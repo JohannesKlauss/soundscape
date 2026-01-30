@@ -5,7 +5,7 @@ export type SoundSampleSourceType = 'local' | 'web' | 'yt'
 export type SoundSample = {
   id: number
   name: string
-  resource: string
+  src: string
   category: SoundSampleCategory
   type: SoundSampleSourceType
 }

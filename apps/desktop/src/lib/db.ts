@@ -11,7 +11,7 @@ const db = new Dexie("soundscape") as Dexie & {
 
 db.version(1).stores({
   set: "++id,name",
-  sample: "++id,name,resource,category,type",
+  sample: "++id,name,src,category,type",
   pad: "++id,name,type"
 });
 

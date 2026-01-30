@@ -5,9 +5,11 @@
   import type {SoundSampleCategory} from "$lib/domain/soundSample/_types";
   import {Player} from "tone";
   import {toast} from "svelte-sonner";
+  import SamplePlayer from "$lib/domain/soundSample/ui/SamplePlayer.svelte";
 
   let open = $state(false)
   let url = $state('')
+  let name = $state('')
   let category = $state<SoundSampleCategory>('music')
   let isAudio = $state(false)
   let isYoutube = $state(false)
@@ -41,13 +43,26 @@
 
   }
 
+  async function onAddAudio() {
+    const res = await fetch(url)
 
-  async function onAdd() {
+    if (!res.ok || !res.body) {
+      toast.error('Unable not download audio')
 
+      return
+    }
+
+    const dir = await navigator.storage.getDirectory()
+    const sampleDir = await dir.getDirectoryHandle('samples')
+
+    const file = await sampleDir.getFileHandle(`${name}`)
+    const writer = await file.createWritable()
+
+    writer.write(res.body)
   }
 </script>
 
-<Dialog bind:open={open} onConfirm={onAdd}>
+<Dialog bind:open={open} onConfirm={isAudio ? onAddAudio : () => null} confirmDisabled={name.trim().length < 3} confirmText="Add to library">
     {#snippet trigger(props)}
         <Tooltip>
             {#snippet trigger()}
@@ -100,10 +115,15 @@
             Atmosphere
         </label>
 
-        {#if player.loaded}
+        {#if isAudio || isYoutube}
             <div class="divider"></div>
 
-            <audio src={url} controls></audio>
+            <label class="label" for="name">Name</label>
+            <input type="text" class="input" name="name" placeholder="Sample Name (min 3 characters)" bind:value={name}/>
+
+            {#if isAudio}
+                <SamplePlayer {player}/>
+            {/if}
         {/if}
     </fieldset>
 </Dialog>
