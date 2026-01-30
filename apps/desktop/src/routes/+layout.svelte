@@ -22,7 +22,7 @@
 <Tooltip.Provider delayDuration={0}>
     <div class="flex flex-col h-screen">
         <div class="header h-32 flex items-center p-8 border-b border-base-content/10 backdrop-blur-xl">
-            <h1 class="text-5xl">Soundscape</h1>
+            <h1 class="text-5xl bg-base-100/40 p-1">SØUND/SCAPE<sup class="text-xl">______vØ.1 a1pha</sup></h1>
         </div>
 
         <AudioContext/>

@@ -32,22 +32,24 @@
     }
   }
 
-  async function play() {
+  async function togglePlay() {
     if (isPlaying) {
       isPlaying = false
       player.stop()
+
+      return
     }
 
     if (!player.loaded) {
       await load()
-
-      player.start(undefined, 0)
-      isPlaying = true
     }
+
+    player.start(undefined, 0)
+    isPlaying = true
   }
 </script>
 
-<button class="btn btn-primary btn-circle btn-ghost" onclick={play}>
+<button class="btn btn-primary btn-circle btn-ghost" onclick={togglePlay}>
     {#if isPlaying}
         <Pause class="w-4 h-4" />
     {:else}
