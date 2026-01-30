@@ -11,8 +11,52 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Futura LT Pro";
+  src: url("/fonts/futura-lt-pro-3/FuturaLTProBook.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Futura LT Pro";
+  src: url("/fonts/futura-lt-pro-3/FuturaLTProLight.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Futura LT Pro";
+  src: url("/fonts/futura-lt-pro-3/FuturaLTProMedium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Futura LT Pro";
+  src: url("/fonts/futura-lt-pro-3/FuturaLTProBold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Futura LT Pro";
+  src: url("/fonts/futura-lt-pro-3/FuturaLTProHeavy.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
-    --default-font-family: "Unbounded", sans-serif;
+  --default-font-family: "Futura LT Pro", sans-serif;
+  --font-family-heading: "Unbounded", sans-serif;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-caret-blink: caret-blink 1s ease-out infinite;
@@ -147,6 +191,15 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-border-card, currentColor);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-family-heading);
   }
 
   .flex-center {

@@ -1,12 +1,18 @@
 import { Dexie, type EntityTable } from "dexie";
-import type { SoundScape } from "$lib/domain/soundscapes/_types";
+import type { SoundSet } from "$lib/domain/soundSet/_types";
+import type {SoundSample} from "$lib/domain/soundSample/_types";
+import type {SoundPad} from "$lib/domain/soundPad/_types";
 
 const db = new Dexie("soundscape") as Dexie & {
-  soundscapes: EntityTable<SoundScape, "id">;
+  set: EntityTable<SoundSet, "id">;
+  sample: EntityTable<SoundSample, "id">
+  pad: EntityTable<SoundPad, "id">
 };
 
 db.version(1).stores({
-  soundscapes: "++id,name",
+  set: "++id,name",
+  sample: "++id,name,resource,category,type",
+  pad: "++id,name,type"
 });
 
 export { db };

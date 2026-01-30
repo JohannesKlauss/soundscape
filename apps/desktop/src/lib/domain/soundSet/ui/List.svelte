@@ -1,0 +1,20 @@
+<script lang="ts">
+    import {liveQuery} from "dexie";
+    import {db} from "$lib/db";
+    import { SwordsIcon } from "@lucide/svelte";
+    import { page } from '$app/state';
+
+    const soundSets = liveQuery(() => db.set.toArray())
+</script>
+
+<ul class="text-xl">
+    {#each $soundSets as set}
+        {@const pathname = `/sets/${set.id}`}
+        <li>
+            <a href={pathname} data-sveltekit-noscroll class="py-2 px-6 hover:bg-base-300 flex-center justify-start cursor-pointer" class:bg-primary={page.url.pathname === pathname}>
+                <SwordsIcon/>
+                {set.name}
+            </a>
+        </li>
+    {/each}
+</ul>
