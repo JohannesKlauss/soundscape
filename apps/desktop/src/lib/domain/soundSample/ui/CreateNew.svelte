@@ -6,6 +6,8 @@
   import {Player} from "tone";
   import {toast} from "svelte-sonner";
   import SamplePlayer from "$lib/domain/soundSample/ui/SamplePlayer.svelte";
+  import {getExtensionFromContentType, getSamplesDirectory} from "$lib/fileSystem";
+  import {db} from "$lib/db";
 
   let open = $state(false)
   let url = $state('')
@@ -16,14 +18,16 @@
 
   const player = new Player().toDestination()
 
-  $effect(async () => {
+  $effect(() => {
     if (url.length > 0 && url.startsWith('http')) {
-      if (await loadAudio()) {
-        isYoutube = false
-        isAudio = true
-      } else if (await loadYoutube()) {
-
-      }
+      loadAudio().then((success) => {
+        if (success) {
+          isYoutube = false
+          isAudio = true
+        } else {
+          loadYoutube()
+        }
+      })
     }
   })
 
@@ -46,19 +50,42 @@
   async function onAddAudio() {
     const res = await fetch(url)
 
-    if (!res.ok || !res.body) {
-      toast.error('Unable not download audio')
+    if (!res.ok) {
+      toast.error('Unable to download audio')
 
       return
     }
 
-    const dir = await navigator.storage.getDirectory()
-    const sampleDir = await dir.getDirectoryHandle('samples')
+    if (!res.headers.get('content-type')) {
+      toast.error('Unable to identify file type')
 
-    const file = await sampleDir.getFileHandle(`${name}`)
+      return
+    }
+
+    const ext = getExtensionFromContentType(res.headers.get('content-type')!)
+    const fileName = `${name}-${crypto.randomUUID().slice(0, 8)}.${ext}`
+
+    const sampleDir = await getSamplesDirectory()
+    const file = await sampleDir.getFileHandle(fileName, { create: true })
     const writer = await file.createWritable()
 
-    writer.write(res.body)
+    await writer.write(await res.blob())
+    await writer.close()
+
+    db.sample.add({
+      category,
+      name,
+      contentType: res.headers.get('content-type')!,
+      src: fileName,
+      type: 'local',
+    })
+
+    open = false
+    name = ''
+    url = ''
+    isAudio = false
+    isYoutube = false
+    category = 'music'
   }
 </script>
 
@@ -66,8 +93,8 @@
     {#snippet trigger(props)}
         <Tooltip>
             {#snippet trigger()}
-                <button class="btn btn-ghost tooltip" {...props}>
-                    <PlusIcon/>
+                <button class="btn btn-ghost btn-circle btn-sm tooltip" {...props}>
+                    <PlusIcon class="w-4 h-4"/>
                 </button>
             {/snippet}
 

@@ -34,7 +34,7 @@
             <div class="grow overflow-x-hidden overflow-y-auto p-4 w-full border-r border-base-content/10 bg-base-300">
                 {@render children()}
             </div>
-            <div class="w-full overflow-x-hidden overflow-y-scroll p-4">
+            <div class="w-160 overflow-x-hidden overflow-y-scroll">
                 <SoundSampleTile/>
             </div>
         </div>
