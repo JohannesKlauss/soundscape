@@ -230,3 +230,13 @@
     @apply opacity-60;
   }
 }
+
+@utility range-vertical {
+  transform: rotate(270deg) translate(calc(-100% + var(--range-thumb-size) / 2), calc(var(--range-thumb-size) / 2));
+  transform-origin: center left;
+}
+
+@utility range-vertical-reverse {
+  transform: rotate(90deg) translate(calc(var(--range-thumb-size) / -2), calc(var(--range-thumb-size) / -2));
+  transform-origin: center left;
+}

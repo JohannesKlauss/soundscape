@@ -10,12 +10,18 @@
 </script>
 
 <div class="flex flex-col gap-2 items-center">
-    <div class="rounded-full size-16 bg-linear-75 from-zinc-400 to-zinc-50 flex justify-center items-center">
-        {#key pad.type}
-            {@const Icon = padIcons[pad.type]}
+    <div class="flex-center">
+        <div class="rounded-full size-16 bg-linear-75 from-zinc-400 to-zinc-50 flex justify-center items-center">
+            {#key pad.type}
+                {@const Icon = padIcons[pad.type]}
 
-            <Icon class="size-8 text-base-100"/>
-        {/key}
+                <Icon class="size-8 text-base-100"/>
+            {/key}
+        </div>
+
+        <div class="h-16 w-4 -mt-2">
+            <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" value="1" step="0.01" />
+        </div>
     </div>
 
     <span class="text-sm">{pad.name}</span>

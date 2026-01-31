@@ -44,7 +44,7 @@
   ) {
     e.preventDefault()
 
-    const delta = e.deltaY < 0 ? $constraints[key]!.step : -$constraints[key]!.step
+    const delta = e.deltaY < 0 ? -$constraints[key]!.step : $constraints[key]!.step
     const newValue = Math.round(($form[key]! + delta) * 10) / 10
 
     $form[key] = Math.max($constraints[key]!.min, Math.min($constraints[key]!.max, newValue))
