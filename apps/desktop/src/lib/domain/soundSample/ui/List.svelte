@@ -7,8 +7,6 @@
     const samples = liveQuery(() => db.sample.toArray())
 </script>
 
-
-
 <ul class="list">
     {#each $samples as sample}
         <li class="list-row hover:bg-base-300 flex-center">
@@ -16,13 +14,6 @@
             <div class="text-lg">{sample.name}</div>
 
             <QuickPreviewPlayer src={sample.src} contentType={sample.contentType} />
-        </li>
-    {/each}
-
-    {#each Array.from(Array(100).keys()) as sample}
-        <li class="list-row hover:bg-base-300 flex-center">
-            <AudioWaveform/>
-            <div class="text-lg">{sample}</div>
         </li>
     {/each}
 </ul>

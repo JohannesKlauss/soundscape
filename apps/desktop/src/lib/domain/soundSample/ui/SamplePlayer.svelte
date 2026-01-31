@@ -128,7 +128,7 @@
               step="0.1"
               bind:value={currentTime}
               oninput={handleSeek}
-              class="range range-primary range-xs flex-1"
+              class="range range-primary range-xs flex-1 [--range-fill:0]"
       />
 
       <span class="text-sm font-medium tabular-nums w-12 text-base-content/70 text-right">

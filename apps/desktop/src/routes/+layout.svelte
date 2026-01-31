@@ -7,6 +7,7 @@
     import AudioContext from "$lib/engine/ui/AudioContext.svelte";
     import {onMount} from "svelte";
     import {start} from "tone";
+    import CreateNew from "$lib/domain/soundPad/ui/CreateNew.svelte";
 
     interface Props {
       children: import('svelte').Snippet
@@ -40,8 +41,8 @@
                     <SoundSampleTile/>
                 </div>
             </div>
-            <div class="w-160 overflow-x-hidden overflow-y-scroll">
-                Right container
+            <div class="w-160 overflow-x-hidden p-4 overflow-y-scroll">
+                <CreateNew/>
             </div>
         </div>
     </div>

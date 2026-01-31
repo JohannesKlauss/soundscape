@@ -4,4 +4,7 @@ export type SoundPad = {
   id: number
   name: string
   type: PadType
+  fadeInSeconds: number
+  fadeOutSeconds: number
 }
+

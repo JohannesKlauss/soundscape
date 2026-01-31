@@ -7,12 +7,12 @@
     const soundSets = liveQuery(() => db.set.toArray())
 </script>
 
-<ul class="text-xl">
+<ul class="text-lg">
     {#each $soundSets as set}
         {@const pathname = `/sets/${set.id}`}
         <li>
             <a href={pathname} data-sveltekit-noscroll class="py-2 px-6 hover:bg-base-300 flex-center justify-start cursor-pointer" class:bg-primary={page.url.pathname === pathname}>
-                <SwordsIcon/>
+                <SwordsIcon class="size-5"/>
                 {set.name}
             </a>
         </li>

@@ -7,10 +7,12 @@ import BottomSheet from "$lib/components/BottomSheet.svelte";
     import { Library } from "@lucide/svelte";
 
 const samples = liveQuery(() => db.sample.toArray())
+
+let open = $state(false)
 </script>
 
 <div class="bg-base-100">
-    <BottomSheet>
+    <BottomSheet bind:open={open}>
         {#snippet title()}
             <div class="flex-center justify-between w-full">
                 <div class="flex-center">

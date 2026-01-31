@@ -6,7 +6,7 @@
   import {Player} from "tone";
   import {toast} from "svelte-sonner";
   import SamplePlayer from "$lib/domain/soundSample/ui/SamplePlayer.svelte";
-  import {getExtensionFromContentType, getSamplesDirectory} from "$lib/fileSystem";
+  import {getExtensionFromContentType, writeFileToSamplesDirectory} from "$lib/fileSystem";
   import {db} from "$lib/db";
 
   let open = $state(false)
@@ -65,12 +65,7 @@
     const ext = getExtensionFromContentType(res.headers.get('content-type')!)
     const fileName = `${name}-${crypto.randomUUID().slice(0, 8)}.${ext}`
 
-    const sampleDir = await getSamplesDirectory()
-    const file = await sampleDir.getFileHandle(fileName, { create: true })
-    const writer = await file.createWritable()
-
-    await writer.write(await res.blob())
-    await writer.close()
+    await writeFileToSamplesDirectory(fileName, await res.blob())
 
     db.sample.add({
       category,

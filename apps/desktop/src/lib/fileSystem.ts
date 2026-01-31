@@ -27,8 +27,17 @@ export async function getSamplesDirectory() {
   return dir.getDirectoryHandle('samples', { create: true })
 }
 
-export async function readFileFromSamplesDirectory(src: string) {
+export async function readFileFromSamplesDirectory(fileName: string) {
   const dir = await getSamplesDirectory()
-  const fileHandle = await dir.getFileHandle(src, {create: false})
+  const fileHandle = await dir.getFileHandle(fileName, {create: false})
   return await fileHandle.getFile()
+}
+
+export async function writeFileToSamplesDirectory(fileName: string, blob: Blob) {
+  const dir = await getSamplesDirectory()
+  const fileHandle = await dir.getFileHandle(fileName, {create: true})
+  const writer = await fileHandle.createWritable({keepExistingData: false})
+
+  await writer.write(blob)
+  await writer.close()
 }
