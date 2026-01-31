@@ -21,11 +21,12 @@
     }
   })
 
-  const {isDropTarget, ref} = useDroppable({
+  const {isDropTarget, ref, droppable} = useDroppable({
     id: 'sample',
-  })
+    onDrop(sourceData) {
 
-  $inspect(isDropTarget)
+  }
+  })
 
   function handleRangeWheel(
     e: WheelEvent,

@@ -6,12 +6,11 @@
     import {useDraggable, DragOverlay} from "@dnd-kit-svelte/svelte";
 
     const samples = liveQuery(() => db.sample.toArray())
-
-    const {ref} = useDraggable({id: 'sample'})
 </script>
 
 <ul class="list">
     {#each $samples as sample}
+        {@const {ref} = useDraggable({id: 'sample', data: sample})}
         <li class="list-row hover:bg-base-300 flex-center">
             <div class="flex-center">
                 <AudioWaveform class="size-5"/>
