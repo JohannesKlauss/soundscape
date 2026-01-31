@@ -3,7 +3,8 @@
   import {z} from "zod";
   import {defaults, superForm} from "sveltekit-superforms";
   import {zod4} from 'sveltekit-superforms/adapters';
-  import {useDroppable} from "@dnd-kit-svelte/svelte";
+  import {useDroppable} from "$lib/dnd";
+  import type {SoundSample} from "$lib/domain/soundSample/_types";
 
   const baseSchema = z.object({
     name: z.string().min(3),
@@ -21,11 +22,11 @@
     }
   })
 
-  const {isDropTarget, ref, droppable} = useDroppable({
+  const {isDropTarget, ref} = useDroppable<SoundSample>({
     id: 'sample',
-    onDrop(sourceData) {
-
-  }
+    onDrop(sample) {
+      console.log('Dropped sample:', sample)
+    }
   })
 
   function handleRangeWheel(
