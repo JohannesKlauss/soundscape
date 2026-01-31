@@ -11,6 +11,21 @@ export interface UseDraggableReturn {
   dragInstanceId: string;
 }
 
+// Offscreen element to hide default drag preview
+let emptyEl: HTMLDivElement | null = null;
+function getEmptyElement(): HTMLDivElement {
+  if (!emptyEl) {
+    emptyEl = document.createElement("div");
+    emptyEl.style.position = "absolute";
+    emptyEl.style.top = "-9999px";
+    emptyEl.style.left = "-9999px";
+    emptyEl.style.width = "1px";
+    emptyEl.style.height = "1px";
+    document.body.appendChild(emptyEl);
+  }
+  return emptyEl;
+}
+
 export function useDraggable<T>(
   options: UseDraggableOptions<T>,
 ): UseDraggableReturn {
@@ -27,6 +42,9 @@ export function useDraggable<T>(
       const payload = JSON.stringify({ id: options.id, data: options.data });
       e.dataTransfer.setData(MIME_TYPE, payload);
       e.dataTransfer.effectAllowed = "move";
+
+      // Hide default drag ghost
+      e.dataTransfer.setDragImage(getEmptyElement(), 0, 0);
 
       isDragging.current = true;
 
