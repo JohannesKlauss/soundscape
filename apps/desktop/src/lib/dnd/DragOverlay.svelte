@@ -15,13 +15,9 @@
   let y = $state(0)
 
   onMount(() => {
-    console.log("[dnd] DragOverlay mounted with id:", dragInstanceId)
-    
     function handleDragStart(e: CustomEvent<{ dragInstanceId: string }>) {
-      console.log("[dnd] DragOverlay received dragstart:", e.detail.dragInstanceId, "my id:", dragInstanceId)
       if (e.detail.dragInstanceId === dragInstanceId) {
         visible = true
-        console.log("[dnd] DragOverlay showing")
       }
     }
 

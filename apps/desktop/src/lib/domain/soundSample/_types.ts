@@ -1,14 +1,18 @@
-import {mimeToExt} from "$lib/fileSystem";
+import {z} from "zod";
 
-export type SoundSampleCategory = 'music' | 'fx' | 'one_shot' | 'atmosphere'
+export const SoundSampleCreationSchema = z.object({
+  name: z.string().min(3),
+  src: z.string().min(3),
+  contentType: z.string(),
+  category: z.union([z.literal('music'), z.literal('fx'), z.literal('one_shot'), z.literal('atmosphere')]),
+  type: z.union([z.literal('local'), z.literal('web'), z.literal('yt')])
+})
 
-export type SoundSampleSourceType = 'local' | 'web' | 'yt'
+export const SoundSampleSchema = SoundSampleCreationSchema.extend({
+  id: z.int().positive(),
+})
 
-export type SoundSample = {
-  id: number
-  name: string
-  src: string
-  contentType: keyof typeof mimeToExt
-  category: SoundSampleCategory
-  type: SoundSampleSourceType
-}
+export type SoundSample = z.infer<typeof SoundSampleSchema>
+
+export type SoundSampleSourceType = SoundSample['type']
+export type SoundSampleCategory = SoundSample['category']

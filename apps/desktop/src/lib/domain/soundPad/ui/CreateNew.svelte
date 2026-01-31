@@ -1,31 +1,40 @@
 <script lang="ts">
-  import {Infinity, AudioWaveform, Music, Crosshair, PlusIcon} from "@lucide/svelte";
-  import {z} from "zod";
+  import {Infinity, AudioWaveform, Music, Crosshair, PlusIcon, Trash} from "@lucide/svelte";
   import {defaults, superForm} from "sveltekit-superforms";
   import {zod4} from 'sveltekit-superforms/adapters';
   import {useDroppable} from "$lib/dnd";
   import type {SoundSample} from "$lib/domain/soundSample/_types";
+  import {SoundPadCreationSchema} from "$lib/domain/soundPad/_types";
+  import {db} from "$lib/db";
+  import {toast} from "svelte-sonner";
 
-  const baseSchema = z.object({
-    name: z.string().min(3),
-    type: z.union([z.literal('music'), z.literal('loop'), z.literal('fx'), z.literal('one_shot')]).default('music'),
-    fadeInSeconds: z.int().min(0).max(30).multipleOf(0.1).default(0.5),
-    fadeOutSeconds: z.int().min(0).max(30).multipleOf(0.1).default(0.5),
-  })
+  const validators = zod4(SoundPadCreationSchema)
 
-  const {form, constraints, enhance} = superForm(defaults(zod4(baseSchema)), {
-    validators: zod4(baseSchema),
+  const {form, constraints, enhance, reset} = superForm(defaults(validators), {
+    validators,
     SPA: true,
-    dataType: 'json',
-    onSubmit() {
-      console.log('submit', $form)
+    onSubmit: async () => {
+      const data = {
+        ...$form,
+        sampleIds: $form.samples.map(val => val.id)
+      }
+
+      delete data.samples
+
+      await db.pad.add(data)
+
+      reset()
+
+      toast.success('Added pad')
     }
   })
 
   const {isDropTarget, ref} = useDroppable<SoundSample>({
     id: 'sample',
     onDrop(sample) {
-      console.log('Dropped sample:', sample)
+      if ($form.samples.findIndex(val => val.id === sample.id) === -1) {
+        $form.samples = [...$form.samples, sample]
+      }
     }
   })
 
@@ -39,6 +48,12 @@
     const newValue = Math.round(($form[key]! + delta) * 10) / 10
 
     $form[key] = Math.max($constraints[key]!.min, Math.min($constraints[key]!.max, newValue))
+  }
+
+  function removeSample(id: number) {
+    const index = $form.samples.findIndex(val => val.id === id)
+
+    $form.samples.splice(index, 1)
   }
 </script>
 
@@ -101,11 +116,28 @@
 
         <div class="card bg-base-300 outline-primary outline-0" class:!outline={isDropTarget.current} {@attach ref}>
             <div class="card-body text-center">
-                Drop sample to add
+                <div class="space-y-2 mb-2">
+                    {#each $form.samples as sample}
+                        <div class="card card-sm bg-base-100">
+                            <div class="card-body">
+                                <div class="flex-center justify-between">
+                                    {sample.name}
+
+                                    <button type="button" class="btn btn-error btn-ghost btn-xs btn-circle" onclick={() => removeSample(sample.id)}>
+                                        <Trash class="size-3"/>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+
+                Drop sample from Library
             </div>
         </div>
 
-        <button class="btn btn-primary btn-block">
+        <button type="submit" class="btn btn-primary btn-block">
             <PlusIcon/>
             Add Sound Pad
         </button>

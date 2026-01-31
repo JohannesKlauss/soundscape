@@ -15,10 +15,10 @@
 
         <li class="list-row hover:bg-base-300 flex-center">
             <div class="flex-center">
-                <AudioWaveform class="size-5"/>
-                <div class="text-lg">{sample.name}</div>
+                <AudioWaveform class="size-4"/>
+                <div>{sample.name}</div>
                 <div {@attach ref}>
-                    <GripVertical class="size-5 text-muted cursor-grab"/>
+                    <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>
             </div>
 
