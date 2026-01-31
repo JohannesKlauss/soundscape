@@ -31,11 +31,17 @@
             <div class="flex relative flex-col basis-1/5 shrink-0 z-10 bg-base-100 border-r border-base-content/10">
                 <SoundSetTile/>
             </div>
-            <div class="grow overflow-x-hidden overflow-y-auto p-4 w-full border-r border-base-content/10 bg-base-300">
-                {@render children()}
+            <div class="grow overflow-x-hidden overflow-y-auto w-full border-r border-base-content/10 bg-base-300 flex flex-col">
+                <div class="p-4">
+                    {@render children()}
+                </div>
+
+                <div class="mt-auto">
+                    <SoundSampleTile/>
+                </div>
             </div>
             <div class="w-160 overflow-x-hidden overflow-y-scroll">
-                <SoundSampleTile/>
+                Right container
             </div>
         </div>
     </div>
