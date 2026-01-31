@@ -1,19 +1,34 @@
 <script lang="ts">
     import {liveQuery} from "dexie";
     import {db} from "$lib/db";
-    import {AudioWaveform} from "@lucide/svelte";
+    import {AudioWaveform, GripVertical} from "@lucide/svelte";
     import QuickPreviewPlayer from "$lib/domain/soundSample/ui/QuickPreviewPlayer.svelte";
+    import {useDraggable, DragOverlay} from "@dnd-kit-svelte/svelte";
 
     const samples = liveQuery(() => db.sample.toArray())
+
+    const {ref} = useDraggable({id: 'sample'})
 </script>
 
 <ul class="list">
     {#each $samples as sample}
         <li class="list-row hover:bg-base-300 flex-center">
-            <AudioWaveform/>
-            <div class="text-lg">{sample.name}</div>
+            <div class="flex-center">
+                <AudioWaveform class="size-5"/>
+                <div class="text-lg">{sample.name}</div>
+                <GripVertical class="size-5 text-muted cursor-grab" {@attach ref}/>
+            </div>
 
-            <QuickPreviewPlayer src={sample.src} contentType={sample.contentType} />
+            <div class="ml-auto">
+                <QuickPreviewPlayer src={sample.src} contentType={sample.contentType} />
+            </div>
         </li>
+
+        <DragOverlay>
+            <div class="flex-center min-w-50 bg-base-300 drop-shadow-2xl border border-base-content/10 px-2 py-2 rounded w-fit max-w-fit">
+                <AudioWaveform class="size-5"/>
+                <div>{sample.name}</div>
+            </div>
+        </DragOverlay>
     {/each}
 </ul>

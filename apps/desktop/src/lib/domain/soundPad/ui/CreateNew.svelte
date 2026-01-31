@@ -3,6 +3,7 @@
   import {z} from "zod";
   import {defaults, superForm} from "sveltekit-superforms";
   import {zod4} from 'sveltekit-superforms/adapters';
+  import {useDroppable} from "@dnd-kit-svelte/svelte";
 
   const baseSchema = z.object({
     name: z.string().min(3),
@@ -16,16 +17,34 @@
     SPA: true,
     dataType: 'json',
     onSubmit() {
-      console.log('data', $form)
+      console.log('submit', $form)
     }
   })
+
+  const {isDropTarget, ref} = useDroppable({
+    id: 'sample',
+  })
+
+  $inspect(isDropTarget)
+
+  function handleRangeWheel(
+    e: WheelEvent,
+    key: 'fadeInSeconds' | 'fadeOutSeconds',
+  ) {
+    e.preventDefault()
+
+    const delta = e.deltaY < 0 ? $constraints[key]!.step : -$constraints[key]!.step
+    const newValue = Math.round(($form[key]! + delta) * 10) / 10
+
+    $form[key] = Math.max($constraints[key]!.min, Math.min($constraints[key]!.max, newValue))
+  }
 </script>
 
 <form use:enhance>
     <div class="space-y-4">
        <div class="fieldset">
            <label class="label" for="name">Name</label>
-           <input type="text" class="input" name="url" placeholder="Name of the pad" bind:value={$form.name}/>
+           <input type="text" class="input" name="url" placeholder="Name of the pad" {...$constraints.name} bind:value={$form.name}/>
        </div>
 
         <div class="fieldset">
@@ -57,14 +76,31 @@
         <div class="fieldset space-y-4">
             <div>
                 <span class="label">Fade In <span class="tabular-nums ml-auto">{$form.fadeInSeconds} seconds</span></span>
-                <input type="range" {...$constraints.fadeInSeconds} bind:value={$form.fadeInSeconds} class="range range-xs"/>
+                <input
+                  type="range"
+                  {...$constraints.fadeInSeconds}
+                  bind:value={$form.fadeInSeconds}
+                  class="range range-xs"
+                  onwheel={(e) => handleRangeWheel(e, 'fadeInSeconds')}
+                />
             </div>
 
             <div>
-                <span class="label">Fade In <span class="tabular-nums ml-auto">{$form.fadeOutSeconds} seconds</span></span>
-                <input type="range" {...$constraints.fadeOutSeconds} bind:value={$form.fadeOutSeconds} class="range range-xs"/>
+                <span class="label">Fade Out <span class="tabular-nums ml-auto">{$form.fadeOutSeconds} seconds</span></span>
+                <input
+                  type="range"
+                  {...$constraints.fadeOutSeconds}
+                  bind:value={$form.fadeOutSeconds}
+                  class="range range-xs"
+                  onwheel={(e) => handleRangeWheel(e, 'fadeOutSeconds')}
+                />
             </div>
+        </div>
 
+        <div class="card bg-base-300 outline-primary outline-0" class:!outline={isDropTarget.current} {@attach ref}>
+            <div class="card-body text-center">
+                Drop sample to add
+            </div>
         </div>
 
         <button class="btn btn-primary btn-block">
