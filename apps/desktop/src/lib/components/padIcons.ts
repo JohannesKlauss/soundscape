@@ -1,0 +1,9 @@
+import type {SoundPadType} from "$lib/domain/soundPad/_types";
+import {AudioWaveform, Crosshair, InfinityIcon, Music} from "@lucide/svelte";
+
+export const padIcons: Record<SoundPadType, typeof Music> = {
+  music: Music,
+  fx: AudioWaveform,
+  loop: InfinityIcon,
+  one_shot: Crosshair
+}

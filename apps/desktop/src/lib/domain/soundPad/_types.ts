@@ -9,9 +9,10 @@ export const SoundPadCreationSchema = z.object({
   samples: z.array(SoundSampleSchema.pick({id: true, name: true})).min(1, 'At least one sample is needed to create a pad'),
 })
 
-export type SoundPad = z.infer<typeof SoundPadCreationSchema> & {
+export type SoundPad = Omit<z.infer<typeof SoundPadCreationSchema>, 'samples'> & {
   id: number
+  sampleIds: number[]
 }
 
-export type PadType = SoundPad['type']
+export type SoundPadType = SoundPad['type']
 

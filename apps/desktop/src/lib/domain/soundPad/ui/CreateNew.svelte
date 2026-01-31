@@ -53,7 +53,7 @@
   function removeSample(id: number) {
     const index = $form.samples.findIndex(val => val.id === id)
 
-    $form.samples.splice(index, 1)
+    $form.samples = $form.samples.toSpliced(index, 1)
   }
 </script>
 

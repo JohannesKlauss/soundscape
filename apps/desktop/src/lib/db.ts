@@ -18,3 +18,7 @@ db.version(1).stores({
 });
 
 export { db };
+
+export async function getPadsForSet(setId: number) {
+  const set = await db.set.where(setId).first()
+}

@@ -8,6 +8,8 @@
     import {onMount} from "svelte";
     import {start} from "tone";
     import CreateNew from "$lib/domain/soundPad/ui/CreateNew.svelte";
+    import List from "$lib/domain/soundPad/ui/List.svelte";
+    import SoundPadPanel from "$lib/domain/soundPad/ui/SoundPadPanel.svelte";
 
     interface Props {
       children: import('svelte').Snippet
@@ -33,7 +35,7 @@
                 <SoundSetTile/>
             </div>
             <div class="grow overflow-x-hidden overflow-y-auto w-full border-r border-base-content/10 bg-base-300 flex flex-col">
-                <div class="p-4">
+                <div class="p-8">
                     {@render children()}
                 </div>
 
@@ -41,8 +43,8 @@
                     <SoundSampleSheet/>
                 </div>
             </div>
-            <div class="w-160 overflow-x-hidden p-4 overflow-y-scroll">
-                <CreateNew/>
+            <div class="w-160 overflow-x-hidden overflow-y-scroll">
+                <SoundPadPanel/>
             </div>
         </div>
     </div>

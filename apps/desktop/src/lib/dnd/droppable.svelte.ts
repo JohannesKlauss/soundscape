@@ -71,7 +71,7 @@ export function useDroppable<T>(
       const data = parseData<T>(e);
 
       if (data && options.onDrop) {
-        options.onDrop(data);
+        options.onDrop?.(data);
       }
     }
 
