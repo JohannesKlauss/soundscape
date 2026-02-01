@@ -49,5 +49,5 @@
         {/each}
     </div>
 
-    <div class="text-lg text-muted text-center mt-12">Drop pads to add them to this Sound Set</div>
+    <div class="text-lg text-muted text-center mt-12">Add new elements by dragging Sound Pads</div>
 </div>

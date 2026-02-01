@@ -9,6 +9,7 @@
   import {toast} from "svelte-sonner";
   import {page} from "$app/state";
   import {replaceState} from "$app/navigation";
+  import QuickPreviewPlayer from "$lib/domain/soundSample/ui/QuickPreviewPlayer.svelte";
 
   interface Props {
     onCancel?: () => void
@@ -58,10 +59,10 @@
   ) {
     e.preventDefault()
 
-    const delta = e.deltaY < 0 ? -$constraints[key]!.step : $constraints[key]!.step
+    const delta = e.deltaY < 0 ? -0.1 : 0.1
     const newValue = Math.round(($form[key]! + delta) * 10) / 10
 
-    $form[key] = Math.max($constraints[key]!.min, Math.min($constraints[key]!.max, newValue))
+    $form[key] = Math.max(0, Math.min(100, newValue))
   }
 
   function removeSample(id: number) {
@@ -148,6 +149,7 @@
                         <div class="card card-sm bg-base-100">
                             <div class="card-body">
                                 <div class="flex-center justify-between">
+                                    <QuickPreviewPlayer class="btn btn-xs" src={sample.src} contentType={sample.contentType} />
                                     {sample.name}
 
                                     <button type="button" class="btn btn-error btn-ghost btn-xs btn-circle" onclick={() => removeSample(sample.id)}>

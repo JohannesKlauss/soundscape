@@ -21,8 +21,10 @@
   let startedAt: number = 0
 
   $effect(() => {
-    if (player.loaded) {
+    if (player && player.loaded) {
       duration = player.buffer.duration
+    } else {
+      duration = 0
     }
   })
 

@@ -3,13 +3,15 @@
   import {Player} from "tone";
   import {toast} from "svelte-sonner";
   import {Play, Pause} from "@lucide/svelte";
+  import type {ClassValue} from "svelte/elements";
 
   interface Props {
     src: string
     contentType: string
+    class: ClassValue
   }
 
-  let {src, contentType}: Props = $props()
+  let {src, contentType, class: customClass}: Props = $props()
 
   let isPlaying = $state(false)
 
@@ -49,10 +51,10 @@
   }
 </script>
 
-<button class="btn btn-primary btn-circle btn-ghost" onclick={togglePlay}>
+<button class={["btn btn-primary btn-circle btn-ghost", customClass]} onclick={togglePlay}>
     {#if isPlaying}
-        <Pause class="w-4 h-4" />
+        <Pause class="size-3" />
     {:else}
-        <Play class="w-4 h-4 ml-0.5" />
+        <Play class="size-3" />
     {/if}
 </button>
