@@ -6,12 +6,15 @@
     import {getContext, Players} from "tone";
     import {volumeToDb} from "$lib/engine/volume";
     import {onMount} from "svelte";
+    import {XIcon} from "@lucide/svelte";
 
     interface Props {
       pad: SoundPad
+      onDelete?: (padId: number) => void
+      editable?: boolean
     }
 
-    let {pad}: Props = $props()
+    let {pad, editable = false, onDelete}: Props = $props()
 
     let isPlaying = $state(false)
     let lastPlayedSampleId = $state<number>()
@@ -97,8 +100,8 @@
     }
 </script>
 
-<div class="flex flex-col gap-2 items-center">
-    <div class="flex-center">
+<div class="flex flex-col gap-2 items-center group">
+    <div class="flex-center relative">
         <div class={["rounded-full size-16 bg-linear-75 flex justify-center items-center cursor-pointer", !isPlaying && "from-zinc-400 to-base-content", isPlaying && "to-primary from-primary/70"]} onclick={togglePlay}>
             {#key pad.type}
                 {@const Icon = padIcons[pad.type]}
@@ -110,6 +113,12 @@
         <div class="h-16 w-4 -mt-2">
             <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" value="1" step="0.01" oninput={e => volume = parseFloat(e.target.value)} />
         </div>
+
+        {#if editable}
+            <button onclick={() => onDelete?.(pad.id)} type="button" class="opacity-0 group-hover:opacity-100 transition-opacity btn btn-xs btn-ghost btn-error btn-circle absolute -left-4 -top-1">
+                <XIcon class="size-3"/>
+            </button>
+        {/if}
     </div>
 
     <span class={["text-sm cursor-pointer", isPlaying && "text-primary"]} onclick={togglePlay}>{pad.name}</span>

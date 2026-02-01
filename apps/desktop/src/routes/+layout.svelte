@@ -10,6 +10,7 @@
     import Form from "$lib/domain/soundPad/ui/Form.svelte";
     import List from "$lib/domain/soundPad/ui/List.svelte";
     import SoundPadPanel from "$lib/domain/soundPad/ui/SoundPadPanel.svelte";
+    import AlertDialog from "$lib/components/AlertDialog.svelte";
 
     interface Props {
       children: import('svelte').Snippet
@@ -51,6 +52,7 @@
 </Tooltip.Provider>
 
 <Toaster position="bottom-right" expand richColors />
+<AlertDialog/>
 
 <style>
     .header {

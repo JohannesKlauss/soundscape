@@ -42,7 +42,7 @@
                 <Dialog.Title class="card-title flex w-full items-center justify-center text-lg font-semibold tracking-tight">
                     {@render title()}
                 </Dialog.Title>
-                <Dialog.Description class="text-foreground-alt text-sm">
+                <Dialog.Description class="text-muted text-sm">
                     {@render description()}
                 </Dialog.Description>
                 {@render children?.()}

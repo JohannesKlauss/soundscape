@@ -6,7 +6,7 @@ import type {SoundPad} from "$lib/domain/soundPad/_types";
 const db = new Dexie("soundscape") as Dexie & {
   set: EntityTable<SoundSet, "id">
   sample: EntityTable<SoundSample, "id">
-  pad: EntityTable<Omit<SoundPad, 'samples'> & {sampleIds: number[]}, "id">
+  pad: EntityTable<SoundPad, "id">
   setHasPads: EntityTable<SoundSetHasPad, "setId" | "padId">
 };
 
@@ -18,7 +18,3 @@ db.version(1).stores({
 });
 
 export { db };
-
-export async function getPadsForSet(setId: number) {
-  const set = await db.set.where(setId).first()
-}
