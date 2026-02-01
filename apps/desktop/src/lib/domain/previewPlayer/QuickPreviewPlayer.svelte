@@ -30,8 +30,8 @@
 
 <button type="button" class={["btn btn-primary btn-sm btn-circle", !isPlaying && "btn-ghost", customClass]} onclick={togglePlay}>
     {#if isPlaying}
-        <Pause class="size-3" />
+      <Pause class="size-3" />
     {:else}
-        <Play class="size-3" />
+      <Play class="size-3" />
     {/if}
 </button>
