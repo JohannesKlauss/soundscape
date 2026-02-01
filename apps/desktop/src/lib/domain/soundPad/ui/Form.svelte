@@ -97,7 +97,9 @@
     id: 'sample',
     items: $form.samples,
     onSort(items) {
+      console.log('items', items)
 
+      $form.samples = [...items]
     }
   })
 </script>
