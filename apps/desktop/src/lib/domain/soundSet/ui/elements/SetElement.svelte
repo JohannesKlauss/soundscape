@@ -140,7 +140,7 @@
 
 <div class="flex flex-col gap-2 items-center group">
     <div class="flex-center relative">
-        <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
         <div class={["radial-progress text-zinc-400 cursor-pointer transition-colors duration-250", !isPlaying && "text-transparent!"]} onclick={togglePlay}
              style="--size:4.4rem; --thickness: 2px;" style:--value={100 - progress * 100}>
             <div class="relative rounded-full size-16">

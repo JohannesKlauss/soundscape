@@ -57,13 +57,15 @@
 
         <li>
             <div class="py-2 px-4 text-sm hover:bg-base-300 flex-center justify-start cursor-pointer group" {@attach ref}>
-                <Tooltip triggerProps={{onclick: () => moveToSet(pad.id), class:"btn btn-primary btn-ghost btn-circle btn-sm"}}>
-                    {#snippet trigger()}
-                        <ChevronLeft class="size-5"/>
-                    {/snippet}
+                {#if page.route.id?.startsWith('/sets/[id]')}
+                    <Tooltip triggerProps={{onclick: () => moveToSet(pad.id), class: "btn btn-primary btn-ghost btn-circle btn-sm"}}>
+                        {#snippet trigger()}
+                            <ChevronLeft class="size-5"/>
+                        {/snippet}
 
-                    Add to Set
-                </Tooltip>
+                        Add to Set
+                    </Tooltip>
+                {/if}
 
                 <Tooltip>
                     {#snippet trigger()}
