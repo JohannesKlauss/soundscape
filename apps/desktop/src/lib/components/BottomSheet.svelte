@@ -6,11 +6,13 @@
 
   type Props = WithoutChild<Collapsible.RootProps> & {
     title: Snippet;
+    trigger?: Snippet;
   };
 
   let {
     open = $bindable(false),
     title,
+    trigger: collapsibleTrigger,
     children,
     ...restProps
   }: Props = $props();
@@ -23,7 +25,11 @@
         <Tooltip>
             {#snippet trigger()}
                 <Collapsible.Trigger class="btn btn-circle btn-sm btn-ghost">
-                    <ChevronsUpDown class="size-4" />
+                    {#if collapsibleTrigger}
+                        {@render collapsibleTrigger()}
+                    {:else}
+                        <ChevronsUpDown class="size-4" />
+                    {/if}
                 </Collapsible.Trigger>
             {/snippet}
 

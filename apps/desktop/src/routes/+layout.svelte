@@ -7,7 +7,7 @@
     import AudioContext from "$lib/engine/ui/AudioContext.svelte";
     import {onMount} from "svelte";
     import {start} from "tone";
-    import CreateNew from "$lib/domain/soundPad/ui/CreateNew.svelte";
+    import Form from "$lib/domain/soundPad/ui/Form.svelte";
     import List from "$lib/domain/soundPad/ui/List.svelte";
     import SoundPadPanel from "$lib/domain/soundPad/ui/SoundPadPanel.svelte";
 

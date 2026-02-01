@@ -43,7 +43,6 @@ export function useDraggable<T>(
       e.dataTransfer.setData(MIME_TYPE, payload);
       e.dataTransfer.effectAllowed = "move";
 
-      // Hide default drag ghost
       e.dataTransfer.setDragImage(getEmptyElement(), 0, 0);
 
       isDragging.current = true;

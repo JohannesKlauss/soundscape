@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {Infinity, AudioWaveform, Music, Crosshair, PlusIcon, Trash} from "@lucide/svelte";
+  import {Infinity, AudioWaveform, Music, Crosshair, PlusIcon, Trash, XIcon, Check} from "@lucide/svelte";
   import {defaults, superForm} from "sveltekit-superforms";
   import {zod4} from 'sveltekit-superforms/adapters';
   import {useDroppable} from "$lib/dnd";
@@ -7,12 +7,21 @@
   import {SoundPadCreationSchema} from "$lib/domain/soundPad/_types";
   import {db} from "$lib/db";
   import {toast} from "svelte-sonner";
+  import {page} from "$app/state";
+
+  interface Props {
+    onCancel?: () => void
+  }
+
+  let {onCancel}: Props = $props()
+  const pad = $derived(page.state.editPad)
 
   const validators = zod4(SoundPadCreationSchema)
 
-  const {form, constraints, enhance, reset} = superForm(defaults(validators), {
+  const {form, constraints, enhance, reset} = superForm(pad ?? defaults(validators), {
     validators,
     SPA: true,
+    dataType: 'json',
     onSubmit: async () => {
       const data = {
         ...$form,
@@ -21,11 +30,14 @@
 
       delete data.samples
 
-      await db.pad.add(data)
-
-      reset()
-
-      toast.success('Created pad')
+      if (pad) {
+        await db.pad.update(pad.id, data)
+        toast.success('Updated pad')
+      } else {
+        await db.pad.add(data)
+        toast.success('Created pad')
+        reset()
+      }
     }
   })
 
@@ -55,10 +67,22 @@
 
     $form.samples = $form.samples.toSpliced(index, 1)
   }
+
+  function cancel() {
+    reset()
+    onCancel?.()
+  }
 </script>
 
 <form use:enhance>
     <div class="space-y-4">
+        <div class="flex-center justify-between text-muted text-sm">
+            Create a new Sound Pad
+            <button type="button" class="btn btn-ghost btn-circle btn-sm" onclick={cancel}>
+                <XIcon class="size-4"/>
+            </button>
+        </div>
+
        <div class="fieldset">
            <label class="label" for="name">Name</label>
            <input type="text" class="input" name="url" placeholder="Name of the pad" {...$constraints.name} bind:value={$form.name}/>
@@ -127,7 +151,6 @@
                                         <Trash class="size-3"/>
                                     </button>
                                 </div>
-
                             </div>
                         </div>
                     {/each}
@@ -138,8 +161,13 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-block">
-            <PlusIcon/>
-            Add Sound Pad
+            {#if pad}
+                <Check/>
+                Update Pad
+            {:else}
+                <PlusIcon/>
+                Add Sound Pad
+            {/if}
         </button>
     </div>
 </form>

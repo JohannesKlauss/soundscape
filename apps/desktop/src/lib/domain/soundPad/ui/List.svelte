@@ -1,10 +1,19 @@
 <script lang="ts">
     import {liveQuery} from "dexie";
     import {db} from "$lib/db";
-    import {GripVertical, ChevronLeft} from "@lucide/svelte";
+    import {GripVertical, ChevronLeft, Pen} from "@lucide/svelte";
     import {DragOverlay, useDraggable} from "$lib/dnd";
     import {page} from "$app/state";
+    import {replaceState} from "$app/navigation";
     import Tooltip from "$lib/components/Tooltip.svelte";
+    import type {Snippet} from "svelte";
+    import {padToForm, type SoundPad} from "$lib/domain/soundPad/_types";
+
+    interface Props {
+      children?: Snippet
+    }
+
+    let {children}: Props = $props()
 
     const pads = liveQuery(() => db.pad.toArray())
 
@@ -18,10 +27,16 @@
         })
       }
     }
+
+    async function editPad(pad: SoundPad) {
+      replaceState('', {editPad: await padToForm(pad)})
+    }
 </script>
 
-<div class="p-4 space-y-2 text-muted">
-    <div>Sound Pads</div>
+<div class="p-4 text-muted flex-center justify-between">
+    <span>Sound Pads</span>
+
+    {@render children?.()}
 </div>
 
 <ul class="text-lg">
@@ -37,8 +52,16 @@
 
                     Add to Set
                 </Tooltip>
-                <GripVertical class="size-3 cursor-drag"/>
+                <GripVertical class="size-4 cursor-drag"/>
                 {pad.name} ({pad.type})
+
+                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto", type: 'button', onclick: () => editPad(pad)}}>
+                    {#snippet trigger()}
+                        <Pen class="size-4"/>
+                    {/snippet}
+
+                    Edit Pad
+                </Tooltip>
             </div>
         </li>
 
