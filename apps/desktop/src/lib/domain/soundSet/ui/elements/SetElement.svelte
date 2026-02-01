@@ -17,6 +17,7 @@
   let {pad, editable = false, onDelete}: Props = $props()
 
   let isPlaying = $state(false)
+  let isStopping = $state(false)
   let lastPlayedSampleId = $state<number>()
   let volume = $state(1)
   let progress = $state(0)
@@ -90,9 +91,11 @@
     const player = players.player(lastPlayedSampleId.toString())
     player.onstop = () => {
       isPlaying = false
+      isStopping = false
       lastPlayedSampleId = undefined
     }
 
+    isStopping = true
     players.stopAll()
   }
 
@@ -138,14 +141,20 @@
 <div class="flex flex-col gap-2 items-center group">
     <div class="flex-center relative">
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events -->
-        <div class={["radial-progress text-zinc-400 cursor-pointer", !isPlaying && "text-transparent!"]} onclick={togglePlay}
-             style="--size:4.4rem; --thickness: 2px;" style:--value={100 - progress * 100} role="progressbar">
-            <div class={["rounded-full size-16 bg-linear-75 flex justify-center items-center", !isPlaying && "from-zinc-400 to-base-content", isPlaying && "to-primary from-primary/70"]}>
-                {#key pad.type}
-                    {@const Icon = padIcons[pad.type]}
-
-                    <Icon class="size-8 text-base-100"/>
-                {/key}
+        <div class={["radial-progress text-zinc-400 cursor-pointer transition-colors duration-250", !isPlaying && "text-transparent!"]} onclick={togglePlay}
+             style="--size:4.4rem; --thickness: 2px;" style:--value={100 - progress * 100}>
+            <div class="relative rounded-full size-16">
+                <!-- Base layer: gray gradient -->
+                <div class="absolute inset-0 rounded-full bg-linear-75 from-zinc-400 to-base-content"></div>
+                <!-- Primary layer: fades in when playing, pulses when stopping -->
+                <div class={["absolute inset-0 rounded-full bg-linear-75 from-primary/70 to-primary transition-opacity", !isPlaying && "opacity-0", isPlaying && !isStopping && "opacity-100", isStopping && "animate-pulse-overlay"]}></div>
+                <!-- Icon -->
+                <div class="absolute inset-0 flex justify-center items-center">
+                    {#key pad.type}
+                        {@const Icon = padIcons[pad.type]}
+                        <Icon class="size-8 text-base-100"/>
+                    {/key}
+                </div>
             </div>
         </div>
 
@@ -163,5 +172,5 @@
     </div>
 
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-    <span class={["text-sm cursor-pointer", isPlaying && "text-primary"]} onclick={togglePlay}>{pad.name}</span>
+    <span class={["text-sm cursor-pointer transition-colors duration-250", isPlaying && "text-primary"]} onclick={togglePlay}>{pad.name}</span>
 </div>
