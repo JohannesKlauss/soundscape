@@ -25,7 +25,7 @@ let open = $state(false)
             <div class="ml-auto"><CreateNew/></div>
         {/snippet}
 
-        <div class="max-h-[75vh] overflow-y-scroll">
+        <div class="max-h-[50vh] overflow-y-scroll">
             <List/>
         </div>
     </BottomSheet>

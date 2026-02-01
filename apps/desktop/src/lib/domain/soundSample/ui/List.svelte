@@ -6,6 +6,7 @@
     import {useDraggable, DragOverlay} from "$lib/dnd";
     import type {SoundSample} from "$lib/domain/soundSample/_types";
     import {sampleIcons} from "$lib/domain/soundSample/ui/sampleIcons";
+    import {formatTime} from "$lib/engine/volume";
 
     const samples = liveQuery(() => db.sample.toArray())
 </script>
@@ -15,10 +16,10 @@
         {@const {ref, dragInstanceId} = useDraggable<SoundSample>({id: 'sample', data: sample})}
         {@const Icon = sampleIcons[sample.category]}
 
-        <li class="list-row hover:bg-base-300 flex-center">
+        <li class="list-row px-4 py-2 text-sm hover:bg-base-300 flex-center">
             <div class="flex-center">
                 <Icon class="size-4"/>
-                <div>{sample.name}</div>
+                <div>{sample.name} <span class="text-xs text-muted">({formatTime(sample.duration)})</span></div>
                 <div {@attach ref}>
                     <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>

@@ -51,7 +51,7 @@
   }
 </script>
 
-<button class={["btn btn-primary btn-circle btn-ghost", customClass]} onclick={togglePlay}>
+<button class={["btn btn-primary btn-sm btn-circle btn-ghost", customClass]} onclick={togglePlay}>
     {#if isPlaying}
         <Pause class="size-3" />
     {:else}
