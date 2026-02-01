@@ -2,7 +2,7 @@
     import {liveQuery} from "dexie";
     import {db} from "$lib/db";
     import {AudioWaveform, GripVertical} from "@lucide/svelte";
-    import QuickPreviewPlayer from "$lib/domain/soundSample/ui/QuickPreviewPlayer.svelte";
+    import QuickPreviewPlayer from "$lib/domain/previewPlayer/QuickPreviewPlayer.svelte";
     import {useDraggable, DragOverlay} from "$lib/dnd";
     import type {SoundSample} from "$lib/domain/soundSample/_types";
     import {sampleIcons} from "$lib/domain/soundSample/ui/sampleIcons";

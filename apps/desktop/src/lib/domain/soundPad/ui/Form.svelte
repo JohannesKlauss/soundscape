@@ -20,7 +20,7 @@
   import {toast} from "svelte-sonner";
   import {page} from "$app/state";
   import {replaceState} from "$app/navigation";
-  import QuickPreviewPlayer from "$lib/domain/soundSample/ui/QuickPreviewPlayer.svelte";
+  import QuickPreviewPlayer from "$lib/domain/previewPlayer/QuickPreviewPlayer.svelte";
 
   interface Props {
     onCancel?: () => void
