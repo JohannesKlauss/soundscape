@@ -28,3 +28,10 @@ export async function padToForm(pad: SoundPad): Promise<SoundPadEditForm> {
     samples,
   }
 }
+
+export const padTypeToLabel: Record<SoundPadType, string> = {
+  one_shot: 'One Shot',
+  loop: 'Loop',
+  fx: 'FX',
+  music: 'Music',
+}

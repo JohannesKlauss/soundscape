@@ -7,7 +7,8 @@
     import {replaceState} from "$app/navigation";
     import Tooltip from "$lib/components/Tooltip.svelte";
     import type {Snippet} from "svelte";
-    import {padToForm, type SoundPad} from "$lib/domain/soundPad/_types";
+    import {padToForm, padTypeToLabel, type SoundPad} from "$lib/domain/soundPad/_types";
+    import {padIcons} from "$lib/components/padIcons";
 
     interface Props {
       children?: Snippet
@@ -42,9 +43,10 @@
 <ul class="text-lg">
     {#each $pads as pad}
         {@const {ref, dragInstanceId} = useDraggable({id: 'pad', data: pad})}
+        {@const Icon = padIcons[pad.type]}
 
         <li>
-            <div class="py-2 px-4 text-sm hover:bg-base-300 flex-center justify-start cursor-pointer" {@attach ref}>
+            <div class="py-2 px-4 text-sm hover:bg-base-300 flex-center justify-start cursor-pointer group" {@attach ref}>
                 <Tooltip triggerProps={{onclick: () => moveToSet(pad.id), class:"btn btn-primary btn-ghost btn-circle btn-sm"}}>
                     {#snippet trigger()}
                         <ChevronLeft class="size-5"/>
@@ -52,10 +54,18 @@
 
                     Add to Set
                 </Tooltip>
-                <GripVertical class="size-4 cursor-drag"/>
-                {pad.name} ({pad.type})
 
-                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto", type: 'button', onclick: () => editPad(pad)}}>
+                <Tooltip>
+                    {#snippet trigger()}
+                        <Icon class="size-5"/>
+                    {/snippet}
+
+                    {padTypeToLabel[pad.type]}
+                </Tooltip>
+
+                {pad.name}
+
+                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => editPad(pad)}}>
                     {#snippet trigger()}
                         <Pen class="size-4"/>
                     {/snippet}
@@ -67,7 +77,6 @@
 
         <DragOverlay {dragInstanceId} offset={{x: 0, y: 0}}>
             <div class="flex-center min-w-50 bg-base-300 drop-shadow-2xl border border-base-content/10 px-2 py-2 text-sm rounded w-fit max-w-fit">
-                <GripVertical class="size-3 cursor-drag"/>
                 <div>{pad.name}</div>
             </div>
         </DragOverlay>
