@@ -84,7 +84,8 @@
   }
 </script>
 
-<Dialog bind:open={open} onConfirm={isAudio ? onAddAudio : () => null} confirmDisabled={name.trim().length < 3} confirmText="Add to library">
+<Dialog bind:open={open} onConfirm={isAudio ? onAddAudio : () => null} confirmDisabled={name.trim().length < 3}
+        confirmText="Add to library">
     {#snippet trigger(props)}
         <Tooltip>
             {#snippet trigger()}
@@ -105,12 +106,15 @@
         To add a sample copy the url or drop a file
     {/snippet}
 
-    <fieldset class="fieldset">
-        <label class="label" for="url">Url</label>
+    <div class="fieldset">
+        <label class="label" for="name">Name</label>
+        <input type="text" class="input" name="name" placeholder="Sample Name (min 3 characters)" bind:value={name}/>
+    </div>
+    <div class="fieldset">
+        <label class="label" for="url">Link to URL</label>
         <input type="text" class="input" name="url" placeholder="https://example.com/media.mp3" bind:value={url}/>
-
-        <div class="divider"></div>
-
+    </div>
+    <div class="fieldset">
         <span class="label">Type</span>
         <label class="label">
             <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3" value="music"
@@ -140,12 +144,9 @@
         {#if isAudio || isYoutube}
             <div class="divider"></div>
 
-            <label class="label" for="name">Name</label>
-            <input type="text" class="input" name="name" placeholder="Sample Name (min 3 characters)" bind:value={name}/>
-
             {#if isAudio}
                 <SamplePlayer {player}/>
             {/if}
         {/if}
-    </fieldset>
+    </div>
 </Dialog>

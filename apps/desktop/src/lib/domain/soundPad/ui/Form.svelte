@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {Infinity, AudioWaveform, Music, Crosshair, PlusIcon, Trash, XIcon, Check} from "@lucide/svelte";
+  import {Infinity, AudioWaveform, Music, Crosshair, PlusIcon, Trash, XIcon, Check, Dices, ListOrdered} from "@lucide/svelte";
   import {defaults, superForm} from "sveltekit-superforms";
   import {zod4} from 'sveltekit-superforms/adapters';
   import {useDroppable} from "$lib/dnd";
@@ -8,6 +8,7 @@
   import {db} from "$lib/db";
   import {toast} from "svelte-sonner";
   import {page} from "$app/state";
+  import {replaceState} from "$app/navigation";
 
   interface Props {
     onCancel?: () => void
@@ -37,6 +38,7 @@
         await db.pad.add(data)
         toast.success('Created pad')
         reset()
+        onCancel?.()
       }
     }
   })
@@ -69,6 +71,7 @@
   }
 
   function cancel() {
+    replaceState('', {editPad: undefined})
     reset()
     onCancel?.()
   }
@@ -157,6 +160,22 @@
                 </div>
 
                 Drop sample from Library
+            </div>
+        </div>
+
+        <div class="fieldset">
+            <span class="label">Multisample Playback Type</span>
+            <div class="grid grid-cols-2 gap-4">
+                <label class="label">
+                    <input type="radio" class="radio" name="playbackType" value="random" disabled={$form.samples.length < 2} bind:group={$form.playbackType}/>
+                    <Dices class="size-5"/>
+                    Random
+                </label>
+                <label class="label">
+                    <input type="radio" class="radio" name="playbackType" value="round_robin" disabled={$form.samples.length < 2} bind:group={$form.playbackType}/>
+                    <ListOrdered class="size-5"/>
+                    Round Robin
+                </label>
             </div>
         </div>
 

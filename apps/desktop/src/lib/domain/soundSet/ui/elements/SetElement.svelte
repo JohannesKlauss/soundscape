@@ -14,6 +14,7 @@
     let {pad}: Props = $props()
 
     let isPlaying = $state(false)
+    let lastPlayedSampleId = $state<number>()
     let volume = $state(1)
     let players = new Players().toDestination()
 
@@ -41,17 +42,36 @@
     })
 
     function playElement() {
-      const player = players.player('1')
+      const sampleId = getNextSampleId()
+
+      const player = players.player(sampleId.toString())
       player.fadeIn = pad.fadeInSeconds
+
+      player.onstop = () => {
+        if (pad.sampleIds.length > 1) {
+          playElement()
+        } else {
+          isPlaying = false
+        }
+      }
+
       player.start()
       isPlaying = true
+      lastPlayedSampleId = sampleId
     }
 
     function stopElement() {
-      const player = players.player('1')
+      if (!lastPlayedSampleId) {
+        throw new Error('Tried to stop SetElement player, but the played sampleId is undefined')
+      }
+
+      const player = players.player(lastPlayedSampleId.toString())
       player.fadeOut = pad.fadeOutSeconds
+      player.onstop = () => {
+        isPlaying = false
+        lastPlayedSampleId = undefined
+      }
       player.stop(pad.fadeOutSeconds)
-      isPlaying = false
     }
 
     function togglePlay() {
@@ -59,6 +79,20 @@
         stopElement()
       } else {
         playElement()
+      }
+    }
+
+    function getNextSampleId(): number {
+      const index = pad.sampleIds.findIndex(id => id === lastPlayedSampleId)
+
+      if (pad.playbackType === 'round_robin') {
+        if (index === -1) {
+          return pad.sampleIds[0]
+        }
+
+        return pad.sampleIds[(index + 1) % pad.sampleIds.length]
+      } else {
+        return pad.sampleIds[Math.floor(Math.random() * pad.sampleIds.length)]
       }
     }
 </script>
