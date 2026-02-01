@@ -5,12 +5,14 @@
   import type {SoundPad, SoundPadType} from "$lib/domain/soundPad/_types";
   import SetElement from "$lib/domain/soundSet/ui/elements/SetElement.svelte";
   import {confirmModal} from "$lib/components/AlertDialog.svelte";
+  import {toast} from "svelte-sonner";
 
   interface Props {
     setId: number
+    editable?: boolean
   }
 
-  let {setId}: Props = $props()
+  let {setId, editable = false}: Props = $props()
 
   const padTypeOrder: SoundPadType[] = ['music', 'loop', 'fx', 'one_shot']
 
@@ -26,6 +28,12 @@
   const {ref, isDropTarget} = useDroppable<SoundPad>({
     id: 'pad',
     onDrop: async (data) => {
+      if (!editable) {
+        toast.warning('Sound Set is locked')
+
+        return
+      }
+
       await db.setHasPads.add({
         setId,
         padId: data.id,
@@ -45,7 +53,7 @@
 <div class="outline-0 outline-primary rounded" class:!outline={isDropTarget.current} {@attach ref}>
     <div class="grid grid-cols-6 gap-6 w-full justify-evenly items-center place-content-center place-items-center">
         {#each $pads as pad}
-            <SetElement {pad} editable {onDelete}/>
+            <SetElement {pad} {editable} {onDelete}/>
         {/each}
     </div>
 

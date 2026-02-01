@@ -179,7 +179,7 @@
             <div class="card-body text-center">
                 <div class="space-y-2 mb-2" {@attach containerRef}>
                     {#each $form.samples as sample}
-                        <div class="card card-sm bg-base-100">
+                        <div class="card card-sm bg-base-100 cursor-grab">
                             <div class="card-body">
                                 <div class="flex-center justify-between">
                                     <QuickPreviewPlayer class="btn btn-xs" src={sample.src}
