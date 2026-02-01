@@ -36,12 +36,17 @@
 
   const validators = zod4(SoundPadCreationSchema)
 
-  const {form, constraints, enhance, reset} = superForm(page.state.editPad ?? defaults(validators), {
+  const {form, constraints, enhance, reset} = superForm(defaults(page.state.editPad, validators), {
     validators,
+    validationMethod: 'onsubmit',
     SPA: true,
     dataType: 'json',
     onSubmit: async () => {
-      console.log('form samples', $form.samples.map(v => v.id))
+      if ($form.samples.length === 0) {
+        toast.error('Add at least one sample to the pad')
+
+        return
+      }
 
       const data = {
         ...$form,
@@ -104,8 +109,6 @@
       $form.samples = items
     }
   })
-
-  $inspect($form.samples.map(v => v.id))
 </script>
 
 <form use:enhance>
@@ -196,7 +199,7 @@
                     {/each}
                 </div>
 
-                Drop sample from Library
+                <span class="text-xs text-muted">Drop sample from Library</span>
             </div>
         </div>
 

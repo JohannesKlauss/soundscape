@@ -1,7 +1,7 @@
 <script lang="ts">
     import {liveQuery} from "dexie";
     import {db} from "$lib/db";
-    import {ChevronLeft, Pen} from "@lucide/svelte";
+    import {ChevronLeft, Pen, Trash} from "@lucide/svelte";
     import {DragOverlay, useDraggable} from "$lib/dnd";
     import {page} from "$app/state";
     import {replaceState} from "$app/navigation";
@@ -9,6 +9,7 @@
     import type {Snippet} from "svelte";
     import {padToForm, padTypeToLabel, type SoundPad} from "$lib/domain/soundPad/_types";
     import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
+    import {confirmModal} from "$lib/components/AlertDialog.svelte";
 
     interface Props {
       children?: Snippet
@@ -31,6 +32,15 @@
 
     async function editPad(pad: SoundPad) {
       replaceState('', {editPad: await padToForm(pad)})
+    }
+
+    async function deletePad(padId: number) {
+      const confirmed = await confirmModal('Delete Pad', 'Are you sure you want to delete this Pad? It will be removed from all Sound Sets that are currently using it')
+
+      if (confirmed) {
+        await db.setHasPads.where('padId').equals(padId).delete()
+        await db.pad.delete(padId)
+      }
     }
 </script>
 
@@ -71,6 +81,14 @@
                     {/snippet}
 
                     Edit Pad
+                </Tooltip>
+
+                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-error btn-sm ml-2 opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => deletePad(pad.id)}}>
+                    {#snippet trigger()}
+                        <Trash class="size-4"/>
+                    {/snippet}
+
+                    Delete Pad
                 </Tooltip>
             </div>
         </li>

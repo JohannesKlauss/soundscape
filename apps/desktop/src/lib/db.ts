@@ -14,7 +14,7 @@ db.version(1).stores({
   set: "++id",
   sample: "++id",
   pad: "++id",
-  setHasPads: "[setId+padId]"
+  setHasPads: "[setId+padId],padId"
 });
 
 export { db };

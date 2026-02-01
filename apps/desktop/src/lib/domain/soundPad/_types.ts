@@ -8,7 +8,7 @@ export const SoundPadCreationSchema = z.object({
   fadeInSeconds: z.int().min(0).max(30).multipleOf(0.1).default(0.5),
   fadeOutSeconds: z.int().min(0).max(30).multipleOf(0.1).default(0.5),
   playbackType: z.union([z.literal('random'), z.literal('round_robin')]).default('random'),
-  samples: z.array(SoundSampleSchema).min(1, 'At least one sample is needed to create a pad'),
+  samples: z.array(SoundSampleSchema).nonempty('At least one sample is needed to create a pad'),
 })
 
 export type SoundPadEditForm = z.infer<typeof SoundPadCreationSchema> & {id: number}
