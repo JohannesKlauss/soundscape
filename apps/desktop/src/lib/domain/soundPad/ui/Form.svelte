@@ -41,6 +41,8 @@
     SPA: true,
     dataType: 'json',
     onSubmit: async () => {
+      console.log('form samples', $form.samples.map(v => v.id))
+
       const data = {
         ...$form,
         sampleIds: $form.samples.map(val => val.id)
@@ -95,13 +97,15 @@
 
   const {containerRef} = useSortable({
     id: 'sample',
-    items: $form.samples,
+    get items() {
+      return $form.samples
+    },
     onSort(items) {
-      console.log('items', items)
-
-      $form.samples = [...items]
+      $form.samples = items
     }
   })
+
+  $inspect($form.samples.map(v => v.id))
 </script>
 
 <form use:enhance>

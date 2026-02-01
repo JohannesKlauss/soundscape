@@ -21,7 +21,11 @@ export type SoundPad = Omit<z.infer<typeof SoundPadCreationSchema>, 'samples'> &
 export type SoundPadType = SoundPad['type']
 
 export async function padToForm(pad: SoundPad): Promise<SoundPadEditForm> {
-  const samples = await db.sample.where('id').anyOf(pad.sampleIds).toArray()
+  const samplesById = await db.sample.where('id').anyOf(pad.sampleIds).toArray()
+
+  // Sort samples to match the order in pad.sampleIds
+  const sampleMap = new Map(samplesById.map(s => [s.id, s]))
+  const samples = pad.sampleIds.map(id => sampleMap.get(id)!).filter(Boolean)
 
   return {
     ...pad,

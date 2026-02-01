@@ -2,7 +2,7 @@ const MIME_TYPE = "application/x-dnd-sortable";
 
 export interface UseSortableOptions<T> {
   id: string;
-  items: T[];
+  get items(): T[];
   onSort: (items: T[]) => void;
 }
 
