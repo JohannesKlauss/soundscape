@@ -10,18 +10,20 @@
 </script>
 
 <div class="flex flex-col h-full">
-    <List>
-        <Tooltip triggerProps={{class:"btn btn-sm btn-circle btn-ghost", onclick: () => showForm = true}}>
-            {#snippet trigger()}
-                <PlusIcon class="size-4"/>
-            {/snippet}
+    <div class="flex-1 min-h-0 overflow-y-auto">
+        <List>
+            <Tooltip triggerProps={{class:"btn btn-sm btn-circle btn-ghost", onclick: () => showForm = true}}>
+                {#snippet trigger()}
+                    <PlusIcon class="size-4"/>
+                {/snippet}
 
-            Create new Sound Pad
-        </Tooltip>
-    </List>
+                Create new Sound Pad
+            </Tooltip>
+        </List>
+    </div>
 
     {#if showForm}
-        <div class="mt-auto p-4 border-base-content/10 border-t" transition:fly={{y: 200}}>
+        <div class="shrink-0 p-4 border-base-content/10 border-t" transition:fly={{y: 200}}>
             <Form onCancel={() => showForm = false}/>
         </div>
     {/if}

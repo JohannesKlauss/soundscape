@@ -227,7 +227,7 @@
   }
 
   .text-muted {
-    @apply opacity-60;
+    @apply text-base-content/60;
   }
 }
 

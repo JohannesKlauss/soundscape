@@ -31,7 +31,7 @@
 
         <AudioContext/>
 
-        <div class="flex relative flex-1">
+        <div class="flex relative flex-1 min-h-0">
             <div class="flex relative flex-col basis-1/5 shrink-0 z-10 bg-base-100 border-r border-base-content/10">
                 <SoundSetTile/>
             </div>
@@ -44,7 +44,7 @@
                     <SoundSampleSheet/>
                 </div>
             </div>
-            <div class="w-160 overflow-x-hidden overflow-y-scroll">
+            <div class="w-160 min-h-0">
                 <SoundPadPanel/>
             </div>
         </div>

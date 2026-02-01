@@ -1,7 +1,7 @@
 <script lang="ts">
     import {liveQuery} from "dexie";
     import {db} from "$lib/db";
-    import {GripVertical, ChevronLeft, Pen} from "@lucide/svelte";
+    import {ChevronLeft, Pen} from "@lucide/svelte";
     import {DragOverlay, useDraggable} from "$lib/dnd";
     import {page} from "$app/state";
     import {replaceState} from "$app/navigation";
@@ -34,7 +34,7 @@
     }
 </script>
 
-<div class="p-4 text-muted flex-center justify-between">
+<div class="p-4 text-muted flex-center justify-between sticky top-0 bg-base-100">
     <span>Sound Pads</span>
 
     {@render children?.()}

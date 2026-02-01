@@ -80,10 +80,10 @@
 
 <form use:enhance>
     <div class="space-y-4">
-        <div class="flex-center justify-between text-muted text-sm">
+        <div class="flex-center justify-between text-sm">
             Create a new Sound Pad
             <button type="button" class="btn btn-ghost btn-circle btn-sm" onclick={cancel}>
-                <XIcon class="size-4"/>
+                <XIcon class="size-4 text-muted"/>
             </button>
         </div>
 
