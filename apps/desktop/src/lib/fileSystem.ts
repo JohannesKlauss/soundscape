@@ -41,3 +41,9 @@ export async function writeFileToSamplesDirectory(fileName: string, blob: Blob) 
   await writer.write(blob)
   await writer.close()
 }
+
+export async function readBufferFromSamplesFile(fileName: string) {
+  const file = await readFileFromSamplesDirectory(fileName)
+
+  return await file.arrayBuffer()
+}

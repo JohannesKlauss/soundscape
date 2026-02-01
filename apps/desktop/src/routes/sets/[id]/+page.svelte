@@ -6,7 +6,7 @@
 </script>
 
 <div>
-    <h1 class="text-2xl mb-4">Elements</h1>
+    <h1 class="text-2xl mb-4">All Elements</h1>
 
     {#if data.set}
         <ElementList setId={data.set.id}/>

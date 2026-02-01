@@ -25,7 +25,7 @@
 
       reset()
 
-      toast.success('Added pad')
+      toast.success('Created pad')
     }
   })
 
