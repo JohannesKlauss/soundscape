@@ -8,7 +8,7 @@
     import Tooltip from "$lib/components/Tooltip.svelte";
     import type {Snippet} from "svelte";
     import {padToForm, padTypeToLabel, type SoundPad} from "$lib/domain/soundPad/_types";
-    import {padIcons} from "$lib/components/padIcons";
+    import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
 
     interface Props {
       children?: Snippet

@@ -43,7 +43,7 @@
 </script>
 
 <div class="outline-0 outline-primary rounded" class:!outline={isDropTarget.current} {@attach ref}>
-    <div class="grid grid-cols-8 w-full justify-evenly items-center place-content-center place-items-center">
+    <div class="grid grid-cols-6 gap-6 w-full justify-evenly items-center place-content-center place-items-center">
         {#each $pads as pad}
             <SetElement {pad} editable {onDelete}/>
         {/each}

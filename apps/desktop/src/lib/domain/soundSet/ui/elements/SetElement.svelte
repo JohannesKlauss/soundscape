@@ -1,6 +1,6 @@
 <script lang="ts">
   import type {SoundPad} from "$lib/domain/soundPad/_types";
-  import {padIcons} from "$lib/components/padIcons";
+  import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
   import {readBufferFromSamplesFile} from "$lib/fileSystem";
   import {db} from "$lib/db";
   import {getContext, Players} from "tone";
@@ -41,8 +41,6 @@
       cancelAnimationFrame(animationFrame)
     }
   })
-
-  $inspect(isPlaying)
 
   // Load Pad Samples into Tone Player
   $effect(async () => {
@@ -140,7 +138,7 @@
 <div class="flex flex-col gap-2 items-center group">
     <div class="flex-center relative">
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events -->
-        <div class={["radial-progress text-zinc-400 cursor-pointer", progress <= 0 || !isPlaying && "text-transparent!"]} onclick={togglePlay}
+        <div class={["radial-progress text-zinc-400 cursor-pointer", !isPlaying && "text-transparent!"]} onclick={togglePlay}
              style="--size:4.4rem; --thickness: 2px;" style:--value={100 - progress * 100} role="progressbar">
             <div class={["rounded-full size-16 bg-linear-75 flex justify-center items-center", !isPlaying && "from-zinc-400 to-base-content", isPlaying && "to-primary from-primary/70"]}>
                 {#key pad.type}

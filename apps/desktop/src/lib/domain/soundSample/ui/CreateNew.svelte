@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from "$lib/components/Dialog.svelte";
-  import {PlusIcon, Music, AudioLines, AudioWaveform, Sparkles} from '@lucide/svelte';
+  import {PlusIcon, Music, AudioLines, AudioWaveform, Sparkle} from '@lucide/svelte';
   import Tooltip from "$lib/components/Tooltip.svelte";
   import type {SoundSampleCategory} from "$lib/domain/soundSample/_types";
   import {Player} from "tone";
@@ -72,6 +72,7 @@
       name,
       contentType: res.headers.get('content-type')!,
       src: fileName,
+      duration: player.buffer.duration,
       type: 'local',
     })
 
@@ -108,38 +109,34 @@
 
     <div class="fieldset">
         <label class="label" for="name">Name</label>
-        <input type="text" class="input" name="name" placeholder="Sample Name (min 3 characters)" bind:value={name}/>
+        <input type="text" class="input w-full" name="name" placeholder="Sample Name (min 3 characters)" bind:value={name}/>
     </div>
     <div class="fieldset">
         <label class="label" for="url">Link to URL</label>
-        <input type="text" class="input" name="url" placeholder="https://example.com/media.mp3" bind:value={url}/>
+        <input type="text" class="input w-full" name="url" placeholder="https://example.com/media.mp3" bind:value={url}/>
     </div>
     <div class="fieldset">
         <span class="label">Type</span>
-        <label class="label">
-            <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3" value="music"
-                   bind:group={category}/>
-            <Music/>
-            Music
-        </label>
-        <label class="label">
-            <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3" value="fx"
-                   bind:group={category}/>
-            <Sparkles/>
-            FX
-        </label>
-        <label class="label">
-            <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3"
-                   value="one_shot" bind:group={category}/>
-            <AudioLines/>
-            One Shot
-        </label>
-        <label class="label">
-            <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3"
-                   value="atmosphere" bind:group={category}/>
-            <AudioWaveform/>
-            Atmosphere
-        </label>
+        <div class="grid grid-cols-3 gap-4">
+            <label class="label">
+                <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3" value="music"
+                       bind:group={category}/>
+                <Music/>
+                Music
+            </label>
+            <label class="label">
+                <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3" value="fx"
+                       bind:group={category}/>
+                <Sparkle/>
+                FX
+            </label>
+            <label class="label">
+                <input type="radio" class="radio" name="category" placeholder="https://example.com/media.mp3"
+                       value="atmosphere" bind:group={category}/>
+                <AudioWaveform/>
+                Atmosphere
+            </label>
+        </div>
 
         {#if isAudio || isYoutube}
             <div class="divider"></div>

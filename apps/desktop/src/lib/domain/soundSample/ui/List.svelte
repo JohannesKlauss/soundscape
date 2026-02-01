@@ -5,6 +5,7 @@
     import QuickPreviewPlayer from "$lib/domain/soundSample/ui/QuickPreviewPlayer.svelte";
     import {useDraggable, DragOverlay} from "$lib/dnd";
     import type {SoundSample} from "$lib/domain/soundSample/_types";
+    import {sampleIcons} from "$lib/domain/soundSample/ui/sampleIcons";
 
     const samples = liveQuery(() => db.sample.toArray())
 </script>
@@ -12,10 +13,11 @@
 <ul class="list">
     {#each $samples as sample}
         {@const {ref, dragInstanceId} = useDraggable<SoundSample>({id: 'sample', data: sample})}
+        {@const Icon = sampleIcons[sample.category]}
 
         <li class="list-row hover:bg-base-300 flex-center">
             <div class="flex-center">
-                <AudioWaveform class="size-4"/>
+                <Icon class="size-4"/>
                 <div>{sample.name}</div>
                 <div {@attach ref}>
                     <GripVertical class="size-4 text-muted cursor-grab"/>

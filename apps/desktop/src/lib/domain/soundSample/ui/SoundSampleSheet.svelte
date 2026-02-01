@@ -6,6 +6,7 @@ import {liveQuery} from "dexie";
 import BottomSheet from "$lib/components/BottomSheet.svelte";
     import { Library } from "@lucide/svelte";
 import {Collapsible} from "bits-ui";
+import ReindexLibrary from "$lib/domain/soundSample/ui/ReindexLibrary.svelte";
 
 const samples = liveQuery(() => db.sample.toArray())
 
@@ -20,6 +21,7 @@ let open = $state(false)
                 <span class="text-sm opacity-60 tracking-wide">{$samples?.length} Sample{$samples?.length !== 1 ? 's' : null} in Library</span>
             </Collapsible.Trigger>
 
+            <ReindexLibrary numSamples={$samples.length}/>
             <div class="ml-auto"><CreateNew/></div>
         {/snippet}
 

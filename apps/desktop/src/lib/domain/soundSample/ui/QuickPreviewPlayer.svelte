@@ -8,7 +8,7 @@
   interface Props {
     src: string
     contentType: string
-    class: ClassValue
+    class?: ClassValue
   }
 
   let {src, contentType, class: customClass}: Props = $props()
