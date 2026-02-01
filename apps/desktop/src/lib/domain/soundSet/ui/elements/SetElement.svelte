@@ -99,7 +99,7 @@
 
 <div class="flex flex-col gap-2 items-center">
     <div class="flex-center">
-        <div class={["rounded-full size-16 bg-linear-75 flex justify-center items-center cursor-pointer", !isPlaying && "from-zinc-400 to-zinc-50", isPlaying && "to-primary from-primary/70"]} onclick={togglePlay}>
+        <div class={["rounded-full size-16 bg-linear-75 flex justify-center items-center cursor-pointer", !isPlaying && "from-zinc-400 to-base-content", isPlaying && "to-primary from-primary/70"]} onclick={togglePlay}>
             {#key pad.type}
                 {@const Icon = padIcons[pad.type]}
 

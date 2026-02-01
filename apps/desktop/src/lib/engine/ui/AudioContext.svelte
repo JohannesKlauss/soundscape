@@ -1,31 +1,37 @@
 <script lang="ts">
   import {getContext, start} from "tone";
-    import {onMount} from "svelte";
+  import {onMount} from "svelte";
   import {toast} from "svelte-sonner";
   import {TriangleAlert} from "@lucide/svelte";
 
   let audioCtxState = $state<AudioContextState | undefined>()
 
-    onMount(() => {
-      setTimeout(() => {
+  let h: number
+
+  onMount(() => {
+    setTimeout(() => {
+      h = setInterval(() => {
         audioCtxState = getContext().state
-      }, 3000)
-    })
+      }, 500)
+    }, 5000)
+  })
 
-    async function startAudioContext() {
-      await start()
+  async function startAudioContext() {
+    await start()
 
-      audioCtxState = getContext().state
+    audioCtxState = getContext().state
 
-      if (audioCtxState !== 'running') {
-        toast.error('Error while starting audio engine.')
-      }
+    if (audioCtxState !== 'running') {
+      toast.error('Error while starting audio engine.')
+    } else {
+      clearInterval(h)
     }
+  }
 </script>
 
 {#if audioCtxState && audioCtxState !== 'running'}
     <div role="alert" class="alert alert-warning rounded-none">
-        <TriangleAlert />
+        <TriangleAlert/>
         <span>
             Audio Engine is not running!
         </span>
