@@ -7,7 +7,8 @@ export const SoundPadCreationSchema = z.object({
   type: z.union([z.literal('music'), z.literal('loop'), z.literal('fx'), z.literal('one_shot')]).default('music'),
   fadeInSeconds: z.int().min(0).max(30).multipleOf(0.1).default(0.5),
   fadeOutSeconds: z.int().min(0).max(30).multipleOf(0.1).default(0.5),
-  playbackType: z.union([z.literal('random'), z.literal('round_robin')]).default('random'),
+  playbackType: z.union([z.literal('random'), z.literal('round_robin')]).default('round_robin'),
+  crossfade: z.int().min(0).max(120).multipleOf(0.1).default(0),
   samples: z.array(SoundSampleSchema).nonempty('At least one sample is needed to create a pad'),
 })
 

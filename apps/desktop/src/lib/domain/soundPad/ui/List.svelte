@@ -75,7 +75,7 @@
                     {padTypeToLabel[pad.type]}
                 </Tooltip>
 
-                {pad.name}
+                <span onclick={() => editPad(pad)}>{pad.name}</span>
 
                 <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => editPad(pad)}}>
                     {#snippet trigger()}

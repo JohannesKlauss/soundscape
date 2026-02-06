@@ -3,26 +3,29 @@
   import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
   import {readBufferFromSamplesFile} from "$lib/fileSystem";
   import {db} from "$lib/db";
-  import {getContext, Players} from "tone";
+  import {CrossFade, getContext, Players} from "tone";
   import {volumeToDb} from "$lib/engine/volume";
   import {onMount} from "svelte";
   import {XIcon} from "@lucide/svelte";
+  import Tooltip from "$lib/components/Tooltip.svelte";
 
   interface Props {
     pad: SoundPad
+    volume?: number
     onDelete?: (padId: number) => void
     editable?: boolean
   }
 
-  let {pad, editable = false, onDelete}: Props = $props()
+  let {pad, volume: initVolume = 1, editable = false, onDelete}: Props = $props()
 
   let isPlaying = $state(false)
   let isStopping = $state(false)
   let lastPlayedSampleId = $state<number>()
-  let volume = $state(1)
+  let volume = $state(initVolume)
   let progress = $state(0)
 
   let players = new Players().toDestination()
+  let crossfader = new CrossFade().toDestination()
   let duration: number = 0
   let startedAt: number = 0
   let animationFrame: number
@@ -33,10 +36,12 @@
     }
   })
 
+  // Sync volume to players instance
   $effect(() => {
     players.volume.value = volumeToDb(volume)
   })
 
+  // Stop animation
   $effect(() => {
     if (!isPlaying) {
       cancelAnimationFrame(animationFrame)
@@ -59,14 +64,14 @@
     players.fadeOut = pad.fadeOutSeconds
   })
 
-  function playElement() {
+  function playNextSample() {
     const sampleId = getNextSampleId()
 
     const player = players.player(sampleId.toString())
 
     player.onstop = () => {
       if (pad.sampleIds.length > 1) {
-        playElement()
+        playNextSample()
       } else {
         isPlaying = false
       }
@@ -83,7 +88,7 @@
     updateProgress()
   }
 
-  function stopElement() {
+  function manualStopElement() {
     if (!lastPlayedSampleId) {
       throw new Error('Tried to stop SetElement player, but the played sampleId is undefined')
     }
@@ -101,9 +106,9 @@
 
   function togglePlay() {
     if (isPlaying) {
-      stopElement()
+      manualStopElement()
     } else {
-      playElement()
+      playNextSample()
     }
   }
 
@@ -136,6 +141,16 @@
       animationFrame = requestAnimationFrame(updateProgress)
     }
   }
+
+  function handleRangeWheel(
+    e: WheelEvent,
+  ) {
+    e.preventDefault()
+
+    const delta = e.deltaY < 0 ? -0.01 : 0.01
+
+    volume = Math.round(Math.max(0, Math.min(1, volume + delta)) * 100) / 100
+  }
 </script>
 
 <div class="flex flex-col gap-2 items-center group">
@@ -145,9 +160,9 @@
              style="--size:4.4rem; --thickness: 2px;" style:--value={100 - progress * 100}>
             <div class="relative rounded-full size-16">
                 <!-- Base layer: gray gradient -->
-                <div class="absolute inset-0 rounded-full bg-linear-75 from-zinc-400 to-base-content"></div>
+                <div class="absolute inset-0 rounded-full bg-linear-75 from-zinc-300 to-base-content to-90%"></div>
                 <!-- Primary layer: fades in when playing, pulses when stopping -->
-                <div class={["absolute inset-0 rounded-full bg-linear-75 from-primary/70 to-primary transition-opacity", !isPlaying && "opacity-0", isPlaying && !isStopping && "opacity-100", isStopping && "animate-pulse-overlay"]}></div>
+                <div class={["absolute inset-0 rounded-full bg-linear-75 to-primary/80 to-90% from-primary transition-opacity", !isPlaying && "opacity-0", isPlaying && !isStopping && "opacity-100", isStopping && "animate-pulse-overlay"]}></div>
                 <!-- Icon -->
                 <div class="absolute inset-0 flex justify-center items-center">
                     {#key pad.type}
@@ -158,10 +173,16 @@
             </div>
         </div>
 
-        <div class="h-16 w-4 -mt-2">
-            <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" value="1" step="0.01"
-                   oninput={e => volume = parseFloat(e.target.value)}/>
-        </div>
+        <Tooltip triggerProps={{class: "h-16 w-4 -mt-12"}} side="right">
+            {#snippet trigger()}
+                <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" step="0.01"
+                       bind:value={volume}
+                       oninput={e => volume = parseFloat(e.target.value)}
+                       onwheel={handleRangeWheel}/>
+            {/snippet}
+
+            {Math.round(volume * 100)}%
+        </Tooltip>
 
         {#if editable}
             <button onclick={() => onDelete?.(pad.id)} type="button"

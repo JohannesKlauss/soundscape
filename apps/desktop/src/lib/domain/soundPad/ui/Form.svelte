@@ -21,6 +21,7 @@
   import {page} from "$app/state";
   import {replaceState} from "$app/navigation";
   import QuickPreviewPlayer from "$lib/domain/previewPlayer/QuickPreviewPlayer.svelte";
+  import {formatTime} from "$lib/engine/volume";
 
   interface Props {
     onCancel?: () => void
@@ -78,7 +79,7 @@
 
   function handleRangeWheel(
     e: WheelEvent,
-    key: 'fadeInSeconds' | 'fadeOutSeconds',
+    key: 'fadeInSeconds' | 'fadeOutSeconds' | 'crossfade',
   ) {
     e.preventDefault()
 
@@ -181,15 +182,15 @@
         <div class="card bg-base-300 outline-primary outline-0" class:!outline={isDropTarget.current} {@attach ref}>
             <div class="card-body text-center">
                 <div class="space-y-2 mb-2" {@attach containerRef}>
-                    {#each $form.samples as sample}
+                    {#each $form.samples as sample, i}
                         <div class="card card-sm bg-base-100 cursor-grab">
                             <div class="card-body">
-                                <div class="flex-center justify-between">
+                                <div class="flex-center justify-start">
                                     <QuickPreviewPlayer class="btn btn-xs" src={sample.src}
                                                         contentType={sample.contentType}/>
-                                    {sample.name}
+                                    <span>{i + 1}. {sample.name} <span class="text-xs text-muted">({formatTime(sample.duration)})</span></span>
 
-                                    <button type="button" class="btn btn-error btn-ghost btn-xs btn-circle"
+                                    <button type="button" class="btn btn-error btn-ghost btn-xs btn-circle ml-auto"
                                             onclick={() => removeSample(sample.id)}>
                                         <Trash class="size-3"/>
                                     </button>
@@ -218,6 +219,18 @@
                     <ListOrdered class="size-5"/>
                     Round Robin
                 </label>
+            </div>
+
+            <div>
+            <span class="label">Crossfade <span class="tabular-nums ml-auto">{$form.crossfade}
+                seconds</span></span>
+                <input
+                        type="range"
+                        {...$constraints.crossfade}
+                        bind:value={$form.crossfade}
+                        class="range range-xs"
+                        onwheel={(e) => handleRangeWheel(e, 'crossfade')}
+                />
             </div>
         </div>
 

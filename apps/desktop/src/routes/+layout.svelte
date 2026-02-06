@@ -51,7 +51,7 @@
     </div>
 </Tooltip.Provider>
 
-<Toaster position="bottom-right" expand richColors />
+<Toaster position="top-right" expand richColors />
 <AlertDialog/>
 
 <style>
