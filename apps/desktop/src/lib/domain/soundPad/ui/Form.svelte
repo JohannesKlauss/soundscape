@@ -37,13 +37,14 @@
 
   const validators = zod4(SoundPadCreationSchema)
 
-  const {form, constraints, enhance, reset} = superForm(defaults(page.state.editPad, validators), {
+  const {form, constraints, enhance, reset, validateForm} = superForm(defaults(page.state.editPad, validators), {
     validators,
-    validationMethod: 'onsubmit',
     SPA: true,
     dataType: 'json',
     onSubmit: async () => {
-      if ($form.samples.length === 0) {
+      const res = await validateForm()
+
+      if (!res.valid) {
         toast.error('Add at least one sample to the pad')
 
         return
@@ -68,6 +69,10 @@
     }
   })
 
+  $effect(() => {
+    $constraints['crossfade'].max = Math.min(...$form.samples.map(s => s.duration))
+  })
+
   const {isDropTarget, ref} = useDroppable<SoundSample>({
     id: 'sample',
     onDrop(sample) {
@@ -86,7 +91,7 @@
     const delta = e.deltaY < 0 ? -0.1 : 0.1
     const newValue = Math.round(($form[key]! + delta) * 10) / 10
 
-    $form[key] = Math.max(0, Math.min(100, newValue))
+    $form[key] = Math.max(0, Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue))
   }
 
   function removeSample(id: number) {

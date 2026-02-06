@@ -11,12 +11,11 @@
     try {
       db.set.add({
         name,
+        moodIds: [],
       })
 
       open = false
       name = ''
-
-      toast.success('Created Sound Set')
     } catch (e) {
       toast.error('Could not create Sound Set')
     }

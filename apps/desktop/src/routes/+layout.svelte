@@ -5,28 +5,25 @@
     import SoundSetTile from "$lib/domain/soundSet/ui/SoundSetTile.svelte";
     import SoundSampleSheet from "$lib/domain/soundSample/ui/SoundSampleSheet.svelte";
     import AudioContext from "$lib/engine/ui/AudioContext.svelte";
-    import {onMount} from "svelte";
-    import {start} from "tone";
-    import Form from "$lib/domain/soundPad/ui/Form.svelte";
-    import List from "$lib/domain/soundPad/ui/List.svelte";
     import SoundPadPanel from "$lib/domain/soundPad/ui/SoundPadPanel.svelte";
     import AlertDialog from "$lib/components/AlertDialog.svelte";
+    import GlobalControl from "$lib/engine/ui/GlobalControl.svelte";
 
     interface Props {
       children: import('svelte').Snippet
     }
 
     let {children}: Props = $props()
-
-    onMount(() => {
-      document.addEventListener('click', () => start())
-    })
 </script>
 
 <Tooltip.Provider delayDuration={0}>
     <div class="flex flex-col h-screen">
-        <div class="header h-32 flex items-center p-8 border-b border-base-content/10 backdrop-blur-xl">
-            <h1 class="text-5xl bg-base-100/40 p-1">SØUND/SCAPE<sup class="text-xl">______vØ.1 a1pha</sup></h1>
+        <div class="flex-center justify-between header px-8">
+            <div class="h-32 flex items-center p-8 pl-0 border-b border-base-content/10">
+                <h1 class="text-5xl bg-base-100/40 p-1">SØUND/SCAPE<sup class="text-xl">______vØ.1 a1pha</sup></h1>
+            </div>
+
+            <GlobalControl/>
         </div>
 
         <AudioContext/>

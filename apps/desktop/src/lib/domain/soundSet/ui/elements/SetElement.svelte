@@ -3,7 +3,7 @@
   import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
   import {readBufferFromSamplesFile} from "$lib/fileSystem";
   import {db} from "$lib/db";
-  import {CrossFade, getContext, Players} from "tone";
+  import {CrossFade, getContext, getTransport, type Player, Players} from "tone";
   import {volumeToDb} from "$lib/engine/volume";
   import {onMount} from "svelte";
   import {XIcon} from "@lucide/svelte";
@@ -20,25 +20,37 @@
 
   let isPlaying = $state(false)
   let isStopping = $state(false)
-  let lastPlayedSampleId = $state<number>()
+  let lastPlayedSampleId = $state<string>()
   let volume = $state(initVolume)
   let progress = $state(0)
 
-  let players = new Players().toDestination()
-  let crossfader = new CrossFade().toDestination()
+  let players = new Players()
+  let crossfader = new CrossFade({fade: 0}).toDestination()
   let duration: number = 0
   let startedAt: number = 0
   let animationFrame: number
 
+  const sampleMap: Record<string, AudioBuffer> = {}
+
   onMount(() => {
+    getTransport().on('stop', () => {
+      isPlaying = false
+      lastPlayedSampleId = undefined
+    })
+
     return () => {
       players.stopAll().dispose()
+      crossfader.dispose()
     }
   })
 
-  // Sync volume to players instance
+  // Sync to players volume
   $effect(() => {
-    players.volume.value = volumeToDb(volume)
+    if (lastPlayedSampleId) {
+      players.player(lastPlayedSampleId).volume.value = volumeToDb(volume)
+    } else {
+      players.volume.value = volumeToDb(volume)
+    }
   })
 
   // Stop animation
@@ -51,49 +63,92 @@
   // Load Pad Samples into Tone Player
   $effect(async () => {
     const samples = await db.sample.where('id').anyOf(pad.sampleIds).toArray()
-    const map: Record<string, AudioBuffer> = {}
 
     await Promise.all(samples.map(async s => {
-      map[s.id.toString()] = await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src))
+      sampleMap[s.id.toString()] = await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src))
+
+      if (pad.type === 'loop' && pad.sampleIds.length === 1) {
+        sampleMap[(s.id + 1).toString()] = sampleMap[s.id.toString()]
+      }
     }))
 
     players.stopAll().dispose()
     isPlaying = false
     lastPlayedSampleId = undefined
-    players = new Players(map).toDestination()
+    players = new Players(sampleMap).toDestination()
     players.fadeOut = pad.fadeOutSeconds
   })
 
-  function playNextSample() {
-    const sampleId = getNextSampleId()
-
-    const player = players.player(sampleId.toString())
-
-    player.onstop = () => {
-      if (pad.sampleIds.length > 1) {
-        playNextSample()
-      } else {
-        isPlaying = false
-      }
+  function crossfadeToNextSample(time: number) {
+    if (!isPlaying) {
+      return
     }
 
-    player.fadeIn = lastPlayedSampleId ? 0 : pad.fadeInSeconds
-    player.start()
+    const nextSampleId = getNextSampleId()
+    const fade = crossfader.fade.value
+    const nextPlayer = players.player(nextSampleId.toString())
+
+    nextPlayer.fadeIn = 0
+    nextPlayer.onstop = () => {
+      if (pad.sampleIds.length === 1 && pad.type !== 'loop') {
+        isPlaying = false
+      }
+
+      nextPlayer.fadeIn = 0
+      nextPlayer.disconnect().unsync()
+    }
+
+    getTransport().schedule(crossfadeToNextSample, `+${Math.max(0, nextPlayer.buffer.duration - pad.crossfade)}`)
+
+    nextPlayer.disconnect().connect(fade < 0.5 ? crossfader.b : crossfader.a).sync().start(time)
+
+    crossfader.fade.rampTo(fade < 0.5 ? 1 : 0, Math.min(pad.crossfade, nextPlayer.buffer.duration), time)
+
+    lastPlayedSampleId = nextSampleId
+
+    getTransport().schedule(t => {
+      startedAt = t
+      duration = Math.max(0, nextPlayer.buffer.duration - pad.crossfade)
+    }, `+${pad.crossfade}`)
+  }
+
+  function play() {
+    const sampleId = getNextSampleId()
+    const player = players.player(sampleId)
+
+    player.onstop = () => {
+      if (pad.sampleIds.length === 1 && pad.type !== 'loop') {
+        isPlaying = false
+      }
+
+      player.fadeIn = 0
+      player.disconnect().unsync()
+    }
+
+    crossfader.fade.value = 0
+    player.fadeIn = pad.fadeInSeconds
+    player.disconnect().connect(crossfader.a).sync().start()
 
     startedAt = player.now()
     isPlaying = true
     lastPlayedSampleId = sampleId
     duration = player.buffer.duration
 
+    if (pad.sampleIds.length > 1 || pad.type === 'loop') {
+      getTransport().schedule(crossfadeToNextSample, `+${Math.max(0, player.buffer.duration - pad.crossfade)}`)
+    } else {
+      player.fadeOut = pad.fadeOutSeconds
+    }
+
     updateProgress()
   }
 
   function manualStopElement() {
     if (!lastPlayedSampleId) {
-      throw new Error('Tried to stop SetElement player, but the played sampleId is undefined')
+      throw new Error('Tried to stop SetElement player, but the lastPlayedSampleId is undefined')
     }
 
-    const player = players.player(lastPlayedSampleId.toString())
+    const player = players.player(lastPlayedSampleId)
     player.onstop = () => {
       isPlaying = false
       isStopping = false
@@ -108,21 +163,22 @@
     if (isPlaying) {
       manualStopElement()
     } else {
-      playNextSample()
+      play()
     }
   }
 
-  function getNextSampleId(): number {
-    const index = pad.sampleIds.findIndex(id => id === lastPlayedSampleId)
+  function getNextSampleId(): string {
+    const sampleIds = Object.keys(sampleMap)
+    const index = sampleIds.findIndex(id => id.toString() === lastPlayedSampleId?.toString())
 
     if (pad.playbackType === 'round_robin') {
       if (index === -1) {
-        return pad.sampleIds[0]
+        return sampleIds[0]
       }
 
-      return pad.sampleIds[(index + 1) % pad.sampleIds.length]
+      return sampleIds[(index + 1) % sampleIds.length]
     } else {
-      return pad.sampleIds[Math.floor(Math.random() * pad.sampleIds.length)]
+      return sampleIds[Math.floor(Math.random() * sampleIds.length)]
     }
   }
 
@@ -131,7 +187,7 @@
       return
     }
 
-    const player = players.player(lastPlayedSampleId.toString())
+    const player = players.player(lastPlayedSampleId)
 
     if (isPlaying) {
       const currentTime = player.now() - startedAt
@@ -173,7 +229,7 @@
             </div>
         </div>
 
-        <Tooltip triggerProps={{class: "h-16 w-4 -mt-12"}} side="right">
+        <Tooltip triggerProps={{class: "h-16 w-4 -mt-12"}} disableCloseOnTriggerClick side="right">
             {#snippet trigger()}
                 <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" step="0.01"
                        bind:value={volume}

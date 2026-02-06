@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {getContext, start} from "tone";
+  import {getContext, getTransport, start} from "tone";
   import {onMount} from "svelte";
   import {toast} from "svelte-sonner";
   import {TriangleAlert} from "@lucide/svelte";
@@ -9,6 +9,13 @@
   let h: number
 
   onMount(() => {
+    onMount(() => {
+      document.addEventListener('click', () => {
+        start()
+        getTransport().start()
+      })
+    })
+
     setTimeout(() => {
       h = setInterval(() => {
         audioCtxState = getContext().state
