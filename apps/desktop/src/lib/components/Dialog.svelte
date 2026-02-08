@@ -9,6 +9,7 @@
     confirmText?: string
     onConfirm: () => void
     confirmDisabled?: boolean
+    asForm?: boolean
     contentProps?: WithoutChild<Dialog.ContentProps>;
   };
 
@@ -22,6 +23,7 @@
     confirmText = 'Save',
     onConfirm,
     confirmDisabled = false,
+    asForm,
     ...restProps
   }: Props = $props();
 </script>
@@ -48,13 +50,11 @@
                 {@render children?.()}
             </div>
             <div class="card-actions flex w-full gap-2 justify-end">
-                <Dialog.Close
-                        class="btn btn-ghost"
-                >
+                <Dialog.Close class="btn btn-ghost">
                     Cancel
                 </Dialog.Close>
 
-                <button class="btn btn-primary" onclick={() => onConfirm()} disabled={confirmDisabled}>
+                <button type={asForm ? 'submit' : 'button'} class="btn btn-primary" onclick={() => onConfirm()} disabled={confirmDisabled}>
                     {confirmText}
                 </button>
             </div>

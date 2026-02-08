@@ -9,6 +9,7 @@
 
   interface Props {
     setId: number
+
     editable?: boolean
   }
 

@@ -16,7 +16,7 @@ db.version(1).stores({
   set: "++id",
   sample: "++id",
   pad: "++id",
-  setHasPads: "[setId+padId],padId",
+  setHasPads: "[setId+padId],setId,padId",
   mood: "++id"
 });
 

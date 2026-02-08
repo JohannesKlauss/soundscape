@@ -1,6 +1,11 @@
-export type SoundSet = {
+import {z} from "zod";
+
+export const SoundSetCreationSchema = z.object({
+  name: z.string().min(3)
+})
+
+export type SoundSet = z.infer<typeof SoundSetCreationSchema> & {
   id: number;
-  name: string;
   moodIds: number[];
 };
 

@@ -41,6 +41,7 @@
     validators,
     SPA: true,
     dataType: 'json',
+    id: page.state.editPad ? `edit-pad-${page.state.editPad.id}` : 'new-pad',
     onSubmit: async () => {
       const res = await validateForm()
 
