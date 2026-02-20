@@ -1,9 +1,9 @@
-import {getContext, getTransport, Players} from "tone";
-import {db} from "$lib/db";
-import {readBufferFromSamplesFile} from "$lib/fileSystem";
-import {ElementPlayer} from "$lib/engine/ElementPlayer.svelte";
-import {SvelteMap} from "svelte/reactivity";
-import type {Mood} from "$lib/domain/soundSet/mood/_types";
+import {getContext, getTransport} from "tone"
+import {db} from "$lib/db"
+import {readBufferFromSamplesFile} from "$lib/fileSystem"
+import {ElementPlayer} from "$lib/engine/ElementPlayer.svelte"
+import {SvelteMap} from "svelte/reactivity"
+import type {Mood} from "$lib/domain/soundSet/mood/_types"
 
 type EngineState = {
   isLoading: boolean
@@ -18,7 +18,10 @@ const _state = $state<EngineState>({
 
 export const engineState = _state as Readonly<EngineState>
 
-const sampleCache = new Map<number, AudioBuffer>()
+const _sampleBuffers = new Map<number, AudioBuffer>()
+
+export const sampleBuffers: ReadonlyMap<number, AudioBuffer> = _sampleBuffers
+
 const elementPlayers = new SvelteMap<number, ElementPlayer>()
 
 export function getElementPlayer(padId: number): ElementPlayer {
@@ -39,22 +42,14 @@ export async function loadSoundSet(setId: number) {
   const samples = await db.sample.where('id').anyOf(pads.flatMap(p => p.sampleIds)).toArray()
 
   await Promise.all(samples.map(async s => {
-    if (!sampleCache.has(s.id)) {
-      sampleCache.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
+    if (!_sampleBuffers.has(s.id)) {
+      _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
     }
   }))
 
   pads.map(pad => {
     if (!elementPlayers.has(pad.id)) {
-      const players = new Players()
-
-      pad.sampleIds.forEach(id => {
-        if (!players.has(id.toString())) {
-          players.add(id.toString(), sampleCache.get(id)!)
-        }
-      })
-
-      elementPlayers.set(pad.id, new ElementPlayer(pad, players))
+      elementPlayers.set(pad.id, new ElementPlayer(pad))
     }
   })
 

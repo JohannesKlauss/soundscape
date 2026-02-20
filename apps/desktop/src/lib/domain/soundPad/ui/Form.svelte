@@ -71,7 +71,7 @@
   })
 
   $effect(() => {
-    $constraints['crossfade'].max = Math.min(...$form.samples.map(s => s.duration))
+    $constraints['crossfade'].max = Math.min(...$form.samples.map(s => s.duration / 2))
   })
 
   const {isDropTarget, ref} = useDroppable<SoundSample>({
@@ -92,7 +92,7 @@
     const delta = e.deltaY < 0 ? -0.1 : 0.1
     const newValue = Math.round(($form[key]! + delta) * 10) / 10
 
-    $form[key] = Math.max(0, Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue))
+    $form[key] = Math.max(0.1, Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue))
   }
 
   function removeSample(id: number) {
