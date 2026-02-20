@@ -1,5 +1,4 @@
 import {CrossFade, getContext, getTransport, Player} from "tone"
-import {volumeToDb} from "$lib/engine/volume"
 import type {SoundPad} from "$lib/domain/soundPad/_types"
 import {sampleBuffers} from "$lib/engine/engine.svelte"
 
@@ -93,9 +92,11 @@ export class ElementPlayer {
       return
     }
 
-    this.#playerA.fadeOut = this.#pad.fadeOutSeconds
-    this.#playerB.fadeOut = this.#pad.fadeOutSeconds
-    this.currentPlayer.stop()
+    const fadeOut = Math.max(0.01, this.#pad.fadeOutSeconds)
+
+    this.#playerA.fadeOut = fadeOut
+    this.#playerB.fadeOut = fadeOut
+    this.currentPlayer.stop(fadeOut)
 
     this.isStopping = true
 
@@ -124,8 +125,6 @@ export class ElementPlayer {
   }
 
   #crossfadeToNextSample(time: number) {
-    console.log('execute crossfade', time)
-
     if (!this.isPlaying) {
       return
     }
@@ -142,17 +141,15 @@ export class ElementPlayer {
     const oldPlayer = this.#activeSlot === 'a' ? this.#playerA : this.#playerB
     const fadeTarget = this.#activeSlot === 'a' ? 1 : 0
 
-    nextPlayer.stop(time)
+    nextPlayer.stop(time).unsync()
     nextPlayer.buffer.set(buffer)
     nextPlayer.fadeIn = 0
     nextPlayer.fadeOut = 0
-    nextPlayer.sync().start(time)
+    nextPlayer.sync().start()
 
     const crossfadeDuration = Math.min(this.#pad.crossfade, nextPlayer.buffer.duration)
 
     this.#crossfader.fade.rampTo(fadeTarget, crossfadeDuration, time)
-
-    console.log(fadeTarget, crossfadeDuration)
 
     this.#activeSlot = this.#activeSlot === 'a' ? 'b' : 'a'
     this.lastPlayedSampleId = nextSampleId
