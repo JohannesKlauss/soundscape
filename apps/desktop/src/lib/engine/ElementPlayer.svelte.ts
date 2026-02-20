@@ -66,7 +66,7 @@ export class ElementPlayer {
     this.duration = player.buffer.duration
 
     if (this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
-      getTransport().schedule(this.#crossfadeToNextSample, `+${Math.max(0, player.buffer.duration - this.#pad.crossfade)}`)
+      getTransport().schedule(this.#crossfadeToNextSample.bind(this), `+${Math.max(0, player.buffer.duration - this.#pad.crossfade)}`)
     } else {
       player.fadeOut = this.#pad.fadeOutSeconds
     }
@@ -114,7 +114,7 @@ export class ElementPlayer {
       nextPlayer.disconnect().unsync()
     }
 
-    getTransport().schedule(this.#crossfadeToNextSample, `+${Math.max(0, nextPlayer.buffer.duration - this.#pad.crossfade)}`)
+    getTransport().schedule(this.#crossfadeToNextSample.bind(this), `+${Math.max(0, nextPlayer.buffer.duration - this.#pad.crossfade)}`)
 
     nextPlayer.disconnect().connect(fade < 0.5 ? this.#crossfader.b : this.#crossfader.a).sync().start(time)
 
