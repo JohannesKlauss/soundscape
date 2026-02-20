@@ -53,6 +53,6 @@
             />
         {/snippet}
 
-        {Math.round(volume * 100)}%
+        Global Volume: {Math.round(volume * 100)}%
     </Tooltip>
 </div>

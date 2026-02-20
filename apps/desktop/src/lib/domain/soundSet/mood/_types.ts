@@ -8,6 +8,5 @@ export type Mood = z.infer<typeof MoodCreationSchema> & {
   id: number;
   elements: Record<number, {
     volume: number
-    playsInMood?: true
   }>
 }

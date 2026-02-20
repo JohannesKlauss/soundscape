@@ -1,8 +1,9 @@
-import {getContext, Players} from "tone";
+import {getContext, getTransport, Players} from "tone";
 import {db} from "$lib/db";
 import {readBufferFromSamplesFile} from "$lib/fileSystem";
 import {ElementPlayer} from "$lib/engine/ElementPlayer.svelte";
 import {SvelteMap} from "svelte/reactivity";
+import type {Mood} from "$lib/domain/soundSet/mood/_types";
 
 type EngineState = {
   isLoading: boolean
@@ -60,14 +61,22 @@ export async function loadSoundSet(setId: number) {
   _state.isLoading = false
 }
 
-export function playMood(moodId: number) {
-  if (_state.activeMoodId === moodId) {
-    stopActiveMood()
-  } else {
-    _state.activeMoodId = moodId
-  }
-}
+export function playMood(mood: Mood) {
+  getTransport().start()
 
-export function stopActiveMood() {
-  _state.activeMoodId = undefined
+  if (_state.activeMoodId === mood.id) {
+    Object.keys(mood.elements).map(id => {
+      elementPlayers.get(parseInt(id, 10))?.stop()
+    })
+
+    _state.activeMoodId = undefined
+  } else if (!_state.activeMoodId) {
+    Object.keys(mood.elements).map(id => {
+      elementPlayers.get(parseInt(id, 10))?.play()
+    })
+
+    _state.activeMoodId = mood.id
+  } else {
+    // transition from one mood to another
+  }
 }

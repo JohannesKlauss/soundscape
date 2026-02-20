@@ -48,6 +48,8 @@ export class ElementPlayer {
     const player = this.#players.player(sampleId.toString())
 
     player.onstop = () => {
+      console.log('stop from play', player.name)
+
       if (this.#pad.sampleIds.length === 1 && this.#pad.type !== 'loop') {
         this.isPlaying = false
       }
@@ -80,9 +82,13 @@ export class ElementPlayer {
     const player = this.#players.player(this.lastPlayedSampleId.toString())
     
     player.onstop = () => {
+      console.log('stop from stop', player.name)
+
       this.isPlaying = false
       this.isStopping = false
       this.lastPlayedSampleId = undefined
+
+      player.disconnect().unsync()
     }
 
     this.isStopping = true
@@ -104,8 +110,12 @@ export class ElementPlayer {
     const fade = this.#crossfader.fade.value
     const nextPlayer = this.#players.player(nextSampleId.toString())
 
+    console.log('nextSampleId', nextSampleId)
+
     nextPlayer.fadeIn = 0
     nextPlayer.onstop = () => {
+      console.log('stopping from crossfade', nextPlayer.name)
+
       if (this.#pad.sampleIds.length === 1 && this.#pad.type !== 'loop') {
         this.isPlaying = false
       }

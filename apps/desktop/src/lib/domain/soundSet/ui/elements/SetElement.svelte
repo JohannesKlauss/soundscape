@@ -1,29 +1,26 @@
 <script lang="ts">
   import type {SoundPad} from "$lib/domain/soundPad/_types";
   import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
-  import {readBufferFromSamplesFile} from "$lib/fileSystem";
-  import {db} from "$lib/db";
-  import {CrossFade, getContext, getTransport, type Player, Players} from "tone";
-  import {volumeToDb} from "$lib/engine/volume";
-  import {onMount} from "svelte";
   import {XIcon} from "@lucide/svelte";
   import Tooltip from "$lib/components/Tooltip.svelte";
-  import type {ElementPlayer} from "$lib/engine/ElementPlayer.svelte";
   import {getElementPlayer} from "$lib/engine/engine.svelte";
+  import {page} from "$app/state";
 
   interface Props {
     pad: SoundPad
     volume?: number
     onDelete?: (padId: number) => void
+    onChangeSettingsForMood: (padId: number, volume: number, playAtMoodStart: boolean) => void
     editable?: boolean
   }
 
-  let {pad, volume: initVolume = 1, editable = false, onDelete}: Props = $props()
+  let {pad, volume: initVolume = 1, editable = false, onDelete, onChangeSettingsForMood}: Props = $props()
 
+  let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
   let progress = $state(0)
   let volume = $derived(initVolume)
 
-  const player = $derived.by(() => getElementPlayer(pad.id))
+  const player = $derived(getElementPlayer(pad.id))
 
   let animationFrame: number
 
@@ -34,7 +31,13 @@
   $effect(() => {
     if (!player.isPlaying) {
       cancelAnimationFrame(animationFrame)
+    } else {
+      updateProgress()
     }
+  })
+
+  $effect(() => {
+    onChangeSettingsForMood(pad.id, volume, playAtMoodStart)
   })
 
   function togglePlay() {
@@ -42,8 +45,6 @@
       player.stop()
     } else {
       player.play()
-
-      updateProgress()
     }
   }
 
@@ -72,7 +73,7 @@
   }
 </script>
 
-<div class="flex flex-col gap-2 items-center group">
+<div class="flex flex-col gap-2 items-center group max-w-full">
     <div class="flex-center relative">
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
         <div class={["radial-progress text-zinc-400 cursor-pointer transition-colors duration-250", !player.isPlaying && "text-transparent!"]} onclick={togglePlay}
@@ -112,5 +113,18 @@
     </div>
 
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-    <span class={["text-sm cursor-pointer transition-colors duration-250", player.isPlaying && "text-primary"]} onclick={togglePlay}>{pad.name}</span>
+    <div class="flex-center max-w-full label">
+        <span class={["text-sm cursor-pointer transition-colors duration-250 text-ellipsis overflow-hidden whitespace-nowrap", player.isPlaying && "text-secondary"]} onclick={togglePlay}>
+            {pad.name}
+        </span>
+    </div>
+
+    {#if page.state.editMood}
+        <Tooltip side="bottom" triggerProps={{class: "label text-sm"}}>
+            {#snippet trigger()}
+                <input type="checkbox" bind:checked={playAtMoodStart} class="checkbox checkbox-sm checkbox-primary" />
+            {/snippet}
+            Plays when starting Mood?
+        </Tooltip>
+    {/if}
 </div>
