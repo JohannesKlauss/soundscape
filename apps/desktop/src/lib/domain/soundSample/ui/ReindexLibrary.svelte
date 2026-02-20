@@ -82,10 +82,16 @@
     {/snippet}
 
     {#if isReindexing || closeInSeconds}
+        <div class="divider"></div>
         <div class="space-y-2">
-            <span class="text-muted mb-2">Reindexed {i} of {numSamples} samples.</span>
-            <progress class="progress w-full" value={i / numSamples}></progress>
-            <span class="text-muted text-sm">Reindexing {currentlyIndexing?.name}</span>
+            <span>Reindexed {i} of {numSamples} samples.</span>
+            <progress class="progress w-full mt-2" value={i / numSamples}></progress>
+            {#if isReindexing}
+                <span class="text-muted text-sm">
+                    Reindexing {currentlyIndexing?.name}
+                    <span class="loading loading-bars loading-xs"></span>
+                </span>
+            {/if}
         </div>
     {/if}
 
