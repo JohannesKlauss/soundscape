@@ -2,9 +2,10 @@
   import {db} from "$lib/db";
   import {confirmModal} from "$lib/components/AlertDialog.svelte";
   import type {Mood} from "$lib/domain/soundSet/mood/_types";
-  import {engineState} from "$lib/engine/ui/engine.svelte";
-  import {Pen, Trash} from "@lucide/svelte";
+  import {PlayIcon, PauseIcon, Trash} from "@lucide/svelte";
   import Tooltip from "$lib/components/Tooltip.svelte";
+  import {page} from "$app/state";
+  import {playMood} from "$lib/engine/ui/engine.svelte";
 
   interface Props {
     setId: number
@@ -33,18 +34,18 @@
   }
 </script>
 
-<div class={["group w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start cursor-pointer text-sm", engineState.activeMood === mood.id && "bg-primary"]} >
+<div class="group w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start cursor-pointer text-sm">
+    <button class={["btn btn-circle btn-xs hover:btn-secondary", page.state.activeMoodId === mood.id && "btn-secondary"]} type="button" onclick={() => playMood(mood.id)}>
+        {#if page.state.activeMoodId === mood.id}
+            <PauseIcon class="size-3"/>
+        {:else}
+            <PlayIcon class="size-3"/>
+        {/if}
+    </button>
+
     {mood.name}
 
     <div class="flex-center ml-auto">
-        <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-xs ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => editSet(set)}}>
-            {#snippet trigger()}
-                <Pen class="size-3"/>
-            {/snippet}
-
-            Rename Mood
-        </Tooltip>
-
         <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-error btn-xs ml-2 opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => deleteMood()}}>
             {#snippet trigger()}
                 <Trash class="size-3"/>

@@ -17,7 +17,7 @@
     let isReindexing = $state(false)
     let i = $state(0)
     let currentlyIndexing = $state<SoundSample>()
-    let closeIn = $state<number>()
+    let closeInSeconds = $state<number>()
 
     async function rebuild() {
       isReindexing = true
@@ -38,13 +38,13 @@
         }
 
         await db.sample.update(sample.id, newSample)
-
-        isReindexing = false
-        closeIn = 5
       }
 
+      isReindexing = false
+      closeInSeconds = 5
+
       const h = setInterval(() => {
-        if (closeIn! <= 1) {
+        if (closeInSeconds! <= 1) {
           open = false
           isReindexing = false
           currentlyIndexing = undefined
@@ -52,14 +52,14 @@
           clearInterval(h)
         }
 
-        if (closeIn) {
-          closeIn--
+        if (closeInSeconds) {
+          closeInSeconds--
         }
       }, 1000)
     }
 </script>
 
-<Dialog bind:open={open} onConfirm={rebuild} confirmDisabled={isReindexing || closeIn > 0} confirmText="Reindex">
+<Dialog bind:open={open} onConfirm={rebuild} confirmDisabled={isReindexing || (!!closeInSeconds && closeInSeconds > 0)} confirmText="Reindex">
     {#snippet trigger(props)}
         <Tooltip triggerProps={{class: "btn btn-sm btn-circle btn-ghost", ...props}}>
             {#snippet trigger()}
@@ -71,22 +71,25 @@
     {/snippet}
 
     {#snippet title()}
-      Reindex Library
+      Reindex Your Library
     {/snippet}
 
     {#snippet description()}
-      Confirm reindexing {numSamples} samples in the library.
+        <p>Reindexing your library extracts all metadata from your library, so that soundscape can display all relevant information of
+        your sound files like duration, name, etc.</p>
+        <p>If sounds in your library appear broken, use reindexing, to fix your library.</p>
+        <p>Depending on the size of your library this can take a while.</p>
     {/snippet}
 
-    {#if isReindexing || closeIn}
+    {#if isReindexing || closeInSeconds}
         <div class="space-y-2">
             <span class="text-muted mb-2">Reindexed {i} of {numSamples} samples.</span>
             <progress class="progress w-full" value={i / numSamples}></progress>
-            <span class="text-muted text-sm">{currentlyIndexing?.name}</span>
+            <span class="text-muted text-sm">Reindexing {currentlyIndexing?.name}</span>
         </div>
     {/if}
 
-    {#if !isReindexing && closeIn > 0}
-        Reindexing successful! Closing window {closeIn}...
+    {#if !isReindexing && !!closeInSeconds && closeInSeconds > 0}
+        Reindexing successful! Closing window {closeInSeconds}...
     {/if}
 </Dialog>

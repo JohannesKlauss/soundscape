@@ -55,7 +55,7 @@
         {#snippet trigger(props)}
             <button class="w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start cursor-pointer text-sm" {...props}>
                 <PlusIcon class="size-4"/>
-                Mood
+                Add Mood
             </button>
         {/snippet}
 

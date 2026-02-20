@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dialog from "$lib/components/Dialog.svelte";
-  import {PlusIcon, Music, AudioLines, AudioWaveform, Sparkle} from '@lucide/svelte';
+  import {PlusIcon, Music, AudioWaveform, Sparkle} from '@lucide/svelte';
   import Tooltip from "$lib/components/Tooltip.svelte";
   import type {SoundSampleCategory} from "$lib/domain/soundSample/_types";
   import {Player} from "tone";

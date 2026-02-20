@@ -53,7 +53,7 @@
         {@const pathname = `/sets/${set.id}`}
         {@const isActive = page.url.pathname === pathname}
         <li>
-            <a href={pathname} data-sveltekit-noscroll class="group py-2 px-4 hover:bg-base-300 flex-center justify-start cursor-pointer" class:bg-primary={isActive}>
+            <a href={pathname} data-sveltekit-noscroll class={["group py-2 px-4 hover:bg-base-300 flex-center justify-start cursor-pointer", isActive && "bg-primary hover:bg-primary", page.state.activeMoodId && "bg-primary/50"]}>
                 <SwordsIcon class="size-5"/>
                 {set.name}
 
