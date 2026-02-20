@@ -6,10 +6,10 @@
   import SetElement from "$lib/domain/soundSet/ui/elements/SetElement.svelte";
   import {confirmModal} from "$lib/components/AlertDialog.svelte";
   import {toast} from "svelte-sonner";
+  import {watch} from "runed";
 
   interface Props {
     setId: number
-
     editable?: boolean
   }
 
@@ -17,7 +17,7 @@
 
   const padTypeOrder: SoundPadType[] = ['music', 'loop', 'fx', 'one_shot']
 
-  const pads = liveQuery(async () => {
+  const loadPads = (setId: number) => liveQuery(async () => {
     const padIds = await db.setHasPads.where('setId').equals(setId).toArray()
     const unsortedPads = await db.pad.where('id').anyOf(padIds.map(v => v.padId)).toArray()
 
@@ -25,6 +25,8 @@
       return padTypeOrder.indexOf(a.type) - padTypeOrder.indexOf(b.type)
     })
   })
+
+  const pads = $derived.by(() => loadPads(setId))
 
   const {ref, isDropTarget} = useDroppable<SoundPad>({
     id: 'pad',
