@@ -54,7 +54,19 @@ export class ElementPlayer {
     this.#lastVolume = volume
   }
 
-  play() {
+  fadeTo(volume: number, seconds: number, stopAfterFadeOut = false) {
+    if (this.isPlaying) {
+      this.#crossfader.output.gain.rampTo(volume, seconds)
+
+      if (stopAfterFadeOut) {
+        this.isStopping = true
+
+        getTransport().schedule(this.stop.bind(this), `+${seconds}`)
+      }
+    }
+  }
+
+  play(startingVolume?: number) {
     const sampleId = this.#getNextSampleId()
     const buffer = sampleBuffers.get(sampleId)
 
@@ -64,7 +76,7 @@ export class ElementPlayer {
     }
 
     this.#activeSlot = 'a'
-    this.#crossfader.output.gain.value = this.#lastVolume
+    this.#crossfader.output.gain.value = typeof startingVolume !== 'undefined' ? startingVolume : this.#lastVolume
     this.#crossfader.fade.value = 0
 
     this.#playerA.buffer.set(buffer)
@@ -83,7 +95,6 @@ export class ElementPlayer {
         `+${Math.max(0, this.#playerA.buffer.duration - this.#pad.crossfade)}`
       )
     } else {
-      // For single non-loop samples, mark as not playing when the buffer ends
       this.#playerA.onstop = () => {
         this.isPlaying = false
         this.lastPlayedSampleId = undefined

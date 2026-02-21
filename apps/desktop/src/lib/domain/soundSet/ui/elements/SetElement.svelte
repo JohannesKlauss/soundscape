@@ -5,6 +5,8 @@
   import Tooltip from "$lib/components/Tooltip.svelte";
   import {getElementPlayer} from "$lib/engine/engine.svelte";
   import {page} from "$app/state";
+  import {Tween} from "svelte/motion";
+  import {watch} from "runed";
 
   interface Props {
     pad: SoundPad
@@ -18,14 +20,20 @@
 
   let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
   let progress = $state(0)
-  let volume = $derived(initVolume)
+  let volume = $state(new Tween(initVolume, {duration: 0}))
 
   const player = $derived(getElementPlayer(pad.id))
 
   let animationFrame: number
 
   $effect(() => {
-    player.volume = volume
+    player.volume = volume.current
+  })
+
+  watch(() => initVolume, () => {
+    volume.set(initVolume, {
+      duration: player.isPlaying ? 5000 : 0,
+    })
   })
 
   $effect(() => {
@@ -37,7 +45,7 @@
   })
 
   $effect(() => {
-    onChangeSettingsForMood(pad.id, volume, playAtMoodStart)
+    onChangeSettingsForMood(pad.id, volume.current, playAtMoodStart)
   })
 
   function togglePlay() {
@@ -69,7 +77,7 @@
 
     const delta = e.deltaY < 0 ? -0.01 : 0.01
 
-    volume = Math.round(Math.max(0, Math.min(1, volume + delta)) * 100) / 100
+    volume.target = Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
   }
 </script>
 
@@ -96,12 +104,12 @@
         <Tooltip triggerProps={{class: "h-16 w-4 -mt-12"}} disableCloseOnTriggerClick side="right">
             {#snippet trigger()}
                 <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" step="0.01"
-                       bind:value={volume}
-                       oninput={e => volume = parseFloat(e.target.value)}
+                       bind:value={volume.current}
+                       oninput={e => volume.target = parseFloat(e.target.value)}
                        onwheel={handleRangeWheel}/>
             {/snippet}
 
-            {Math.round(volume * 100)}%
+            {Math.round(volume.current * 100)}%
         </Tooltip>
 
         {#if editable}

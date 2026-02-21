@@ -5,6 +5,7 @@ import {ElementPlayer} from "$lib/engine/ElementPlayer.svelte"
 import {SvelteMap} from "svelte/reactivity"
 import type {Mood} from "$lib/domain/soundSet/mood/_types"
 import {goto} from "$app/navigation";
+import {toast} from "svelte-sonner";
 
 type EngineState = {
   isLoading: boolean
@@ -63,17 +64,45 @@ export async function playMood(mood: Mood) {
   getTransport().start()
 
   if (_state.activeMoodId === mood.id) {
-    getTransport().emit('fadeOut').stop('+5')
+    getTransport().emit('fadeOut', mood).stop('+5')
     getTransport().once('stop', () => {
       _state.activeMoodId = undefined
     })
   } else if (!_state.activeMoodId) {
-    Object.keys(mood.elements).map(id => {
+    Object.keys(mood.elements).forEach(id => {
       elementPlayers.get(parseInt(id, 10))?.play()
     })
 
     _state.activeMoodId = mood.id
   } else {
-    // transition from one mood to another
+    const previousMood = await db.mood.where('id').equals(_state.activeMoodId).first()
+
+    if (!previousMood) {
+      toast.error('Trying to fade between moods, but could not find currently playing mood.')
+
+      return
+    }
+
+    const previousIds = new Set(Object.keys(previousMood.elements))
+    const newIds = new Set(Object.keys(mood.elements))
+
+    const fadeOutIds = previousIds.difference(newIds)
+    const fadeInIds = newIds.difference(previousIds)
+
+    console.log('fadeOutIds', fadeOutIds)
+    console.log('fadeInIds', fadeInIds)
+
+    fadeOutIds.forEach(id => {
+      elementPlayers.get(parseInt(id, 10))?.fadeTo(0, 5, true)
+    })
+
+    fadeInIds.forEach(id => {
+      const player = elementPlayers.get(parseInt(id, 10))
+
+      player?.play(0)
+      player?.fadeTo(mood.elements[parseInt(id, 10)].volume, 5)
+    })
+
+    _state.activeMoodId = mood.id
   }
 }

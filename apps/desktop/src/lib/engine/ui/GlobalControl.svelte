@@ -27,7 +27,7 @@
   }
 
   function stopAll() {
-    getTransport().stop("+0.1")
+    getTransport().emit('fadeOut').stop("+5")
   }
 </script>
 
