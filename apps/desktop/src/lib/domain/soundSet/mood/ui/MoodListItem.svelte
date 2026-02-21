@@ -6,7 +6,7 @@
   import Tooltip from "$lib/components/Tooltip.svelte";
   import {page} from "$app/state";
   import {engineState, playMood} from "$lib/engine/engine.svelte.js";
-  import {goto, pushState} from "$app/navigation";
+  import {goto} from "$app/navigation";
 
   interface Props {
     setId: number
@@ -35,11 +35,13 @@
   }
 
   function editMood() {
-    pushState('', {
-      editMood: {
-        ...mood,
-        elements: {
-          ...mood.elements,
+    goto(`?viewMoodId=${mood.id}`, {
+      state: {
+        editMood: {
+          ...mood,
+          elements: {
+            ...mood.elements,
+          }
         }
       }
     })

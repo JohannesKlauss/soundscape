@@ -12,6 +12,8 @@ export class ElementPlayer {
   #activeSlot: 'a' | 'b' = 'a'
   #scheduledEventId: number | null = null
 
+  #lastVolume = 1
+
   isPlaying = $state(false)
   isStopping = $state(false)
 
@@ -28,6 +30,8 @@ export class ElementPlayer {
     getTransport().on('stop', (time) => {
       this.#cleanup(time)
     })
+
+    getTransport().on('fadeOut', this.#fadeOut.bind(this))
   }
 
   get currentPlayer() {
@@ -47,6 +51,7 @@ export class ElementPlayer {
 
   set volume(volume: number) {
     this.#crossfader.output.gain.value = volume
+    this.#lastVolume = volume
   }
 
   play() {
@@ -59,6 +64,7 @@ export class ElementPlayer {
     }
 
     this.#activeSlot = 'a'
+    this.#crossfader.output.gain.value = this.#lastVolume
     this.#crossfader.fade.value = 0
 
     this.#playerA.buffer.set(buffer)
@@ -113,6 +119,8 @@ export class ElementPlayer {
       getTransport().clear(this.#scheduledEventId)
       this.#scheduledEventId = null
     }
+
+    getTransport().off('fadeOut', this.#fadeOut.bind(this))
 
     this.#playerA.stop(time).unsync()
     this.#playerB.stop(time).unsync()
@@ -178,6 +186,13 @@ export class ElementPlayer {
       return this.#pad.sampleIds[(index + 1) % this.#pad.sampleIds.length]
     } else {
       return this.#pad.sampleIds[Math.floor(Math.random() * this.#pad.sampleIds.length)]
+    }
+  }
+
+  #fadeOut() {
+    if (this.isPlaying) {
+      this.isStopping = true
+      this.#crossfader.output.gain.rampTo(0, 5)
     }
   }
 }

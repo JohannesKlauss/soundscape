@@ -4,6 +4,7 @@ import {readBufferFromSamplesFile} from "$lib/fileSystem"
 import {ElementPlayer} from "$lib/engine/ElementPlayer.svelte"
 import {SvelteMap} from "svelte/reactivity"
 import type {Mood} from "$lib/domain/soundSet/mood/_types"
+import {goto} from "$app/navigation";
 
 type EngineState = {
   isLoading: boolean
@@ -56,15 +57,16 @@ export async function loadSoundSet(setId: number) {
   _state.isLoading = false
 }
 
-export function playMood(mood: Mood) {
+export async function playMood(mood: Mood) {
+  await goto(`?viewMoodId=${mood.id}`)
+
   getTransport().start()
 
   if (_state.activeMoodId === mood.id) {
-    Object.keys(mood.elements).map(id => {
-      elementPlayers.get(parseInt(id, 10))?.stop()
+    getTransport().emit('fadeOut').stop('+5')
+    getTransport().once('stop', () => {
+      _state.activeMoodId = undefined
     })
-
-    _state.activeMoodId = undefined
   } else if (!_state.activeMoodId) {
     Object.keys(mood.elements).map(id => {
       elementPlayers.get(parseInt(id, 10))?.play()
