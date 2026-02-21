@@ -1,31 +1,31 @@
 <script lang="ts">
-  import {Play, Pause} from "@lucide/svelte";
-  import type {ClassValue} from "svelte/elements";
-  import {
-    previewPlayerState,
-    previewSource,
-    stopPreviewSource
-  } from "$lib/domain/previewPlayer/previewPlayer.svelte";
+import { Play, Pause } from '@lucide/svelte'
+import type { ClassValue } from 'svelte/elements'
+import {
+  previewPlayerState,
+  previewSource,
+  stopPreviewSource,
+} from '$lib/domain/previewPlayer/previewPlayer.svelte'
 
-  interface Props {
-    src: string
-    contentType: string
-    class?: ClassValue
+interface Props {
+  src: string
+  contentType: string
+  class?: ClassValue
+}
+
+let { src, contentType, class: customClass }: Props = $props()
+
+const isPlaying = $derived(previewPlayerState.currentPlayingSource === src)
+
+async function togglePlay() {
+  if (isPlaying) {
+    await stopPreviewSource()
+
+    return
   }
 
-  let {src, contentType, class: customClass}: Props = $props()
-
-  const isPlaying = $derived(previewPlayerState.currentPlayingSource === src)
-
-  async function togglePlay() {
-    if (isPlaying) {
-      await stopPreviewSource()
-
-      return
-    }
-
-    await previewSource(src, contentType)
-  }
+  await previewSource(src, contentType)
+}
 </script>
 
 <button type="button" class={["btn btn-primary btn-sm btn-circle", !isPlaying && "btn-ghost", customClass]} onclick={togglePlay}>

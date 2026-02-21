@@ -1,23 +1,25 @@
 <script lang="ts">
-  import { PlusIcon } from '@lucide/svelte';
-  import Dialog from "$lib/components/Dialog.svelte";
-  import {db} from "$lib/db";
-  import {toast} from "svelte-sonner";
-  import {defaults, superForm} from "sveltekit-superforms";
-  import {MoodCreationSchema} from "$lib/domain/soundSet/mood/_types";
-  import {zod4} from "sveltekit-superforms/adapters";
+import { PlusIcon } from '@lucide/svelte'
+import Dialog from '$lib/components/Dialog.svelte'
+import { db } from '$lib/db'
+import { toast } from 'svelte-sonner'
+import { defaults, superForm } from 'sveltekit-superforms'
+import { MoodCreationSchema } from '$lib/domain/soundSet/mood/_types'
+import { zod4 } from 'sveltekit-superforms/adapters'
 
-  interface Props {
-    setId: number
-  }
+interface Props {
+  setId: number
+}
 
-  let {setId}: Props = $props()
+let { setId }: Props = $props()
 
-  let open = $state(false)
+let open = $state(false)
 
-  const validators = zod4(MoodCreationSchema)
+const validators = zod4(MoodCreationSchema)
 
-  const {form, constraints, submit, reset, validateForm, enhance} = superForm(defaults(validators), {
+const { form, constraints, submit, reset, validateForm, enhance } = superForm(
+  defaults(validators),
+  {
     validators,
     SPA: true,
     onSubmit: async () => {
@@ -33,7 +35,7 @@
 
         if (set) {
           await db.set.update(setId, {
-            moodIds: [...(set.moodIds ?? []), id]
+            moodIds: [...(set.moodIds ?? []), id],
           })
         } else {
           toast.error('Cannot find corresponding Sound Set')
@@ -46,8 +48,9 @@
         console.log(e)
         toast.error('Could not create Mood')
       }
-    }
-  })
+    },
+  },
+)
 </script>
 
 <form use:enhance>

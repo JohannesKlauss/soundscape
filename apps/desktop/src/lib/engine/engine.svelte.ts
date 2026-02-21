@@ -1,11 +1,11 @@
-import {getContext, getTransport} from "tone"
-import {db} from "$lib/db"
-import {readBufferFromSamplesFile} from "$lib/fileSystem"
-import {ElementPlayer} from "$lib/engine/ElementPlayer.svelte"
-import {SvelteMap} from "svelte/reactivity"
-import type {Mood} from "$lib/domain/soundSet/mood/_types"
-import {goto} from "$app/navigation";
-import {toast} from "svelte-sonner";
+import { getContext, getTransport } from 'tone'
+import { db } from '$lib/db'
+import { readBufferFromSamplesFile } from '$lib/fileSystem'
+import { ElementPlayer } from '$lib/engine/ElementPlayer.svelte'
+import { SvelteMap } from 'svelte/reactivity'
+import type { Mood } from '$lib/domain/soundSet/mood/_types'
+import { goto } from '$app/navigation'
+import { toast } from 'svelte-sonner'
 
 type EngineState = {
   isLoading: boolean
@@ -40,16 +40,29 @@ export async function loadSoundSet(setId: number) {
   _state.isLoading = true
 
   const setHasPads = await db.setHasPads.where('setId').equals(setId).toArray()
-  const pads = await db.pad.where('id').anyOf(setHasPads.map(s => s.padId)).toArray()
-  const samples = await db.sample.where('id').anyOf(pads.flatMap(p => p.sampleIds)).toArray()
+  const pads = await db.pad
+    .where('id')
+    .anyOf(setHasPads.map((s) => s.padId))
+    .toArray()
+  const samples = await db.sample
+    .where('id')
+    .anyOf(pads.flatMap((p) => p.sampleIds))
+    .toArray()
 
-  await Promise.all(samples.map(async s => {
-    if (!_sampleBuffers.has(s.id)) {
-      _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
-    }
-  }))
+  await Promise.all(
+    samples.map(async (s) => {
+      if (!_sampleBuffers.has(s.id)) {
+        _sampleBuffers.set(
+          s.id,
+          await getContext().decodeAudioData(
+            await readBufferFromSamplesFile(s.src),
+          ),
+        )
+      }
+    }),
+  )
 
-  pads.map(pad => {
+  pads.map((pad) => {
     if (!elementPlayers.has(pad.id)) {
       elementPlayers.set(pad.id, new ElementPlayer(pad))
     }
@@ -69,16 +82,21 @@ export async function playMood(mood: Mood) {
       _state.activeMoodId = undefined
     })
   } else if (!_state.activeMoodId) {
-    Object.keys(mood.elements).forEach(id => {
+    Object.keys(mood.elements).forEach((id) => {
       elementPlayers.get(parseInt(id, 10))?.play()
     })
 
     _state.activeMoodId = mood.id
   } else {
-    const previousMood = await db.mood.where('id').equals(_state.activeMoodId).first()
+    const previousMood = await db.mood
+      .where('id')
+      .equals(_state.activeMoodId)
+      .first()
 
     if (!previousMood) {
-      toast.error('Trying to fade between moods, but could not find currently playing mood.')
+      toast.error(
+        'Trying to fade between moods, but could not find currently playing mood.',
+      )
 
       return
     }
@@ -92,11 +110,11 @@ export async function playMood(mood: Mood) {
     console.log('fadeOutIds', fadeOutIds)
     console.log('fadeInIds', fadeInIds)
 
-    fadeOutIds.forEach(id => {
+    fadeOutIds.forEach((id) => {
       elementPlayers.get(parseInt(id, 10))?.fadeTo(0, 5, true)
     })
 
-    fadeInIds.forEach(id => {
+    fadeInIds.forEach((id) => {
       const player = elementPlayers.get(parseInt(id, 10))
 
       player?.play(0)

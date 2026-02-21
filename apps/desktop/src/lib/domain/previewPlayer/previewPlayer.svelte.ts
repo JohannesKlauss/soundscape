@@ -1,12 +1,12 @@
-import {Player} from "tone";
-import {readFileFromSamplesDirectory} from "$lib/fileSystem";
+import { Player } from 'tone'
+import { readFileFromSamplesDirectory } from '$lib/fileSystem'
 
 type State = {
   currentPlayingSource?: string
 }
 
 let _state = $state<State>({
-  currentPlayingSource: undefined
+  currentPlayingSource: undefined,
 })
 
 export const previewPlayerState: Readonly<State> = _state
@@ -23,8 +23,8 @@ export async function previewSource(src: string, contentType: string) {
 
   const file = await readFileFromSamplesDirectory(src)
 
-  const blob = new Blob([await file.arrayBuffer()], {type: contentType});
-  const url = window.URL.createObjectURL(blob);
+  const blob = new Blob([await file.arrayBuffer()], { type: contentType })
+  const url = window.URL.createObjectURL(blob)
 
   await previewPlayer.load(url)
 

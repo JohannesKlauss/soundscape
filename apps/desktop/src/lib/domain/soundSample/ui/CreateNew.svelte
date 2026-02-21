@@ -1,88 +1,89 @@
 <script lang="ts">
-  import Dialog from "$lib/components/Dialog.svelte";
-  import {PlusIcon, Music, AudioWaveform, Sparkle} from '@lucide/svelte';
-  import Tooltip from "$lib/components/Tooltip.svelte";
-  import type {SoundSampleCategory} from "$lib/domain/soundSample/_types";
-  import {Player} from "tone";
-  import {toast} from "svelte-sonner";
-  import SamplePlayer from "$lib/domain/soundSample/ui/SamplePlayer.svelte";
-  import {getExtensionFromContentType, writeFileToSamplesDirectory} from "$lib/fileSystem";
-  import {db} from "$lib/db";
+import Dialog from '$lib/components/Dialog.svelte'
+import { PlusIcon, Music, AudioWaveform, Sparkle } from '@lucide/svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import type { SoundSampleCategory } from '$lib/domain/soundSample/_types'
+import { Player } from 'tone'
+import { toast } from 'svelte-sonner'
+import SamplePlayer from '$lib/domain/soundSample/ui/SamplePlayer.svelte'
+import {
+  getExtensionFromContentType,
+  writeFileToSamplesDirectory,
+} from '$lib/fileSystem'
+import { db } from '$lib/db'
 
-  let open = $state(false)
-  let url = $state('')
-  let name = $state('')
-  let category = $state<SoundSampleCategory>('music')
-  let isAudio = $state(false)
-  let isYoutube = $state(false)
+let open = $state(false)
+let url = $state('')
+let name = $state('')
+let category = $state<SoundSampleCategory>('music')
+let isAudio = $state(false)
+let isYoutube = $state(false)
 
-  const player = new Player().toDestination()
+const player = new Player().toDestination()
 
-  $effect(() => {
-    if (url.length > 0 && url.startsWith('http')) {
-      loadAudio().then((success) => {
-        if (success) {
-          isYoutube = false
-          isAudio = true
-        } else {
-          loadYoutube()
-        }
-      })
-    }
+$effect(() => {
+  if (url.length > 0 && url.startsWith('http')) {
+    loadAudio().then((success) => {
+      if (success) {
+        isYoutube = false
+        isAudio = true
+      } else {
+        loadYoutube()
+      }
+    })
+  }
+})
+
+async function loadAudio() {
+  try {
+    await player.load(url)
+
+    toast.success('Sample loaded.')
+
+    return true
+  } catch (e) {
+    toast.error('URL is no audio file.')
+  }
+}
+
+async function loadYoutube() {}
+
+async function onAddAudio() {
+  const res = await fetch(url)
+
+  if (!res.ok) {
+    toast.error('Unable to download audio')
+
+    return
+  }
+
+  if (!res.headers.get('content-type')) {
+    toast.error('Unable to identify file type')
+
+    return
+  }
+
+  const ext = getExtensionFromContentType(res.headers.get('content-type')!)
+  const fileName = `${name}-${crypto.randomUUID().slice(0, 8)}.${ext}`
+
+  await writeFileToSamplesDirectory(fileName, await res.blob())
+
+  db.sample.add({
+    category,
+    name,
+    contentType: res.headers.get('content-type')!,
+    src: fileName,
+    duration: player.buffer.duration,
+    type: 'local',
   })
 
-  async function loadAudio() {
-    try {
-      await player.load(url)
-
-      toast.success('Sample loaded.')
-
-      return true
-    } catch (e) {
-      toast.error('URL is no audio file.')
-    }
-  }
-
-  async function loadYoutube() {
-
-  }
-
-  async function onAddAudio() {
-    const res = await fetch(url)
-
-    if (!res.ok) {
-      toast.error('Unable to download audio')
-
-      return
-    }
-
-    if (!res.headers.get('content-type')) {
-      toast.error('Unable to identify file type')
-
-      return
-    }
-
-    const ext = getExtensionFromContentType(res.headers.get('content-type')!)
-    const fileName = `${name}-${crypto.randomUUID().slice(0, 8)}.${ext}`
-
-    await writeFileToSamplesDirectory(fileName, await res.blob())
-
-    db.sample.add({
-      category,
-      name,
-      contentType: res.headers.get('content-type')!,
-      src: fileName,
-      duration: player.buffer.duration,
-      type: 'local',
-    })
-
-    open = false
-    name = ''
-    url = ''
-    isAudio = false
-    isYoutube = false
-    category = 'music'
-  }
+  open = false
+  name = ''
+  url = ''
+  isAudio = false
+  isYoutube = false
+  category = 'music'
+}
 </script>
 
 <Dialog bind:open={open} onConfirm={isAudio ? onAddAudio : () => null} confirmDisabled={name.trim().length < 3}

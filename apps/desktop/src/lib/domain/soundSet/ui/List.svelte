@@ -1,45 +1,50 @@
 <script lang="ts">
-    import {liveQuery} from "dexie";
-    import {db} from "$lib/db";
-    import {Pen, SwordsIcon, Trash} from "@lucide/svelte";
-    import { page } from '$app/state';
-    import { goto } from "$app/navigation";
-    import CreateNewMood from "$lib/domain/soundSet/mood/ui/CreateNew.svelte";
-    import FormSet from "$lib/domain/soundSet/ui/Form.svelte";
-    import Tooltip from "$lib/components/Tooltip.svelte";
-    import {confirmModal} from "$lib/components/AlertDialog.svelte";
-    import type {Mood} from "$lib/domain/soundSet/mood/_types";
-    import MoodListItem from "$lib/domain/soundSet/mood/ui/MoodListItem.svelte";
+import { liveQuery } from 'dexie'
+import { db } from '$lib/db'
+import { Pen, SwordsIcon, Trash } from '@lucide/svelte'
+import { page } from '$app/state'
+import { goto } from '$app/navigation'
+import CreateNewMood from '$lib/domain/soundSet/mood/ui/CreateNew.svelte'
+import FormSet from '$lib/domain/soundSet/ui/Form.svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { confirmModal } from '$lib/components/AlertDialog.svelte'
+import type { Mood } from '$lib/domain/soundSet/mood/_types'
+import MoodListItem from '$lib/domain/soundSet/mood/ui/MoodListItem.svelte'
 
-    type SoundSet = {
-      moods: Mood[]
-      id: number
-      name: string
-      moodIds: number[]
-    }
+type SoundSet = {
+  moods: Mood[]
+  id: number
+  name: string
+  moodIds: number[]
+}
 
-    const soundSets = liveQuery(async () => {
-      const sets = await db.set.toArray()
+const soundSets = liveQuery(async () => {
+  const sets = await db.set.toArray()
 
-      return Promise.all(sets.map(async set => {
-        const moods = await db.mood.where('id').anyOf(set.moodIds).toArray()
+  return Promise.all(
+    sets.map(async (set) => {
+      const moods = await db.mood.where('id').anyOf(set.moodIds).toArray()
 
-        return {
-          ...set,
-          moods,
-        }
-      }))
-    })
-
-    async function deleteSet(set: SoundSet) {
-      const confirmed = await confirmModal('Delete Set', 'Are you sure you want to delete this Set? You cannot undo this!')
-
-      if (confirmed) {
-        await db.setHasPads.where('setId').equals(set.id).delete()
-        await db.mood.where('id').anyOf(set.moodIds).delete()
-        await db.set.delete(set.id)
+      return {
+        ...set,
+        moods,
       }
-    }
+    }),
+  )
+})
+
+async function deleteSet(set: SoundSet) {
+  const confirmed = await confirmModal(
+    'Delete Set',
+    'Are you sure you want to delete this Set? You cannot undo this!',
+  )
+
+  if (confirmed) {
+    await db.setHasPads.where('setId').equals(set.id).delete()
+    await db.mood.where('id').anyOf(set.moodIds).delete()
+    await db.set.delete(set.id)
+  }
+}
 </script>
 
 <div class="p-4 text-muted flex-center justify-between">

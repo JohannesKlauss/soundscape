@@ -1,23 +1,27 @@
 <script lang="ts">
-  import { PlusIcon } from '@lucide/svelte';
-  import Dialog from "$lib/components/Dialog.svelte";
-  import {db} from "$lib/db";
-  import {toast} from "svelte-sonner";
-  import Tooltip from "$lib/components/Tooltip.svelte";
-  import {defaults, superForm} from "sveltekit-superforms";
-  import {zod4} from "sveltekit-superforms/adapters";
-  import {type SoundSet, SoundSetCreationSchema} from "$lib/domain/soundSet/_types";
+import { PlusIcon } from '@lucide/svelte'
+import Dialog from '$lib/components/Dialog.svelte'
+import { db } from '$lib/db'
+import { toast } from 'svelte-sonner'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { defaults, superForm } from 'sveltekit-superforms'
+import { zod4 } from 'sveltekit-superforms/adapters'
+import {
+  type SoundSet,
+  SoundSetCreationSchema,
+} from '$lib/domain/soundSet/_types'
 
-  interface Props {
-    set?: SoundSet
-    open?: boolean
-  }
+interface Props {
+  set?: SoundSet
+  open?: boolean
+}
 
-  let {set, open = $bindable(false)}: Props = $props()
+let { set, open = $bindable(false) }: Props = $props()
 
-  const validators = zod4(SoundSetCreationSchema)
+const validators = zod4(SoundSetCreationSchema)
 
-  const {form, constraints, submit, reset, errors, validateForm, enhance} = superForm(defaults(set, validators), {
+const { form, constraints, submit, reset, errors, validateForm, enhance } =
+  superForm(defaults(set, validators), {
     validators,
     SPA: true,
     validationMethod: 'oninput',
@@ -46,7 +50,7 @@
       } catch (e) {
         toast.error('Could not create Sound Set')
       }
-    }
+    },
   })
 </script>
 

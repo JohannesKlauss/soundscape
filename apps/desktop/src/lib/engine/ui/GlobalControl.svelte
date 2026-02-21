@@ -1,34 +1,34 @@
 <script lang="ts">
-  import {Play, Square} from "@lucide/svelte";
-  import {getContext, getTransport} from "tone";
-  import {onMount} from "svelte";
-  import Tooltip from "$lib/components/Tooltip.svelte";
-  import {volumeToDb} from "$lib/engine/volume";
+import { Play, Square } from '@lucide/svelte'
+import { getContext, getTransport } from 'tone'
+import { onMount } from 'svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { volumeToDb } from '$lib/engine/volume'
 
-  let isPlaying = $state(false)
-  let volume = $state(1)
+let isPlaying = $state(false)
+let volume = $state(1)
 
-  onMount(() => {
-    getTransport().on('start', () => {
-      isPlaying = true
-    })
+onMount(() => {
+  getTransport().on('start', () => {
+    isPlaying = true
   })
+})
 
-  $effect(() => {
-    getContext().destination.volume.value = volumeToDb(volume)
-  })
+$effect(() => {
+  getContext().destination.volume.value = volumeToDb(volume)
+})
 
-  function handleRangeWheel(e: WheelEvent) {
-    e.preventDefault()
+function handleRangeWheel(e: WheelEvent) {
+  e.preventDefault()
 
-    const delta = e.deltaY < 0 ? -0.01 : 0.01
+  const delta = e.deltaY < 0 ? -0.01 : 0.01
 
-    volume = Math.round(Math.max(0, Math.min(1, volume + delta)) * 100) / 100
-  }
+  volume = Math.round(Math.max(0, Math.min(1, volume + delta)) * 100) / 100
+}
 
-  function stopAll() {
-    getTransport().emit('fadeOut').stop("+5")
-  }
+function stopAll() {
+  getTransport().emit('fadeOut').stop('+5')
+}
 </script>
 
 <div class="flex-center">

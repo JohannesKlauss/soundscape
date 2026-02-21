@@ -1,14 +1,14 @@
 <script lang="ts">
-    import {liveQuery} from "dexie";
-    import {db} from "$lib/db";
-    import {AudioWaveform, GripVertical} from "@lucide/svelte";
-    import QuickPreviewPlayer from "$lib/domain/previewPlayer/QuickPreviewPlayer.svelte";
-    import {useDraggable, DragOverlay} from "$lib/dnd";
-    import type {SoundSample} from "$lib/domain/soundSample/_types";
-    import {sampleIcons} from "$lib/domain/soundSample/ui/sampleIcons";
-    import {formatTime} from "$lib/engine/volume";
+import { liveQuery } from 'dexie'
+import { db } from '$lib/db'
+import { AudioWaveform, GripVertical } from '@lucide/svelte'
+import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
+import { useDraggable, DragOverlay } from '$lib/dnd'
+import type { SoundSample } from '$lib/domain/soundSample/_types'
+import { sampleIcons } from '$lib/domain/soundSample/ui/sampleIcons'
+import { formatTime } from '$lib/engine/volume'
 
-    const samples = liveQuery(() => db.sample.toArray())
+const samples = liveQuery(() => db.sample.toArray())
 </script>
 
 <ul class="list">

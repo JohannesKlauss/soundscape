@@ -1,43 +1,45 @@
 <script lang="ts">
-  import {
-    Infinity,
-    AudioWaveform,
-    Music,
-    Crosshair,
-    PlusIcon,
-    Trash,
-    XIcon,
-    Check,
-    Dices,
-    ListOrdered
-  } from "@lucide/svelte";
-  import {defaults, superForm} from "sveltekit-superforms";
-  import {zod4} from 'sveltekit-superforms/adapters';
-  import {useDroppable, useSortable} from "$lib/dnd";
-  import type {SoundSample} from "$lib/domain/soundSample/_types";
-  import {SoundPadCreationSchema} from "$lib/domain/soundPad/_types";
-  import {db} from "$lib/db";
-  import {toast} from "svelte-sonner";
-  import {page} from "$app/state";
-  import {replaceState} from "$app/navigation";
-  import QuickPreviewPlayer from "$lib/domain/previewPlayer/QuickPreviewPlayer.svelte";
-  import {formatTime} from "$lib/engine/volume";
+import {
+  Infinity,
+  AudioWaveform,
+  Music,
+  Crosshair,
+  PlusIcon,
+  Trash,
+  XIcon,
+  Check,
+  Dices,
+  ListOrdered,
+} from '@lucide/svelte'
+import { defaults, superForm } from 'sveltekit-superforms'
+import { zod4 } from 'sveltekit-superforms/adapters'
+import { useDroppable, useSortable } from '$lib/dnd'
+import type { SoundSample } from '$lib/domain/soundSample/_types'
+import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
+import { db } from '$lib/db'
+import { toast } from 'svelte-sonner'
+import { page } from '$app/state'
+import { replaceState } from '$app/navigation'
+import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
+import { formatTime } from '$lib/engine/volume'
 
-  interface Props {
-    onCancel?: () => void
-  }
+interface Props {
+  onCancel?: () => void
+}
 
-  let {onCancel}: Props = $props()
+let { onCancel }: Props = $props()
 
-  $effect(() => {
-    reset({
-      data: page.state.editPad,
-    })
+$effect(() => {
+  reset({
+    data: page.state.editPad,
   })
+})
 
-  const validators = zod4(SoundPadCreationSchema)
+const validators = zod4(SoundPadCreationSchema)
 
-  const {form, constraints, enhance, reset, validateForm} = superForm(defaults(page.state.editPad, validators), {
+const { form, constraints, enhance, reset, validateForm } = superForm(
+  defaults(page.state.editPad, validators),
+  {
     validators,
     SPA: true,
     dataType: 'json',
@@ -53,7 +55,7 @@
 
       const data = {
         ...$form,
-        sampleIds: $form.samples.map(val => val.id)
+        sampleIds: $form.samples.map((val) => val.id),
       }
 
       delete data.samples
@@ -67,55 +69,61 @@
         reset()
         onCancel?.()
       }
-    }
-  })
-
-  $effect(() => {
-    $constraints['crossfade'].max = Math.min(...$form.samples.map(s => s.duration / 2))
-  })
-
-  const {isDropTarget, ref} = useDroppable<SoundSample>({
-    id: 'sample',
-    onDrop(sample) {
-      if ($form.samples.findIndex(val => val.id === sample.id) === -1) {
-        $form.samples = [...$form.samples, sample]
-      }
-    }
-  })
-
-  function handleRangeWheel(
-    e: WheelEvent,
-    key: 'fadeInSeconds' | 'fadeOutSeconds' | 'crossfade',
-  ) {
-    e.preventDefault()
-
-    const delta = e.deltaY < 0 ? -0.1 : 0.1
-    const newValue = Math.round(($form[key]! + delta) * 10) / 10
-
-    $form[key] = Math.max(0.1, Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue))
-  }
-
-  function removeSample(id: number) {
-    const index = $form.samples.findIndex(val => val.id === id)
-
-    $form.samples = $form.samples.toSpliced(index, 1)
-  }
-
-  function cancel() {
-    replaceState('', {editPad: undefined})
-    reset()
-    onCancel?.()
-  }
-
-  const {containerRef} = useSortable({
-    id: 'sample',
-    get items() {
-      return $form.samples
     },
-    onSort(items) {
-      $form.samples = items
+  },
+)
+
+$effect(() => {
+  $constraints['crossfade'].max = Math.min(
+    ...$form.samples.map((s) => s.duration / 2),
+  )
+})
+
+const { isDropTarget, ref } = useDroppable<SoundSample>({
+  id: 'sample',
+  onDrop(sample) {
+    if ($form.samples.findIndex((val) => val.id === sample.id) === -1) {
+      $form.samples = [...$form.samples, sample]
     }
-  })
+  },
+})
+
+function handleRangeWheel(
+  e: WheelEvent,
+  key: 'fadeInSeconds' | 'fadeOutSeconds' | 'crossfade',
+) {
+  e.preventDefault()
+
+  const delta = e.deltaY < 0 ? -0.1 : 0.1
+  const newValue = Math.round(($form[key]! + delta) * 10) / 10
+
+  $form[key] = Math.max(
+    0.1,
+    Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue),
+  )
+}
+
+function removeSample(id: number) {
+  const index = $form.samples.findIndex((val) => val.id === id)
+
+  $form.samples = $form.samples.toSpliced(index, 1)
+}
+
+function cancel() {
+  replaceState('', { editPad: undefined })
+  reset()
+  onCancel?.()
+}
+
+const { containerRef } = useSortable({
+  id: 'sample',
+  get items() {
+    return $form.samples
+  },
+  onSort(items) {
+    $form.samples = items
+  },
+})
 </script>
 
 <form use:enhance>

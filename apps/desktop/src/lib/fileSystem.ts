@@ -15,7 +15,7 @@ export const mimeToExt: Record<string, string> = {
 export function getExtensionFromContentType(contentType: string): string {
   const mime = contentType.split(';')[0].trim().toLowerCase()
 
-  if(!mimeToExt[mime]) {
+  if (!mimeToExt[mime]) {
     throw new Error(`Unmapped content type: ${contentType}`)
   }
 
@@ -29,14 +29,17 @@ export async function getSamplesDirectory() {
 
 export async function readFileFromSamplesDirectory(fileName: string) {
   const dir = await getSamplesDirectory()
-  const fileHandle = await dir.getFileHandle(fileName, {create: false})
+  const fileHandle = await dir.getFileHandle(fileName, { create: false })
   return await fileHandle.getFile()
 }
 
-export async function writeFileToSamplesDirectory(fileName: string, blob: Blob) {
+export async function writeFileToSamplesDirectory(
+  fileName: string,
+  blob: Blob,
+) {
   const dir = await getSamplesDirectory()
-  const fileHandle = await dir.getFileHandle(fileName, {create: true})
-  const writer = await fileHandle.createWritable({keepExistingData: false})
+  const fileHandle = await dir.getFileHandle(fileName, { create: true })
+  const writer = await fileHandle.createWritable({ keepExistingData: false })
 
   await writer.write(blob)
   await writer.close()

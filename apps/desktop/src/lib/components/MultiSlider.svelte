@@ -1,16 +1,23 @@
 <script lang="ts">
-  import { Slider } from 'bits-ui'
+import { Slider } from 'bits-ui'
 
-  interface Props {
-    min?: number
-    max?: number
-    step?: number
-    value: number[]
-    disabled?: boolean
-    onChange?: (value: number[]) => void
-  }
+interface Props {
+  min?: number
+  max?: number
+  step?: number
+  value: number[]
+  disabled?: boolean
+  onChange?: (value: number[]) => void
+}
 
-  let { value = $bindable([0]), disabled, min = 0, max = 100, step = 1, onChange }: Props = $props()
+let {
+  value = $bindable([0]),
+  disabled,
+  min = 0,
+  max = 100,
+  step = 1,
+  onChange,
+}: Props = $props()
 </script>
 
 <div class="w-full mt-1.5">

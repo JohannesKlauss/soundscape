@@ -1,31 +1,31 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  import { Dialog, type WithoutChild } from "bits-ui";
+import type { Snippet } from 'svelte'
+import { Dialog, type WithoutChild } from 'bits-ui'
 
-  type Props = Dialog.RootProps & {
-    trigger: Snippet<[Record<string, any>]>;
-    title: Snippet;
-    description: Snippet;
-    confirmText?: string
-    onConfirm: () => void
-    confirmDisabled?: boolean
-    asForm?: boolean
-    contentProps?: WithoutChild<Dialog.ContentProps>;
-  };
+type Props = Dialog.RootProps & {
+  trigger: Snippet<[Record<string, any>]>
+  title: Snippet
+  description: Snippet
+  confirmText?: string
+  onConfirm: () => void
+  confirmDisabled?: boolean
+  asForm?: boolean
+  contentProps?: WithoutChild<Dialog.ContentProps>
+}
 
-  let {
-    open = $bindable(false),
-    children,
-    trigger,
-    contentProps,
-    title,
-    description,
-    confirmText = 'Save',
-    onConfirm,
-    confirmDisabled = false,
-    asForm,
-    ...restProps
-  }: Props = $props();
+let {
+  open = $bindable(false),
+  children,
+  trigger,
+  contentProps,
+  title,
+  description,
+  confirmText = 'Save',
+  onConfirm,
+  confirmDisabled = false,
+  asForm,
+  ...restProps
+}: Props = $props()
 </script>
 
 <Dialog.Root bind:open {...restProps}>

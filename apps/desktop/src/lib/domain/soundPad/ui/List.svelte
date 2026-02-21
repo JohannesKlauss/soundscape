@@ -1,47 +1,54 @@
 <script lang="ts">
-    import {liveQuery} from "dexie";
-    import {db} from "$lib/db";
-    import {ChevronLeft, Pen, Trash} from "@lucide/svelte";
-    import {DragOverlay, useDraggable} from "$lib/dnd";
-    import {page} from "$app/state";
-    import {replaceState} from "$app/navigation";
-    import Tooltip from "$lib/components/Tooltip.svelte";
-    import type {Snippet} from "svelte";
-    import {padToForm, padTypeToLabel, type SoundPad} from "$lib/domain/soundPad/_types";
-    import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
-    import {confirmModal} from "$lib/components/AlertDialog.svelte";
+import { liveQuery } from 'dexie'
+import { db } from '$lib/db'
+import { ChevronLeft, Pen, Trash } from '@lucide/svelte'
+import { DragOverlay, useDraggable } from '$lib/dnd'
+import { page } from '$app/state'
+import { replaceState } from '$app/navigation'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import type { Snippet } from 'svelte'
+import {
+  padToForm,
+  padTypeToLabel,
+  type SoundPad,
+} from '$lib/domain/soundPad/_types'
+import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
+import { confirmModal } from '$lib/components/AlertDialog.svelte'
 
-    interface Props {
-      children?: Snippet
-    }
+interface Props {
+  children?: Snippet
+}
 
-    let {children}: Props = $props()
+let { children }: Props = $props()
 
-    const pads = liveQuery(() => db.pad.toArray())
+const pads = liveQuery(() => db.pad.toArray())
 
-    async function moveToSet(padId: number) {
-      const setId = parseInt(page.params?.id ?? '0', 10)
+async function moveToSet(padId: number) {
+  const setId = parseInt(page.params?.id ?? '0', 10)
 
-      if (setId > 0) {
-        await db.setHasPads.add({
-          setId,
-          padId,
-        })
-      }
-    }
+  if (setId > 0) {
+    await db.setHasPads.add({
+      setId,
+      padId,
+    })
+  }
+}
 
-    async function editPad(pad: SoundPad) {
-      replaceState('', {editPad: await padToForm(pad)})
-    }
+async function editPad(pad: SoundPad) {
+  replaceState('', { editPad: await padToForm(pad) })
+}
 
-    async function deletePad(padId: number) {
-      const confirmed = await confirmModal('Delete Pad', 'Are you sure you want to delete this Pad? It will be removed from all Sound Sets that are currently using it')
+async function deletePad(padId: number) {
+  const confirmed = await confirmModal(
+    'Delete Pad',
+    'Are you sure you want to delete this Pad? It will be removed from all Sound Sets that are currently using it',
+  )
 
-      if (confirmed) {
-        await db.setHasPads.where('padId').equals(padId).delete()
-        await db.pad.delete(padId)
-      }
-    }
+  if (confirmed) {
+    await db.setHasPads.where('padId').equals(padId).delete()
+    await db.pad.delete(padId)
+  }
+}
 </script>
 
 <div class="p-4 text-muted flex-center justify-between sticky top-0 bg-base-100">

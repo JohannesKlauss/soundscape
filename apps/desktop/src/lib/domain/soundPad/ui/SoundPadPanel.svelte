@@ -1,12 +1,12 @@
 <script lang="ts">
-  import List from "$lib/domain/soundPad/ui/List.svelte";
-  import Form from "$lib/domain/soundPad/ui/Form.svelte";
-  import {PlusIcon} from "@lucide/svelte";
-  import {fly} from "svelte/transition";
-  import Tooltip from "$lib/components/Tooltip.svelte";
-  import {page} from "$app/state";
+import List from '$lib/domain/soundPad/ui/List.svelte'
+import Form from '$lib/domain/soundPad/ui/Form.svelte'
+import { PlusIcon } from '@lucide/svelte'
+import { fly } from 'svelte/transition'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { page } from '$app/state'
 
-  let showForm = $derived(!!page.state.editPad)
+let showForm = $derived(!!page.state.editPad)
 </script>
 
 <div class="flex flex-col h-full">

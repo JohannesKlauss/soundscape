@@ -1,62 +1,64 @@
 <script lang="ts">
-    import {RotateCcw} from "@lucide/svelte";
-    import Tooltip from "$lib/components/Tooltip.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import type {SoundSample} from "$lib/domain/soundSample/_types";
-    import {db} from "$lib/db";
-    import {readBufferFromSamplesFile} from "$lib/fileSystem";
-    import {getContext, Player} from "tone";
+import { RotateCcw } from '@lucide/svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import Dialog from '$lib/components/Dialog.svelte'
+import type { SoundSample } from '$lib/domain/soundSample/_types'
+import { db } from '$lib/db'
+import { readBufferFromSamplesFile } from '$lib/fileSystem'
+import { getContext, Player } from 'tone'
 
-    interface Props {
-      numSamples: number
+interface Props {
+  numSamples: number
+}
+
+let { numSamples }: Props = $props()
+
+let open = $state(false)
+let isReindexing = $state(false)
+let i = $state(0)
+let currentlyIndexing = $state<SoundSample>()
+let closeInSeconds = $state<number>()
+
+async function rebuild() {
+  isReindexing = true
+
+  const samples = await db.sample.toArray()
+
+  for (i = 0; i < samples.length; i++) {
+    const sample = samples[i]
+
+    currentlyIndexing = sample
+
+    const buffer = await getContext().decodeAudioData(
+      await readBufferFromSamplesFile(sample.src),
+    )
+    const player = new Player(buffer)
+
+    const newSample: SoundSample = {
+      ...sample,
+      duration: player.buffer.duration,
     }
 
-    let {numSamples}: Props = $props()
+    await db.sample.update(sample.id, newSample)
+  }
 
-    let open = $state(false)
-    let isReindexing = $state(false)
-    let i = $state(0)
-    let currentlyIndexing = $state<SoundSample>()
-    let closeInSeconds = $state<number>()
+  isReindexing = false
+  closeInSeconds = 5
 
-    async function rebuild() {
-      isReindexing = true
-
-      const samples = await db.sample.toArray()
-
-      for (i = 0; i < samples.length; i++) {
-        const sample = samples[i]
-
-        currentlyIndexing = sample
-
-        const buffer = await getContext().decodeAudioData(await readBufferFromSamplesFile(sample.src))
-        const player = new Player(buffer)
-
-        const newSample: SoundSample = {
-          ...sample,
-          duration: player.buffer.duration,
-        }
-
-        await db.sample.update(sample.id, newSample)
-      }
-
+  const h = setInterval(() => {
+    if (closeInSeconds! <= 1) {
+      open = false
       isReindexing = false
-      closeInSeconds = 5
+      currentlyIndexing = undefined
 
-      const h = setInterval(() => {
-        if (closeInSeconds! <= 1) {
-          open = false
-          isReindexing = false
-          currentlyIndexing = undefined
-
-          clearInterval(h)
-        }
-
-        if (closeInSeconds) {
-          closeInSeconds--
-        }
-      }, 1000)
+      clearInterval(h)
     }
+
+    if (closeInSeconds) {
+      closeInSeconds--
+    }
+  }, 1000)
+}
 </script>
 
 <Dialog bind:open={open} onConfirm={rebuild} confirmDisabled={isReindexing || (!!closeInSeconds && closeInSeconds > 0)} confirmText="Reindex">

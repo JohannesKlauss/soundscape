@@ -1,44 +1,44 @@
 <script module lang="ts">
-  import { writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
-  let confirmPromise: Promise<boolean>
-  let confirmCallback: (() => void) | undefined
-  let cancelCallback: (() => void) | undefined
+let confirmPromise: Promise<boolean>
+let confirmCallback: (() => void) | undefined
+let cancelCallback: (() => void) | undefined
 
-  let confirmTitle = writable('')
-  let confirmMessage = writable('')
-  let isOpen = writable(false)
+let confirmTitle = writable('')
+let confirmMessage = writable('')
+let isOpen = writable(false)
 
-  export async function confirmModal(title: string, message: string) {
-    confirmTitle.set(title)
-    confirmMessage.set(message)
+export async function confirmModal(title: string, message: string) {
+  confirmTitle.set(title)
+  confirmMessage.set(message)
 
-    isOpen.set(true)
+  isOpen.set(true)
 
-    confirmPromise = new Promise(resolve => {
-      confirmCallback = () => {
-        resolve(true)
+  confirmPromise = new Promise((resolve) => {
+    confirmCallback = () => {
+      resolve(true)
 
-        isOpen.set(false)
+      isOpen.set(false)
 
-        confirmCallback = undefined
-      }
+      confirmCallback = undefined
+    }
 
-      cancelCallback = () => {
-        resolve(false)
+    cancelCallback = () => {
+      resolve(false)
 
-        isOpen.set(false)
+      isOpen.set(false)
 
-        cancelCallback = undefined
-      }
-    })
+      cancelCallback = undefined
+    }
+  })
 
-    return confirmPromise
-  }
+  return confirmPromise
+}
 
-  export function closeConfirmModal() {
-    isOpen.set(false)
-  }
+export function closeConfirmModal() {
+  isOpen.set(false)
+}
 </script>
 
 <script lang="ts">

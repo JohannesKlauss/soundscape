@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { Collapsible, type WithoutChild } from "bits-ui";
-  import type {Snippet} from "svelte";
-  import {ChevronsUpDown} from "@lucide/svelte";
-  import Tooltip from "$lib/components/Tooltip.svelte";
+import { Collapsible, type WithoutChild } from 'bits-ui'
+import type { Snippet } from 'svelte'
+import { ChevronsUpDown } from '@lucide/svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
 
-  type Props = WithoutChild<Collapsible.RootProps> & {
-    title: Snippet;
-    trigger?: Snippet;
-  };
+type Props = WithoutChild<Collapsible.RootProps> & {
+  title: Snippet
+  trigger?: Snippet
+}
 
-  let {
-    open = $bindable(false),
-    title,
-    trigger: collapsibleTrigger,
-    children,
-    ...restProps
-  }: Props = $props();
+let {
+  open = $bindable(false),
+  title,
+  trigger: collapsibleTrigger,
+  children,
+  ...restProps
+}: Props = $props()
 </script>
 
 <Collapsible.Root>

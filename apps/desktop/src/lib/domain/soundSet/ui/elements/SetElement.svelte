@@ -1,84 +1,96 @@
 <script lang="ts">
-  import type {SoundPad} from "$lib/domain/soundPad/_types";
-  import {padIcons} from "$lib/domain/soundPad/ui/padIcons";
-  import {XIcon} from "@lucide/svelte";
-  import Tooltip from "$lib/components/Tooltip.svelte";
-  import {getElementPlayer} from "$lib/engine/engine.svelte";
-  import {page} from "$app/state";
-  import {Tween} from "svelte/motion";
-  import {watch} from "runed";
+import type { SoundPad } from '$lib/domain/soundPad/_types'
+import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
+import { XIcon } from '@lucide/svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { getElementPlayer } from '$lib/engine/engine.svelte'
+import { page } from '$app/state'
+import { Tween } from 'svelte/motion'
+import { watch } from 'runed'
 
-  interface Props {
-    pad: SoundPad
-    volume?: number
-    onDelete?: (padId: number) => void
-    onChangeSettingsForMood: (padId: number, volume: number, playAtMoodStart: boolean) => void
-    editable?: boolean
-  }
+interface Props {
+  pad: SoundPad
+  volume?: number
+  onDelete?: (padId: number) => void
+  onChangeSettingsForMood: (
+    padId: number,
+    volume: number,
+    playAtMoodStart: boolean,
+  ) => void
+  editable?: boolean
+}
 
-  let {pad, volume: initVolume = 1, editable = false, onDelete, onChangeSettingsForMood}: Props = $props()
+let {
+  pad,
+  volume: initVolume = 1,
+  editable = false,
+  onDelete,
+  onChangeSettingsForMood,
+}: Props = $props()
 
-  let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
-  let progress = $state(0)
-  let volume = $state(new Tween(initVolume, {duration: 0}))
+let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
+let progress = $state(0)
+let volume = $state(new Tween(initVolume, { duration: 0 }))
 
-  const player = $derived(getElementPlayer(pad.id))
+const player = $derived(getElementPlayer(pad.id))
 
-  let animationFrame: number
+let animationFrame: number
 
-  $effect(() => {
-    player.volume = volume.current
-  })
+$effect(() => {
+  player.volume = volume.current
+})
 
-  watch(() => initVolume, () => {
+watch(
+  () => initVolume,
+  () => {
     volume.set(initVolume, {
       duration: player.isPlaying ? 5000 : 0,
     })
-  })
+  },
+)
 
-  $effect(() => {
-    if (!player.isPlaying) {
-      cancelAnimationFrame(animationFrame)
-    } else {
-      updateProgress()
-    }
-  })
+$effect(() => {
+  if (!player.isPlaying) {
+    cancelAnimationFrame(animationFrame)
+  } else {
+    updateProgress()
+  }
+})
 
-  $effect(() => {
-    onChangeSettingsForMood(pad.id, volume.current, playAtMoodStart)
-  })
+$effect(() => {
+  onChangeSettingsForMood(pad.id, volume.current, playAtMoodStart)
+})
 
-  function togglePlay() {
-    if (player.isPlaying) {
-      player.stop()
-    } else {
-      player.play()
-    }
+function togglePlay() {
+  if (player.isPlaying) {
+    player.stop()
+  } else {
+    player.play()
+  }
+}
+
+function updateProgress() {
+  if (!player.lastPlayedSampleId) {
+    return
   }
 
-  function updateProgress() {
-    if (!player.lastPlayedSampleId) {
-      return
-    }
+  if (player.isPlaying && player.currentPlayer) {
+    const currentTime = player.currentPlayer.now() - player.startedAt
 
-    if (player.isPlaying && player.currentPlayer) {
-      const currentTime = player.currentPlayer.now() - player.startedAt
+    progress = Math.max(0, Math.min(1, currentTime / player.duration))
 
-      progress = Math.max(0, Math.min(1, currentTime / player.duration))
-
-      animationFrame = requestAnimationFrame(updateProgress)
-    }
+    animationFrame = requestAnimationFrame(updateProgress)
   }
+}
 
-  function handleRangeWheel(
-    e: WheelEvent,
-  ) {
-    e.preventDefault()
+function handleRangeWheel(e: WheelEvent) {
+  e.preventDefault()
 
-    const delta = e.deltaY < 0 ? -0.01 : 0.01
+  const delta = e.deltaY < 0 ? -0.01 : 0.01
 
-    volume.target = Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
-  }
+  volume.target =
+    Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
+}
 </script>
 
 <div class="flex flex-col gap-2 items-center group max-w-full">

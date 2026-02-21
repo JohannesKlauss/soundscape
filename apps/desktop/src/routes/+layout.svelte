@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { Toaster } from 'svelte-sonner'
-    import { Tooltip } from "bits-ui";
-    import '../app.css'
-    import SoundSetTile from "$lib/domain/soundSet/ui/SoundSetTile.svelte";
-    import SoundSampleSheet from "$lib/domain/soundSample/ui/SoundSampleSheet.svelte";
-    import AudioContext from "$lib/engine/ui/AudioContext.svelte";
-    import SoundPadPanel from "$lib/domain/soundPad/ui/SoundPadPanel.svelte";
-    import AlertDialog from "$lib/components/AlertDialog.svelte";
-    import GlobalControl from "$lib/engine/ui/GlobalControl.svelte";
+import { Toaster } from 'svelte-sonner'
+import { Tooltip } from 'bits-ui'
+import '../app.css'
+import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
+import SoundSampleSheet from '$lib/domain/soundSample/ui/SoundSampleSheet.svelte'
+import AudioContext from '$lib/engine/ui/AudioContext.svelte'
+import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
+import AlertDialog from '$lib/components/AlertDialog.svelte'
+import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
 
-    interface Props {
-      children: import('svelte').Snippet
-    }
+interface Props {
+  children: import('svelte').Snippet
+}
 
-    let {children}: Props = $props()
+let { children }: Props = $props()
 </script>
 
 <Tooltip.Provider delayDuration={0}>

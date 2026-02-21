@@ -1,13 +1,13 @@
-import {CrossFade, getContext, getTransport, Player} from "tone"
-import type {SoundPad} from "$lib/domain/soundPad/_types"
-import {sampleBuffers} from "$lib/engine/engine.svelte"
+import { CrossFade, getContext, getTransport, Player } from 'tone'
+import type { SoundPad } from '$lib/domain/soundPad/_types'
+import { sampleBuffers } from '$lib/engine/engine.svelte'
 
 export class ElementPlayer {
   #pad: SoundPad
 
   #playerA = new Player()
   #playerB = new Player()
-  #crossfader = new CrossFade({fade: 0}).toDestination()
+  #crossfader = new CrossFade({ fade: 0 }).toDestination()
 
   #activeSlot: 'a' | 'b' = 'a'
   #scheduledEventId: number | null = null
@@ -76,7 +76,8 @@ export class ElementPlayer {
     }
 
     this.#activeSlot = 'a'
-    this.#crossfader.output.gain.value = typeof startingVolume !== 'undefined' ? startingVolume : this.#lastVolume
+    this.#crossfader.output.gain.value =
+      typeof startingVolume !== 'undefined' ? startingVolume : this.#lastVolume
     this.#crossfader.fade.value = 0
 
     this.#playerA.buffer.set(buffer)
@@ -92,14 +93,13 @@ export class ElementPlayer {
     if (this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
       this.#scheduledEventId = getTransport().schedule(
         this.#crossfadeToNextSample.bind(this),
-        `+${Math.max(0, this.#playerA.buffer.duration - this.#pad.crossfade)}`
+        `+${Math.max(0, this.#playerA.buffer.duration - this.#pad.crossfade)}`,
       )
     } else {
       this.#playerA.onstop = () => {
         this.isPlaying = false
         this.lastPlayedSampleId = undefined
-        this.#playerA.onstop = () => {
-        }
+        this.#playerA.onstop = () => {}
       }
     }
   }
@@ -122,7 +122,10 @@ export class ElementPlayer {
       this.#scheduledEventId = null
     }
 
-    getTransport().schedule(this.#cleanup.bind(this), `+${this.#pad.fadeOutSeconds + 0.1}`)
+    getTransport().schedule(
+      this.#cleanup.bind(this),
+      `+${this.#pad.fadeOutSeconds + 0.1}`,
+    )
   }
 
   #cleanup(time: number) {
@@ -166,7 +169,10 @@ export class ElementPlayer {
     nextPlayer.fadeOut = 0
     nextPlayer.sync().start()
 
-    const crossfadeDuration = Math.min(this.#pad.crossfade, nextPlayer.buffer.duration)
+    const crossfadeDuration = Math.min(
+      this.#pad.crossfade,
+      nextPlayer.buffer.duration,
+    )
 
     this.#crossfader.fade.rampTo(fadeTarget, crossfadeDuration, time)
 
@@ -175,19 +181,24 @@ export class ElementPlayer {
 
     this.#scheduledEventId = getTransport().schedule(
       this.#crossfadeToNextSample.bind(this),
-      `+${Math.max(0, nextPlayer.buffer.duration - this.#pad.crossfade)}`
+      `+${Math.max(0, nextPlayer.buffer.duration - this.#pad.crossfade)}`,
     )
 
-    getTransport().schedule(t => {
+    getTransport().schedule((t) => {
       this.startedAt = t
-      this.duration = Math.max(0, nextPlayer.buffer.duration - crossfadeDuration)
+      this.duration = Math.max(
+        0,
+        nextPlayer.buffer.duration - crossfadeDuration,
+      )
 
       oldPlayer.stop(t)
     }, `+${crossfadeDuration}`)
   }
 
   #getNextSampleId(): number {
-    const index = this.#pad.sampleIds.findIndex(id => id === this.lastPlayedSampleId)
+    const index = this.#pad.sampleIds.findIndex(
+      (id) => id === this.lastPlayedSampleId,
+    )
 
     if (this.#pad.playbackType === 'round_robin') {
       if (index === -1) {
@@ -196,7 +207,9 @@ export class ElementPlayer {
 
       return this.#pad.sampleIds[(index + 1) % this.#pad.sampleIds.length]
     } else {
-      return this.#pad.sampleIds[Math.floor(Math.random() * this.#pad.sampleIds.length)]
+      return this.#pad.sampleIds[
+        Math.floor(Math.random() * this.#pad.sampleIds.length)
+      ]
     }
   }
 

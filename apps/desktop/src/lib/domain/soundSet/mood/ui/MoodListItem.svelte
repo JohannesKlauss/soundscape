@@ -1,51 +1,54 @@
 <script lang="ts">
-  import {db} from "$lib/db";
-  import {confirmModal} from "$lib/components/AlertDialog.svelte";
-  import type {Mood} from "$lib/domain/soundSet/mood/_types";
-  import {PlayIcon, Pen, PauseIcon, Trash} from "@lucide/svelte";
-  import Tooltip from "$lib/components/Tooltip.svelte";
-  import {page} from "$app/state";
-  import {engineState, playMood} from "$lib/engine/engine.svelte.js";
-  import {goto} from "$app/navigation";
+import { db } from '$lib/db'
+import { confirmModal } from '$lib/components/AlertDialog.svelte'
+import type { Mood } from '$lib/domain/soundSet/mood/_types'
+import { PlayIcon, Pen, PauseIcon, Trash } from '@lucide/svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { page } from '$app/state'
+import { engineState, playMood } from '$lib/engine/engine.svelte.js'
+import { goto } from '$app/navigation'
 
-  interface Props {
-    setId: number
-    mood: Mood
-  }
+interface Props {
+  setId: number
+  mood: Mood
+}
 
-  let {setId, mood}: Props = $props()
+let { setId, mood }: Props = $props()
 
-  async function deleteMood() {
-    const confirmed = await confirmModal('Delete Mood', 'Are you sure you want to delete this Mood? You cannot undo this!')
+async function deleteMood() {
+  const confirmed = await confirmModal(
+    'Delete Mood',
+    'Are you sure you want to delete this Mood? You cannot undo this!',
+  )
 
-    if (confirmed) {
-      const set = await db.set.where('id').equals(setId).first()
+  if (confirmed) {
+    const set = await db.set.where('id').equals(setId).first()
 
-      if (!set) {
-        return
-      }
-
-      const index = set.moodIds.findIndex(id => id === mood.id)
-
-      await db.set.update(set.id, {
-        moodIds: [...set.moodIds.toSpliced(index, 1)]
-      })
-      await db.mood.where('id').anyOf(set.moodIds).delete()
+    if (!set) {
+      return
     }
-  }
 
-  function editMood() {
-    goto(`?viewMoodId=${mood.id}`, {
-      state: {
-        editMood: {
-          ...mood,
-          elements: {
-            ...mood.elements,
-          }
-        }
-      }
+    const index = set.moodIds.findIndex((id) => id === mood.id)
+
+    await db.set.update(set.id, {
+      moodIds: [...set.moodIds.toSpliced(index, 1)],
     })
+    await db.mood.where('id').anyOf(set.moodIds).delete()
   }
+}
+
+function editMood() {
+  goto(`?viewMoodId=${mood.id}`, {
+    state: {
+      editMood: {
+        ...mood,
+        elements: {
+          ...mood.elements,
+        },
+      },
+    },
+  })
+}
 </script>
 
 <div class={["group w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start text-sm", page.url.searchParams.get('viewMoodId') === mood.id.toString() && "bg-primary/30 hover:bg-primary/30"]}>
