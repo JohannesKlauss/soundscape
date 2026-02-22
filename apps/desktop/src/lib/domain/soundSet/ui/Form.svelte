@@ -1,15 +1,12 @@
 <script lang="ts">
 import { PlusIcon } from '@lucide/svelte'
-import Dialog from '$lib/components/Dialog.svelte'
-import { db } from '$lib/db'
 import { toast } from 'svelte-sonner'
-import Tooltip from '$lib/components/Tooltip.svelte'
 import { defaults, superForm } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
-import {
-  type SoundSet,
-  SoundSetCreationSchema,
-} from '$lib/domain/soundSet/_types'
+import Dialog from '$lib/components/Dialog.svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { db } from '$lib/db'
+import { type SoundSet, SoundSetCreationSchema } from '$lib/domain/soundSet/_types'
 
 interface Props {
   set?: SoundSet
@@ -20,38 +17,37 @@ let { set, open = $bindable(false) }: Props = $props()
 
 const validators = zod4(SoundSetCreationSchema)
 
-const { form, constraints, submit, reset, errors, validateForm, enhance } =
-  superForm(defaults(set, validators), {
-    validators,
-    SPA: true,
-    validationMethod: 'oninput',
-    id: set ? `edit-set-${set.id}` : 'new-set',
-    onSubmit: async () => {
-      const res = await validateForm()
+const { form, constraints, submit, reset, errors, validateForm, enhance } = superForm(defaults(set, validators), {
+  validators,
+  SPA: true,
+  validationMethod: 'oninput',
+  id: set ? `edit-set-${set.id}` : 'new-set',
+  onSubmit: async () => {
+    const res = await validateForm()
 
-      if (!res.valid) {
-        return
+    if (!res.valid) {
+      return
+    }
+
+    try {
+      if (set) {
+        db.set.update(set.id, {
+          name: $form.name,
+        })
+      } else {
+        db.set.add({
+          name: $form.name,
+          moodIds: [],
+        })
       }
 
-      try {
-        if (set) {
-          db.set.update(set.id, {
-            name: $form.name,
-          })
-        } else {
-          db.set.add({
-            name: $form.name,
-            moodIds: [],
-          })
-        }
-
-        open = false
-        reset()
-      } catch (e) {
-        toast.error('Could not create Sound Set')
-      }
-    },
-  })
+      open = false
+      reset()
+    } catch (e) {
+      toast.error('Could not create Sound Set')
+    }
+  },
+})
 </script>
 
 <form use:enhance>

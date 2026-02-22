@@ -11,6 +11,7 @@ export class ElementPlayer {
 
   #activeSlot: 'a' | 'b' = 'a'
   #scheduledEventId: number | null = null
+  #scheduledStopId: number | null = null
 
   #lastVolume = 1
 
@@ -55,18 +56,31 @@ export class ElementPlayer {
   }
 
   fadeTo(volume: number, seconds: number, stopAfterFadeOut = false) {
+    if (this.#scheduledStopId && volume > 0) {
+      getTransport().clear(this.#scheduledStopId)
+      this.isStopping = false
+    }
+
     if (this.isPlaying) {
-      this.#crossfader.output.gain.rampTo(volume, seconds)
+      this.#crossfader.output.gain.cancelAndHoldAtTime('+0').rampTo(volume, seconds)
 
       if (stopAfterFadeOut) {
         this.isStopping = true
 
-        getTransport().schedule(this.stop.bind(this), `+${seconds}`)
+        this.#scheduledEventId = getTransport().schedule(this.stop.bind(this), `+${seconds}`)
       }
     }
   }
 
   play(startingVolume?: number) {
+    if (this.#scheduledStopId) {
+      getTransport().clear(this.#scheduledStopId)
+    }
+
+    if (this.#pad.id === 10) {
+      console.log('play alien atmo')
+    }
+
     const sampleId = this.#getNextSampleId()
     const buffer = sampleBuffers.get(sampleId)
 
@@ -76,8 +90,8 @@ export class ElementPlayer {
     }
 
     this.#activeSlot = 'a'
-    this.#crossfader.output.gain.value =
-      typeof startingVolume !== 'undefined' ? startingVolume : this.#lastVolume
+    this.#crossfader.output.gain.cancelAndHoldAtTime('+0')
+    this.#crossfader.output.gain.value = typeof startingVolume !== 'undefined' ? startingVolume : this.#lastVolume
     this.#crossfader.fade.value = 0
 
     this.#playerA.buffer.set(buffer)
@@ -85,8 +99,13 @@ export class ElementPlayer {
     this.#playerA.fadeOut = this.#pad.fadeOutSeconds
     this.#playerA.sync().start()
 
+    if (typeof startingVolume !== 'undefined' && startingVolume !== this.#lastVolume) {
+      this.#crossfader.output.gain.rampTo(this.#lastVolume, 5)
+    }
+
     this.startedAt = this.#playerA.now()
     this.isPlaying = true
+    this.isStopping = false
     this.lastPlayedSampleId = sampleId
     this.duration = this.#playerA.buffer.duration
 
@@ -109,6 +128,10 @@ export class ElementPlayer {
       return
     }
 
+    if (this.#pad.id === 10) {
+      console.log('stop alien atmo')
+    }
+
     const fadeOut = Math.max(0.01, this.#pad.fadeOutSeconds)
 
     this.#playerA.fadeOut = fadeOut
@@ -122,10 +145,7 @@ export class ElementPlayer {
       this.#scheduledEventId = null
     }
 
-    getTransport().schedule(
-      this.#cleanup.bind(this),
-      `+${this.#pad.fadeOutSeconds + 0.1}`,
-    )
+    getTransport().schedule(this.#cleanup.bind(this), `+${this.#pad.fadeOutSeconds + 0.1}`)
   }
 
   #cleanup(time: number) {
@@ -169,10 +189,7 @@ export class ElementPlayer {
     nextPlayer.fadeOut = 0
     nextPlayer.sync().start()
 
-    const crossfadeDuration = Math.min(
-      this.#pad.crossfade,
-      nextPlayer.buffer.duration,
-    )
+    const crossfadeDuration = Math.min(this.#pad.crossfade, nextPlayer.buffer.duration)
 
     this.#crossfader.fade.rampTo(fadeTarget, crossfadeDuration, time)
 
@@ -186,19 +203,14 @@ export class ElementPlayer {
 
     getTransport().schedule((t) => {
       this.startedAt = t
-      this.duration = Math.max(
-        0,
-        nextPlayer.buffer.duration - crossfadeDuration,
-      )
+      this.duration = Math.max(0, nextPlayer.buffer.duration - crossfadeDuration)
 
       oldPlayer.stop(t)
     }, `+${crossfadeDuration}`)
   }
 
   #getNextSampleId(): number {
-    const index = this.#pad.sampleIds.findIndex(
-      (id) => id === this.lastPlayedSampleId,
-    )
+    const index = this.#pad.sampleIds.findIndex((id) => id === this.lastPlayedSampleId)
 
     if (this.#pad.playbackType === 'round_robin') {
       if (index === -1) {
@@ -207,16 +219,14 @@ export class ElementPlayer {
 
       return this.#pad.sampleIds[(index + 1) % this.#pad.sampleIds.length]
     } else {
-      return this.#pad.sampleIds[
-        Math.floor(Math.random() * this.#pad.sampleIds.length)
-      ]
+      return this.#pad.sampleIds[Math.floor(Math.random() * this.#pad.sampleIds.length)]
     }
   }
 
   #fadeOut() {
     if (this.isPlaying) {
       this.isStopping = true
-      this.#crossfader.output.gain.rampTo(0, 5)
+      this.#crossfader.output.gain.cancelAndHoldAtTime('+0').rampTo(0, 5)
     }
   }
 }

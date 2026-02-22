@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { Snippet } from 'svelte'
 import { Dialog, type WithoutChild } from 'bits-ui'
+import type { Snippet } from 'svelte'
 
 type Props = Dialog.RootProps & {
   trigger: Snippet<[Record<string, any>]>

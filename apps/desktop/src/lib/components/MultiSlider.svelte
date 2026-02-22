@@ -10,14 +10,7 @@ interface Props {
   onChange?: (value: number[]) => void
 }
 
-let {
-  value = $bindable([0]),
-  disabled,
-  min = 0,
-  max = 100,
-  step = 1,
-  onChange,
-}: Props = $props()
+let { value = $bindable([0]), disabled, min = 0, max = 100, step = 1, onChange }: Props = $props()
 </script>
 
 <div class="w-full mt-1.5">

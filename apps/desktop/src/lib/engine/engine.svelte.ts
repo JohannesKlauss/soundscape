@@ -1,11 +1,11 @@
-import { getContext, getTransport } from 'tone'
-import { db } from '$lib/db'
-import { readBufferFromSamplesFile } from '$lib/fileSystem'
-import { ElementPlayer } from '$lib/engine/ElementPlayer.svelte'
 import { SvelteMap } from 'svelte/reactivity'
-import type { Mood } from '$lib/domain/soundSet/mood/_types'
-import { goto } from '$app/navigation'
 import { toast } from 'svelte-sonner'
+import { getContext, getTransport } from 'tone'
+import { goto } from '$app/navigation'
+import { db } from '$lib/db'
+import type { Mood } from '$lib/domain/soundSet/mood/_types'
+import { ElementPlayer } from '$lib/engine/ElementPlayer.svelte'
+import { readBufferFromSamplesFile } from '$lib/fileSystem'
 
 type EngineState = {
   isLoading: boolean
@@ -52,12 +52,7 @@ export async function loadSoundSet(setId: number) {
   await Promise.all(
     samples.map(async (s) => {
       if (!_sampleBuffers.has(s.id)) {
-        _sampleBuffers.set(
-          s.id,
-          await getContext().decodeAudioData(
-            await readBufferFromSamplesFile(s.src),
-          ),
-        )
+        _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
       }
     }),
   )
@@ -83,20 +78,15 @@ export async function playMood(mood: Mood) {
     })
   } else if (!_state.activeMoodId) {
     Object.keys(mood.elements).forEach((id) => {
-      elementPlayers.get(parseInt(id, 10))?.play()
+      elementPlayers.get(parseInt(id, 10))?.play(0)
     })
 
     _state.activeMoodId = mood.id
   } else {
-    const previousMood = await db.mood
-      .where('id')
-      .equals(_state.activeMoodId)
-      .first()
+    const previousMood = await db.mood.where('id').equals(_state.activeMoodId).first()
 
     if (!previousMood) {
-      toast.error(
-        'Trying to fade between moods, but could not find currently playing mood.',
-      )
+      toast.error('Trying to fade between moods, but could not find currently playing mood.')
 
       return
     }
@@ -118,7 +108,6 @@ export async function playMood(mood: Mood) {
       const player = elementPlayers.get(parseInt(id, 10))
 
       player?.play(0)
-      player?.fadeTo(mood.elements[parseInt(id, 10)].volume, 5)
     })
 
     _state.activeMoodId = mood.id

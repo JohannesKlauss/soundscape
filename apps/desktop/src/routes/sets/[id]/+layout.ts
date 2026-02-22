@@ -1,7 +1,7 @@
-import type { LayoutLoad } from './$types'
-import { db } from '$lib/db'
 import { redirect } from '@sveltejs/kit'
+import { db } from '$lib/db'
 import { loadSoundSet } from '$lib/engine/engine.svelte.js'
+import type { LayoutLoad } from './$types'
 
 export const load: LayoutLoad = async ({ params }) => {
   const id = parseInt(params.id, 10)

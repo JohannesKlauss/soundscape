@@ -1,16 +1,13 @@
 <script lang="ts">
-import Dialog from '$lib/components/Dialog.svelte'
-import { PlusIcon, Music, AudioWaveform, Sparkle } from '@lucide/svelte'
-import Tooltip from '$lib/components/Tooltip.svelte'
-import type { SoundSampleCategory } from '$lib/domain/soundSample/_types'
-import { Player } from 'tone'
+import { AudioWaveform, Music, PlusIcon, Sparkle } from '@lucide/svelte'
 import { toast } from 'svelte-sonner'
-import SamplePlayer from '$lib/domain/soundSample/ui/SamplePlayer.svelte'
-import {
-  getExtensionFromContentType,
-  writeFileToSamplesDirectory,
-} from '$lib/fileSystem'
+import { Player } from 'tone'
+import Dialog from '$lib/components/Dialog.svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
+import type { SoundSampleCategory } from '$lib/domain/soundSample/_types'
+import SamplePlayer from '$lib/domain/soundSample/ui/SamplePlayer.svelte'
+import { getExtensionFromContentType, writeFileToSamplesDirectory } from '$lib/fileSystem'
 
 let open = $state(false)
 let url = $state('')

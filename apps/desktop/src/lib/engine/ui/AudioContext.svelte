@@ -1,8 +1,8 @@
 <script lang="ts">
-import { getContext, getTransport, start } from 'tone'
+import { TriangleAlert } from '@lucide/svelte'
 import { onMount } from 'svelte'
 import { toast } from 'svelte-sonner'
-import { TriangleAlert } from '@lucide/svelte'
+import { getContext, getTransport, start } from 'tone'
 
 let audioCtxState = $state<AudioContextState | undefined>()
 

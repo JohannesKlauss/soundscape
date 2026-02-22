@@ -1,11 +1,11 @@
 <script lang="ts">
-import CreateNew from '$lib/domain/soundSample/ui/CreateNew.svelte'
-import List from '$lib/domain/soundSample/ui/List.svelte'
-import { db } from '$lib/db'
-import { liveQuery } from 'dexie'
-import BottomSheet from '$lib/components/BottomSheet.svelte'
 import { Library } from '@lucide/svelte'
 import { Collapsible } from 'bits-ui'
+import { liveQuery } from 'dexie'
+import BottomSheet from '$lib/components/BottomSheet.svelte'
+import { db } from '$lib/db'
+import CreateNew from '$lib/domain/soundSample/ui/CreateNew.svelte'
+import List from '$lib/domain/soundSample/ui/List.svelte'
 import ReindexLibrary from '$lib/domain/soundSample/ui/ReindexLibrary.svelte'
 
 const samples = liveQuery(() => db.sample.toArray())

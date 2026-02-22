@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Tooltip } from 'bits-ui'
-import { type Snippet } from 'svelte'
+import type { Snippet } from 'svelte'
 
 type Props = Tooltip.RootProps & {
   trigger: Snippet
@@ -8,14 +8,7 @@ type Props = Tooltip.RootProps & {
   side?: Tooltip.ContentProps['side']
 }
 
-let {
-  open = $bindable(false),
-  children,
-  side,
-  trigger,
-  triggerProps = {},
-  ...restProps
-}: Props = $props()
+let { open = $bindable(false), children, side, trigger, triggerProps = {}, ...restProps }: Props = $props()
 </script>
 
 <Tooltip.Root bind:open {...restProps}>

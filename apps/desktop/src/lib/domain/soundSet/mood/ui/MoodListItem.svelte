@@ -1,12 +1,12 @@
 <script lang="ts">
-import { db } from '$lib/db'
-import { confirmModal } from '$lib/components/AlertDialog.svelte'
-import type { Mood } from '$lib/domain/soundSet/mood/_types'
-import { PlayIcon, Pen, PauseIcon, Trash } from '@lucide/svelte'
-import Tooltip from '$lib/components/Tooltip.svelte'
-import { page } from '$app/state'
-import { engineState, playMood } from '$lib/engine/engine.svelte.js'
+import { PauseIcon, Pen, PlayIcon, Trash } from '@lucide/svelte'
 import { goto } from '$app/navigation'
+import { page } from '$app/state'
+import { confirmModal } from '$lib/components/AlertDialog.svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { db } from '$lib/db'
+import type { Mood } from '$lib/domain/soundSet/mood/_types'
+import { engineState, playMood } from '$lib/engine/engine.svelte.js'
 
 interface Props {
   setId: number

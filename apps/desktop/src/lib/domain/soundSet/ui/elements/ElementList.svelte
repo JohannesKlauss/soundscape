@@ -1,21 +1,17 @@
 <script lang="ts">
 import { liveQuery } from 'dexie'
+import { toast } from 'svelte-sonner'
+import { page } from '$app/state'
+import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import { db } from '$lib/db'
 import { useDroppable } from '$lib/dnd'
 import type { SoundPad, SoundPadType } from '$lib/domain/soundPad/_types'
 import SetElement from '$lib/domain/soundSet/ui/elements/SetElement.svelte'
-import { confirmModal } from '$lib/components/AlertDialog.svelte'
-import { toast } from 'svelte-sonner'
-import { page } from '$app/state'
 
 interface Props {
   setId: number
   editable?: boolean
-  onChangeSettingsForMood: (
-    padId: number,
-    volume: number,
-    playAtMoodStart: boolean,
-  ) => void
+  onChangeSettingsForMood: (padId: number, volume: number, playAtMoodStart: boolean) => void
 }
 
 let { setId, editable = false, onChangeSettingsForMood }: Props = $props()
@@ -37,15 +33,10 @@ const loadPads = (setId: number) =>
 
 const pads = $derived.by(() => loadPads(setId))
 
-const loadMood = (moodId: number) =>
-  liveQuery(() => db.mood.where('id').equals(moodId).first())
+const loadMood = (moodId: number) => liveQuery(() => db.mood.where('id').equals(moodId).first())
 
 const mood = $derived(
-  loadMood(
-    page.url.searchParams.has('viewMoodId')
-      ? parseInt(page.url.searchParams.get('viewMoodId')!)
-      : 0,
-  ),
+  loadMood(page.url.searchParams.has('viewMoodId') ? parseInt(page.url.searchParams.get('viewMoodId')!) : 0),
 )
 
 const { ref, isDropTarget } = useDroppable<SoundPad>({
@@ -65,16 +56,10 @@ const { ref, isDropTarget } = useDroppable<SoundPad>({
 })
 
 async function onDelete(padId: number) {
-  const confirm = await confirmModal(
-    'Remove Pad',
-    `Do you really want to remove this pad from this Sound Set?`,
-  )
+  const confirm = await confirmModal('Remove Pad', `Do you really want to remove this pad from this Sound Set?`)
 
   if (confirm) {
-    await db.setHasPads
-      .where(['setId', 'padId'])
-      .equals([setId, padId])
-      .delete()
+    await db.setHasPads.where(['setId', 'padId']).equals([setId, padId]).delete()
   }
 }
 </script>

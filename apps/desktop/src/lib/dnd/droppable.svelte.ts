@@ -23,9 +23,7 @@ function parseData<T>(e: DragEvent): T | null {
   }
 }
 
-export function useDroppable<T>(
-  options: UseDroppableOptions<T>,
-): UseDroppableReturn {
+export function useDroppable<T>(options: UseDroppableOptions<T>): UseDroppableReturn {
   const isDropTarget = $state({ current: false })
   let dragEnterCount = 0
 

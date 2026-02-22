@@ -39,10 +39,7 @@ onMount(() => {
   document.addEventListener('dragover', handleDragOver)
 
   return () => {
-    document.removeEventListener(
-      'dnd:dragstart',
-      handleDragStart as EventListener,
-    )
+    document.removeEventListener('dnd:dragstart', handleDragStart as EventListener)
     document.removeEventListener('dnd:dragend', handleDragEnd as EventListener)
     document.removeEventListener('dragover', handleDragOver)
   }

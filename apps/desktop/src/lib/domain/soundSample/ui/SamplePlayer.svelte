@@ -1,9 +1,9 @@
 <script lang="ts">
+import { Pause, Play, Volume2, VolumeX } from '@lucide/svelte'
+import { onDestroy, onMount } from 'svelte'
 import type { Player } from 'tone'
-import { Play, Pause, Volume2, VolumeX } from '@lucide/svelte'
-import { onMount, onDestroy } from 'svelte'
-import { formatTime, volumeToDb } from '$lib/engine/volume'
 import Tooltip from '$lib/components/Tooltip.svelte'
+import { formatTime, volumeToDb } from '$lib/engine/volume'
 
 interface Props {
   player: Player

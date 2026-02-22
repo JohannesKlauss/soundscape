@@ -1,32 +1,22 @@
 <script lang="ts">
+import { XIcon } from '@lucide/svelte'
+import { watch } from 'runed'
+import { Tween } from 'svelte/motion'
+import { page } from '$app/state'
+import Tooltip from '$lib/components/Tooltip.svelte'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
-import { XIcon } from '@lucide/svelte'
-import Tooltip from '$lib/components/Tooltip.svelte'
 import { getElementPlayer } from '$lib/engine/engine.svelte'
-import { page } from '$app/state'
-import { Tween } from 'svelte/motion'
-import { watch } from 'runed'
 
 interface Props {
   pad: SoundPad
   volume?: number
   onDelete?: (padId: number) => void
-  onChangeSettingsForMood: (
-    padId: number,
-    volume: number,
-    playAtMoodStart: boolean,
-  ) => void
+  onChangeSettingsForMood: (padId: number, volume: number, playAtMoodStart: boolean) => void
   editable?: boolean
 }
 
-let {
-  pad,
-  volume: initVolume = 1,
-  editable = false,
-  onDelete,
-  onChangeSettingsForMood,
-}: Props = $props()
+let { pad, volume: initVolume = 1, editable = false, onDelete, onChangeSettingsForMood }: Props = $props()
 
 let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
 let progress = $state(0)
@@ -88,8 +78,7 @@ function handleRangeWheel(e: WheelEvent) {
 
   const delta = e.deltaY < 0 ? -0.01 : 0.01
 
-  volume.target =
-    Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
+  volume.target = Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
 }
 </script>
 

@@ -1,26 +1,26 @@
 <script lang="ts">
 import {
-  Infinity,
   AudioWaveform,
-  Music,
+  Check,
   Crosshair,
+  Dices,
+  Infinity,
+  ListOrdered,
+  Music,
   PlusIcon,
   Trash,
   XIcon,
-  Check,
-  Dices,
-  ListOrdered,
 } from '@lucide/svelte'
+import { toast } from 'svelte-sonner'
 import { defaults, superForm } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
-import { useDroppable, useSortable } from '$lib/dnd'
-import type { SoundSample } from '$lib/domain/soundSample/_types'
-import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
-import { db } from '$lib/db'
-import { toast } from 'svelte-sonner'
-import { page } from '$app/state'
 import { replaceState } from '$app/navigation'
+import { page } from '$app/state'
+import { db } from '$lib/db'
+import { useDroppable, useSortable } from '$lib/dnd'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
+import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
+import type { SoundSample } from '$lib/domain/soundSample/_types'
 import { formatTime } from '$lib/engine/volume'
 
 interface Props {
@@ -37,46 +37,41 @@ $effect(() => {
 
 const validators = zod4(SoundPadCreationSchema)
 
-const { form, constraints, enhance, reset, validateForm } = superForm(
-  defaults(page.state.editPad, validators),
-  {
-    validators,
-    SPA: true,
-    dataType: 'json',
-    id: page.state.editPad ? `edit-pad-${page.state.editPad.id}` : 'new-pad',
-    onSubmit: async () => {
-      const res = await validateForm()
+const { form, constraints, enhance, reset, validateForm } = superForm(defaults(page.state.editPad, validators), {
+  validators,
+  SPA: true,
+  dataType: 'json',
+  id: page.state.editPad ? `edit-pad-${page.state.editPad.id}` : 'new-pad',
+  onSubmit: async () => {
+    const res = await validateForm()
 
-      if (!res.valid) {
-        toast.error('Add at least one sample to the pad')
+    if (!res.valid) {
+      toast.error('Add at least one sample to the pad')
 
-        return
-      }
+      return
+    }
 
-      const data = {
-        ...$form,
-        sampleIds: $form.samples.map((val) => val.id),
-      }
+    const data = {
+      ...$form,
+      sampleIds: $form.samples.map((val) => val.id),
+    }
 
-      delete data.samples
+    delete data.samples
 
-      if (page.state.editPad) {
-        await db.pad.update(page.state.editPad.id, data)
-        toast.success('Updated pad')
-      } else {
-        await db.pad.add(data)
-        toast.success('Created pad')
-        reset()
-        onCancel?.()
-      }
-    },
+    if (page.state.editPad) {
+      await db.pad.update(page.state.editPad.id, data)
+      toast.success('Updated pad')
+    } else {
+      await db.pad.add(data)
+      toast.success('Created pad')
+      reset()
+      onCancel?.()
+    }
   },
-)
+})
 
 $effect(() => {
-  $constraints['crossfade'].max = Math.min(
-    ...$form.samples.map((s) => s.duration / 2),
-  )
+  $constraints['crossfade'].max = Math.min(...$form.samples.map((s) => s.duration / 2))
 })
 
 const { isDropTarget, ref } = useDroppable<SoundSample>({
@@ -88,19 +83,13 @@ const { isDropTarget, ref } = useDroppable<SoundSample>({
   },
 })
 
-function handleRangeWheel(
-  e: WheelEvent,
-  key: 'fadeInSeconds' | 'fadeOutSeconds' | 'crossfade',
-) {
+function handleRangeWheel(e: WheelEvent, key: 'fadeInSeconds' | 'fadeOutSeconds' | 'crossfade') {
   e.preventDefault()
 
   const delta = e.deltaY < 0 ? -0.1 : 0.1
   const newValue = Math.round(($form[key]! + delta) * 10) / 10
 
-  $form[key] = Math.max(
-    0.1,
-    Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue),
-  )
+  $form[key] = Math.max(0.1, Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue))
 }
 
 function removeSample(id: number) {

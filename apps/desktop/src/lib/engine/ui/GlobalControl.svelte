@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Play, Square } from '@lucide/svelte'
-import { getContext, getTransport } from 'tone'
 import { onMount } from 'svelte'
+import { getContext, getTransport } from 'tone'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { volumeToDb } from '$lib/engine/volume'
 

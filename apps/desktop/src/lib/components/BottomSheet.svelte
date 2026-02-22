@@ -1,7 +1,7 @@
 <script lang="ts">
+import { ChevronsUpDown } from '@lucide/svelte'
 import { Collapsible, type WithoutChild } from 'bits-ui'
 import type { Snippet } from 'svelte'
-import { ChevronsUpDown } from '@lucide/svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 
 type Props = WithoutChild<Collapsible.RootProps> & {
@@ -9,13 +9,7 @@ type Props = WithoutChild<Collapsible.RootProps> & {
   trigger?: Snippet
 }
 
-let {
-  open = $bindable(false),
-  title,
-  trigger: collapsibleTrigger,
-  children,
-  ...restProps
-}: Props = $props()
+let { open = $bindable(false), title, trigger: collapsibleTrigger, children, ...restProps }: Props = $props()
 </script>
 
 <Collapsible.Root>

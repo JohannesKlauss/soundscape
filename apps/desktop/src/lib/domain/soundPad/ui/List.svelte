@@ -1,19 +1,15 @@
 <script lang="ts">
-import { liveQuery } from 'dexie'
-import { db } from '$lib/db'
 import { ChevronLeft, Pen, Trash } from '@lucide/svelte'
-import { DragOverlay, useDraggable } from '$lib/dnd'
-import { page } from '$app/state'
-import { replaceState } from '$app/navigation'
-import Tooltip from '$lib/components/Tooltip.svelte'
+import { liveQuery } from 'dexie'
 import type { Snippet } from 'svelte'
-import {
-  padToForm,
-  padTypeToLabel,
-  type SoundPad,
-} from '$lib/domain/soundPad/_types'
-import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
+import { replaceState } from '$app/navigation'
+import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { db } from '$lib/db'
+import { DragOverlay, useDraggable } from '$lib/dnd'
+import { padToForm, padTypeToLabel, type SoundPad } from '$lib/domain/soundPad/_types'
+import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
 
 interface Props {
   children?: Snippet

@@ -1,15 +1,15 @@
 <script lang="ts">
-import { liveQuery } from 'dexie'
-import { db } from '$lib/db'
 import { Pen, SwordsIcon, Trash } from '@lucide/svelte'
-import { page } from '$app/state'
+import { liveQuery } from 'dexie'
 import { goto } from '$app/navigation'
-import CreateNewMood from '$lib/domain/soundSet/mood/ui/CreateNew.svelte'
-import FormSet from '$lib/domain/soundSet/ui/Form.svelte'
-import Tooltip from '$lib/components/Tooltip.svelte'
+import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { db } from '$lib/db'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
+import CreateNewMood from '$lib/domain/soundSet/mood/ui/CreateNew.svelte'
 import MoodListItem from '$lib/domain/soundSet/mood/ui/MoodListItem.svelte'
+import FormSet from '$lib/domain/soundSet/ui/Form.svelte'
 
 type SoundSet = {
   moods: Mood[]
@@ -34,10 +34,7 @@ const soundSets = liveQuery(async () => {
 })
 
 async function deleteSet(set: SoundSet) {
-  const confirmed = await confirmModal(
-    'Delete Set',
-    'Are you sure you want to delete this Set? You cannot undo this!',
-  )
+  const confirmed = await confirmModal('Delete Set', 'Are you sure you want to delete this Set? You cannot undo this!')
 
   if (confirmed) {
     await db.setHasPads.where('setId').equals(set.id).delete()

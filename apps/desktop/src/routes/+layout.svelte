@@ -1,12 +1,12 @@
 <script lang="ts">
-import { Toaster } from 'svelte-sonner'
 import { Tooltip } from 'bits-ui'
+import { Toaster } from 'svelte-sonner'
 import '../app.css'
-import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
-import SoundSampleSheet from '$lib/domain/soundSample/ui/SoundSampleSheet.svelte'
-import AudioContext from '$lib/engine/ui/AudioContext.svelte'
-import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
 import AlertDialog from '$lib/components/AlertDialog.svelte'
+import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
+import SoundSampleSheet from '$lib/domain/soundSample/ui/SoundSampleSheet.svelte'
+import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
+import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
 
 interface Props {

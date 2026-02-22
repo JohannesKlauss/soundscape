@@ -13,9 +13,7 @@ export interface UseSortableReturn {
   previewIndex: { current: number }
 }
 
-export function useSortable<T>(
-  options: UseSortableOptions<T>,
-): UseSortableReturn {
+export function useSortable<T>(options: UseSortableOptions<T>): UseSortableReturn {
   const activeIndex = $state<{ current: number }>({ current: -1 })
   const overIndex = $state<{ current: number }>({ current: -1 })
   const previewIndex = $state<{ current: number }>({ current: -1 })
@@ -63,8 +61,7 @@ export function useSortable<T>(
       const gap = parseFloat(computedStyle.gap) || 0
       const shiftAmount = draggedHeight + gap
 
-      const targetIndex =
-        currentPreviewIndex === -1 ? draggedIndex : currentPreviewIndex
+      const targetIndex = currentPreviewIndex === -1 ? draggedIndex : currentPreviewIndex
 
       // The dragged element stays in place (visibility: hidden) keeping its space.
       // We shift other elements to show where the dragged item would go.
@@ -96,8 +93,7 @@ export function useSortable<T>(
         }
         // If targetIndex === draggedIndex, nothing moves
 
-        child.style.transform =
-          translateY !== 0 ? `translateY(${translateY}px)` : ''
+        child.style.transform = translateY !== 0 ? `translateY(${translateY}px)` : ''
       })
     }
 
@@ -138,8 +134,7 @@ export function useSortable<T>(
 
       // If cursor is below all items
       const lastIndex = children.length - 1
-      const lastBottom =
-        (itemTops[lastIndex] ?? 0) + (itemHeights[lastIndex] ?? 0)
+      const lastBottom = (itemTops[lastIndex] ?? 0) + (itemHeights[lastIndex] ?? 0)
       if (cursorY > lastBottom) {
         return lastIndex
       }
@@ -154,10 +149,7 @@ export function useSortable<T>(
 
       if (!e.dataTransfer) return
 
-      e.dataTransfer.setData(
-        MIME_TYPE,
-        JSON.stringify({ id: options.id, index }),
-      )
+      e.dataTransfer.setData(MIME_TYPE, JSON.stringify({ id: options.id, index }))
       e.dataTransfer.effectAllowed = 'move'
 
       draggedIndex = index
@@ -168,9 +160,7 @@ export function useSortable<T>(
       // Recalculate heights and positions at drag start (before hiding)
       itemHeights = children.map((child) => child.offsetHeight)
       const containerRect = container.getBoundingClientRect()
-      itemTops = children.map(
-        (child) => child.getBoundingClientRect().top - containerRect.top,
-      )
+      itemTops = children.map((child) => child.getBoundingClientRect().top - containerRect.top)
 
       // Add dragging class for styling
       target.classList.add('sortable-dragging')
@@ -194,11 +184,7 @@ export function useSortable<T>(
         // Reset all transforms and classes
         children.forEach((child) => {
           child.style.transform = ''
-          child.classList.remove(
-            'sortable-over',
-            'sortable-over-top',
-            'sortable-over-bottom',
-          )
+          child.classList.remove('sortable-over', 'sortable-over-top', 'sortable-over-bottom')
         })
       }
 
@@ -240,16 +226,10 @@ export function useSortable<T>(
         const isAbove = e.clientY < midY
 
         children.forEach((child) => {
-          child.classList.remove(
-            'sortable-over',
-            'sortable-over-top',
-            'sortable-over-bottom',
-          )
+          child.classList.remove('sortable-over', 'sortable-over-top', 'sortable-over-bottom')
         })
         target.classList.add('sortable-over')
-        target.classList.add(
-          isAbove ? 'sortable-over-top' : 'sortable-over-bottom',
-        )
+        target.classList.add(isAbove ? 'sortable-over-top' : 'sortable-over-bottom')
       }
     }
 
@@ -261,11 +241,7 @@ export function useSortable<T>(
       const relatedTarget = e.relatedTarget as HTMLElement
       if (target.contains(relatedTarget)) return
 
-      target.classList.remove(
-        'sortable-over',
-        'sortable-over-top',
-        'sortable-over-bottom',
-      )
+      target.classList.remove('sortable-over', 'sortable-over-top', 'sortable-over-bottom')
 
       // Check if we're leaving the container entirely
       if (!container.contains(relatedTarget)) {
@@ -309,11 +285,7 @@ export function useSortable<T>(
 
       // Clean up classes (but keep transforms until DOM updates)
       children.forEach((child) => {
-        child.classList.remove(
-          'sortable-over',
-          'sortable-over-top',
-          'sortable-over-bottom',
-        )
+        child.classList.remove('sortable-over', 'sortable-over-top', 'sortable-over-bottom')
       })
 
       // Reset transforms and re-enable transitions after DOM has updated

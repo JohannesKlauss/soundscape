@@ -26,9 +26,7 @@ function getEmptyElement(): HTMLDivElement {
   return emptyEl
 }
 
-export function useDraggable<T>(
-  options: UseDraggableOptions<T>,
-): UseDraggableReturn {
+export function useDraggable<T>(options: UseDraggableOptions<T>): UseDraggableReturn {
   const dragInstanceId = crypto.randomUUID()
   const isDragging = $state({ current: false })
 

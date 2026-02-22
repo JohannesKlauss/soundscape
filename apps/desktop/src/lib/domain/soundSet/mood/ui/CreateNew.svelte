@@ -1,11 +1,11 @@
 <script lang="ts">
 import { PlusIcon } from '@lucide/svelte'
-import Dialog from '$lib/components/Dialog.svelte'
-import { db } from '$lib/db'
 import { toast } from 'svelte-sonner'
 import { defaults, superForm } from 'sveltekit-superforms'
-import { MoodCreationSchema } from '$lib/domain/soundSet/mood/_types'
 import { zod4 } from 'sveltekit-superforms/adapters'
+import Dialog from '$lib/components/Dialog.svelte'
+import { db } from '$lib/db'
+import { MoodCreationSchema } from '$lib/domain/soundSet/mood/_types'
 
 interface Props {
   setId: number
@@ -17,40 +17,37 @@ let open = $state(false)
 
 const validators = zod4(MoodCreationSchema)
 
-const { form, constraints, submit, reset, validateForm, enhance } = superForm(
-  defaults(validators),
-  {
-    validators,
-    SPA: true,
-    onSubmit: async () => {
-      const res = await validateForm()
+const { form, constraints, submit, reset, validateForm, enhance } = superForm(defaults(validators), {
+  validators,
+  SPA: true,
+  onSubmit: async () => {
+    const res = await validateForm()
 
-      if (!res.valid) {
-        return
+    if (!res.valid) {
+      return
+    }
+
+    try {
+      const id = await db.mood.add($form)
+      const set = await db.set.where('id').equals(setId).first()
+
+      if (set) {
+        await db.set.update(setId, {
+          moodIds: [...(set.moodIds ?? []), id],
+        })
+      } else {
+        toast.error('Cannot find corresponding Sound Set')
       }
 
-      try {
-        const id = await db.mood.add($form)
-        const set = await db.set.where('id').equals(setId).first()
+      open = false
 
-        if (set) {
-          await db.set.update(setId, {
-            moodIds: [...(set.moodIds ?? []), id],
-          })
-        } else {
-          toast.error('Cannot find corresponding Sound Set')
-        }
-
-        open = false
-
-        reset()
-      } catch (e) {
-        console.log(e)
-        toast.error('Could not create Mood')
-      }
-    },
+      reset()
+    } catch (e) {
+      console.log(e)
+      toast.error('Could not create Mood')
+    }
   },
-)
+})
 </script>
 
 <form use:enhance>
