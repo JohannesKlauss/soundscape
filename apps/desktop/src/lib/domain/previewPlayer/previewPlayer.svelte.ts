@@ -5,7 +5,7 @@ type State = {
   currentPlayingSource?: string
 }
 
-let _state = $state<State>({
+const _state = $state<State>({
   currentPlayingSource: undefined,
 })
 
