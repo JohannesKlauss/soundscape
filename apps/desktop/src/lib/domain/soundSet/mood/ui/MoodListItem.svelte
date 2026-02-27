@@ -28,12 +28,12 @@ async function deleteMood() {
       return
     }
 
-    const index = set.moodIds.findIndex((id) => id === mood.id)
+    const index = set.moodIds.indexOf(mood.id)
 
     await db.set.update(set.id, {
-      moodIds: [...set.moodIds.toSpliced(index, 1)],
+      moodIds: set.moodIds.toSpliced(index, 1),
     })
-    await db.mood.where('id').anyOf(set.moodIds).delete()
+    await db.mood.where('id').equals(mood.id).delete()
   }
 }
 

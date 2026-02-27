@@ -31,12 +31,6 @@ export class ElementPlayer {
     getTransport().on('globalStop', () => {
       this.stop()
     })
-
-    setInterval(() => {
-      if (this.isPlaying) {
-        console.log(this.#activeSlot, this.#playerA.state, this.#playerB.state, this.#crossfader.fade.value, this.#crossfader.output.gain.value)
-      }
-    }, 100)
   }
 
   get currentPlayer() {
@@ -53,7 +47,7 @@ export class ElementPlayer {
   }
 
   #cleanup() {
-    console.log('cleanup')
+    console.log('cleanup', this.#pad.name)
 
     if (this.#scheduledEventId !== null) {
       getTransport().clear(this.#scheduledEventId)
@@ -70,15 +64,13 @@ export class ElementPlayer {
   }
 
   play(startingVolume: number = 0) {
-    console.log('play')
+    console.log('play', this.#pad.name)
 
-    if (this.#scheduledStopId) {
-      getTransport().clear(this.#scheduledStopId)
+    if (this.currentPlayer?.state === 'started' && !this.isStopping) {
+      return
     }
 
-    if (this.#pad.id === 10) {
-      console.log('play alien atmo')
-    }
+    this.#clearScheduledStop()
 
     const sampleId = this.#getNextSampleId()
     const buffer = sampleBuffers.get(sampleId)
@@ -90,9 +82,23 @@ export class ElementPlayer {
 
     const fadeInTime = Math.min(buffer.duration, this.#pad.fadeInSeconds)
 
+    if (this.currentPlayer?.state === 'started' && this.isStopping) {
+      console.log('fade back up', this.#pad.name)
+
+      this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)
+
+      this.isPlaying = true
+      this.isStopping = false
+
+      return
+    }
+
     this.#activeSlot = 'a'
     this.#crossfader.output.gain.value = startingVolume
     this.#crossfader.fade.value = 0
+
+    this.#playerA.onstop = () => {}
+    this.#playerB.onstop = () => {}
 
     this.#playerA.stop()
     this.#playerB.stop()
@@ -114,12 +120,14 @@ export class ElementPlayer {
       )
     } else {
       this.#playerA.onstop = () => {
-        if (!this.isStopping) {
-          console.log('onstop')
-
-          this.isPlaying = false
-          this.lastPlayedSampleId = undefined
+        if (this.isStopping || this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
+          return
         }
+
+        console.log('onstop', this.#pad.name)
+
+        this.isPlaying = false
+        this.lastPlayedSampleId = undefined
 
         this.#playerA.onstop = () => {}
       }
@@ -131,21 +139,27 @@ export class ElementPlayer {
       return
     }
 
-    console.log('stop sample')
+    this.#clearScheduledStop()
+
+    console.log('stop', this.#pad.name, fadeOutSeconds)
 
     const fadeOutTime = fadeOutSeconds ?? Math.max(0.01, this.#pad.fadeOutSeconds)
 
     this.#crossfader.output.gain.rampTo(0, fadeOutTime)
-    this.currentPlayer.stop(`+${fadeOutTime}`)
 
     this.isStopping = true
 
-    if (this.#scheduledEventId !== null) {
-      getTransport().clear(this.#scheduledEventId)
-      this.#scheduledEventId = null
-    }
+    this.#scheduledStopId = getTransport().scheduleOnce(() => {
+      const player = this.currentPlayer
 
-    getTransport().scheduleOnce(this.#cleanup.bind(this), `+${fadeOutTime}`)
+      if (player) {
+        console.log('call clean up from stop', this.#pad.name)
+
+        this.currentPlayer.onstop = () => {}
+        this.currentPlayer.stop()
+        this.#cleanup()
+      }
+    }, `+${fadeOutTime}`)
   }
 
   #crossfadeToNextSample() {
@@ -204,6 +218,15 @@ export class ElementPlayer {
       return this.#pad.sampleIds[(index + 1) % this.#pad.sampleIds.length]
     } else {
       return this.#pad.sampleIds[Math.floor(Math.random() * this.#pad.sampleIds.length)]
+    }
+  }
+
+  #clearScheduledStop() {
+    if (this.#scheduledStopId !== null) {
+      console.log('clear stop', this.#pad.name)
+
+      getTransport().clear(this.#scheduledStopId)
+      this.#scheduledStopId = null
     }
   }
 }
