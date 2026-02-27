@@ -105,8 +105,8 @@ function handleRangeWheel(e: WheelEvent) {
         <Tooltip triggerProps={{class: "h-16 w-4 -mt-12"}} disableCloseOnTriggerClick side="right">
             {#snippet trigger()}
                 <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" step="0.01"
-                       bind:value={volume.current}
-                       oninput={e => volume.target = parseFloat(e.target.value)}
+                       value={volume.current}
+                       oninput={e => volume.set(parseFloat(e.target.value), {duration: 50})}
                        onwheel={handleRangeWheel}/>
             {/snippet}
 

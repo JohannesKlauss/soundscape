@@ -18,6 +18,8 @@ const _state = $state<EngineState>({
   playingPadIds: [],
 })
 
+export const CROSSFADE_SECONDS_BETWEEN_MOODS = 5
+
 export const engineState = _state as Readonly<EngineState>
 
 const _sampleBuffers = new Map<number, AudioBuffer>()
@@ -57,7 +59,7 @@ export async function loadSoundSet(setId: number) {
     }),
   )
 
-  pads.map((pad) => {
+  pads.forEach(pad => {
     if (!elementPlayers.has(pad.id)) {
       elementPlayers.set(pad.id, new ElementPlayer(pad))
     }
@@ -69,13 +71,14 @@ export async function loadSoundSet(setId: number) {
 export async function playMood(mood: Mood) {
   await goto(`?viewMoodId=${mood.id}`)
 
-  getTransport().start()
-
   if (_state.activeMoodId === mood.id) {
-    getTransport().emit('fadeOut', mood).stop('+5')
-    getTransport().once('stop', () => {
-      _state.activeMoodId = undefined
+    Object.keys(mood.elements).forEach((id) => {
+      elementPlayers.get(parseInt(id, 10))?.stop()
     })
+
+    getTransport().schedule(() => {
+      _state.activeMoodId = undefined
+    }, `+${CROSSFADE_SECONDS_BETWEEN_MOODS}`)
   } else if (!_state.activeMoodId) {
     Object.keys(mood.elements).forEach((id) => {
       elementPlayers.get(parseInt(id, 10))?.play(0)
@@ -97,17 +100,12 @@ export async function playMood(mood: Mood) {
     const fadeOutIds = previousIds.difference(newIds)
     const fadeInIds = newIds.difference(previousIds)
 
-    console.log('fadeOutIds', fadeOutIds)
-    console.log('fadeInIds', fadeInIds)
-
     fadeOutIds.forEach((id) => {
-      elementPlayers.get(parseInt(id, 10))?.fadeTo(0, 5, true)
+      elementPlayers.get(parseInt(id, 10))?.stop(CROSSFADE_SECONDS_BETWEEN_MOODS)
     })
 
     fadeInIds.forEach((id) => {
-      const player = elementPlayers.get(parseInt(id, 10))
-
-      player?.play(0)
+      elementPlayers.get(parseInt(id, 10))?.play(0)
     })
 
     _state.activeMoodId = mood.id

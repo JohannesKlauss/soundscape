@@ -43,7 +43,7 @@ async function startAudioContext() {
             Audio Engine is not running!
         </span>
 
-        <button class="btn btn-ghost btn-sm" onclick={startAudioContext}>
+        <button type="button" class="btn btn-ghost btn-sm" onclick={startAudioContext}>
             Click to start audio engine.
         </button>
     </div>

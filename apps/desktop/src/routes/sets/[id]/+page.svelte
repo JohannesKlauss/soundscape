@@ -21,7 +21,7 @@ watch(
   },
 )
 
-const isEditingMoodDirty = $derived(
+const isStateDirty = $derived(
   editingMood ? JSON.stringify(editingMood) !== JSON.stringify(page.state.editMood) : false,
 )
 
@@ -59,7 +59,7 @@ async function saveMood() {
 <div class="relative">
     <div class="flex-center justify-start mb-4">
         <h1 class="text-2xl">All Elements</h1>
-        {#if page.state.editMood && isEditingMoodDirty}
+        {#if page.state.editMood && isStateDirty}
             <button type="button" onclick={saveMood} class="btn btn-neutral hover:btn-primary btn-sm ml-4">
                 Save Mood
             </button>

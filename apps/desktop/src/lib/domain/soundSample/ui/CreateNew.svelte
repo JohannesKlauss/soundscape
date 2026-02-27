@@ -88,7 +88,7 @@ async function onAddAudio() {
     {#snippet trigger(props)}
         <Tooltip>
             {#snippet trigger()}
-                <button class="btn btn-ghost btn-circle btn-sm tooltip" {...props}>
+                <button type="button" class="btn btn-ghost btn-circle btn-sm tooltip" {...props}>
                     <PlusIcon class="w-4 h-4"/>
                 </button>
             {/snippet}
@@ -106,13 +106,15 @@ async function onAddAudio() {
     {/snippet}
 
     <div class="fieldset">
-        <label class="label" for="name">Name</label>
-        <input type="text" class="input w-full" name="name" placeholder="Sample Name (min 3 characters)" bind:value={name}/>
-    </div>
-    <div class="fieldset">
         <label class="label" for="url">Link to URL</label>
         <input type="text" class="input w-full" name="url" placeholder="https://example.com/media.mp3" bind:value={url}/>
     </div>
+
+    <div class="fieldset">
+        <label class="label" for="name">Name</label>
+        <input type="text" class="input w-full" name="name" placeholder="Sample Name (min 3 characters)" bind:value={name}/>
+    </div>
+
     <div class="fieldset">
         <span class="label">Type</span>
         <div class="grid grid-cols-3 gap-4">
