@@ -9,9 +9,15 @@ import type { SoundSampleCategory } from '$lib/domain/soundSample/_types'
 import SamplePlayer from '$lib/domain/soundSample/ui/SamplePlayer.svelte'
 import { getExtensionFromContentType, writeFileToSamplesDirectory } from '$lib/fileSystem'
 
-let open = $state(false)
-let url = $state('')
-let name = $state('')
+interface Props {
+  open?: boolean
+  url?: string
+  name?: string
+  showTrigger?: boolean
+}
+
+let { open = $bindable(false), url = $bindable(''), name = $bindable(''), showTrigger = true }: Props = $props()
+
 let category = $state<SoundSampleCategory>('music')
 let isAudio = $state(false)
 let isYoutube = $state(false)
@@ -34,8 +40,6 @@ $effect(() => {
 async function loadAudio() {
   try {
     await player.load(url)
-
-    toast.success('Sample loaded.')
 
     return true
   } catch (e) {
@@ -86,15 +90,17 @@ async function onAddAudio() {
 <Dialog bind:open={open} onConfirm={isAudio ? onAddAudio : () => null} confirmDisabled={name.trim().length < 3}
         confirmText="Add to library">
     {#snippet trigger(props)}
-        <Tooltip>
-            {#snippet trigger()}
-                <button type="button" class="btn btn-ghost btn-circle btn-sm tooltip" {...props}>
-                    <PlusIcon class="w-4 h-4"/>
-                </button>
-            {/snippet}
+        {#if showTrigger}
+            <Tooltip>
+                {#snippet trigger()}
+                    <button type="button" class="btn btn-ghost btn-circle btn-primary btn-sm tooltip" {...props}>
+                        <PlusIcon class="w-4 h-4"/>
+                    </button>
+                {/snippet}
 
-            Add Sample
-        </Tooltip>
+                Add Sample
+            </Tooltip>
+        {/if}
     {/snippet}
 
     {#snippet title()}

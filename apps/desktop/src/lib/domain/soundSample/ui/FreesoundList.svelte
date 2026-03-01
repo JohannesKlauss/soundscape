@@ -1,10 +1,10 @@
 <script lang="ts">
-import { AudioWaveform, Download, GripVertical, Search, Star, PlusIcon } from '@lucide/svelte'
-import { DragOverlay, useDraggable } from '$lib/dnd'
+import { Download, Search, Star, PlusIcon } from '@lucide/svelte'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import type { FreesoundSound } from '$lib/freesound'
 import { formatTime } from '$lib/engine/volume'
 import Tooltip from '$lib/components/Tooltip.svelte'
+import CreateNew from "$lib/domain/soundSample/ui/CreateNew.svelte";
 
 interface Props {
   sounds: FreesoundSound[]
@@ -12,21 +12,25 @@ interface Props {
 
 let { sounds }: Props = $props()
 
+let createNewOpen = $state(false)
+let createNewUrl = $state('')
+let createNewName = $state('')
+
 function formatDownloads(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`
   return String(n)
 }
 
-async function onAddSampleToLibrary(name: string, url: string) {
-
+function onAddSampleToLibrary(name: string, url: string) {
+  createNewName = name
+  createNewUrl = url
+  createNewOpen = true
 }
 </script>
 
 <ul class="list">
     {#each sounds as sound (sound.id)}
-        {@const {ref, dragInstanceId} = useDraggable<FreesoundSound>({id: 'freesound-sample', data: sound})}
-
         <li class="list-row px-4 py-2 text-sm hover:bg-base-300 flex-center">
             <div class="flex-center">
                 <Tooltip side="left">
@@ -80,18 +84,10 @@ async function onAddSampleToLibrary(name: string, url: string) {
 
                     Save Sample to Library
                 </Tooltip>
-                <div {@attach ref}>
-                    <GripVertical class="size-4 text-muted cursor-grab"/>
-                </div>
                 <QuickPreviewPlayer src={sound.previews['preview-hq-mp3']} contentType="audio/mpeg" />
             </div>
         </li>
-
-        <DragOverlay {dragInstanceId}>
-            <div class="flex-center min-w-50 bg-base-300 drop-shadow-2xl border border-base-content/10 px-2 py-2 rounded w-fit max-w-fit">
-                <AudioWaveform class="size-5"/>
-                <div>{sound.name}</div>
-            </div>
-        </DragOverlay>
     {/each}
 </ul>
+
+<CreateNew bind:open={createNewOpen} bind:url={createNewUrl} bind:name={createNewName} showTrigger={false} />
