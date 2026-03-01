@@ -31,6 +31,7 @@ const filteredPads = $derived.by(() => {
   const f = new Fuse($pads, {
     keys: ['name'],
     minMatchCharLength: 2,
+    threshold: 0.3,
   })
 
   return f.search(searchText).map(r => r.item).toSorted((a, b) => a.id - b.id)
