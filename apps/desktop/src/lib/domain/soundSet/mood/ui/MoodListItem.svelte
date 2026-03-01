@@ -7,6 +7,7 @@ import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
 import { engineState, playMood } from '$lib/engine/engine.svelte.js'
+import {toast} from "svelte-sonner";
 
 interface Props {
   setId: number
@@ -38,6 +39,12 @@ async function deleteMood() {
 }
 
 function editMood() {
+  if (engineState.activeMoodId) {
+    toast.warning('Soundscape is currently playing. To edit a mood first stop the playback.')
+
+    return
+  }
+
   goto(`?viewMoodId=${mood.id}`, {
     state: {
       editMood: {
@@ -63,7 +70,7 @@ function editMood() {
 
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
     <span class={["cursor-pointer", engineState.activeMoodId === mood.id && "text-secondary"]}
-          onclick={() => goto(`?viewMoodId=${mood.id}`)}>{mood.name}</span>
+          onclick={() => playMood(mood)}>{mood.name}</span>
 
     <div class="flex-center ml-auto">
         <Tooltip
