@@ -12,7 +12,7 @@ type Props = WithoutChild<Collapsible.RootProps> & {
 let { open = $bindable(false), title, trigger: collapsibleTrigger, children, ...restProps }: Props = $props()
 </script>
 
-<Collapsible.Root>
+<Collapsible.Root bind:open>
     <div class="flex items-center justify-between px-4 py-2 border-t border-base-content/10 bg-base-300 border-b shadow-xl" {...restProps}>
         {@render title()}
 

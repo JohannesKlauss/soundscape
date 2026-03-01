@@ -24,6 +24,7 @@
     "bits-ui": "2.16.2",
     "daisyui": "5.5.19",
     "dexie": "4.3.0",
+    "fuse.js": "7.1.0",
     "runed": "0.37.1",
     "svelte-sonner": "1.0.7",
     "sveltekit-superforms": "2.30.0",

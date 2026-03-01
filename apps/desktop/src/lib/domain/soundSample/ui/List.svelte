@@ -9,11 +9,15 @@ import { sampleIcons } from '$lib/domain/soundSample/ui/sampleIcons'
 import { formatTime } from '$lib/engine/volume'
 import Tooltip from "$lib/components/Tooltip.svelte";
 
-const samples = liveQuery(() => db.sample.toArray())
+interface Props {
+  samples: SoundSample[]
+}
+
+let {samples }: Props = $props()
 </script>
 
 <ul class="list">
-    {#each $samples as sample}
+    {#each samples as sample}
         {@const {ref, dragInstanceId} = useDraggable<SoundSample>({id: 'sample', data: sample})}
         {@const Icon = sampleIcons[sample.category]}
 
