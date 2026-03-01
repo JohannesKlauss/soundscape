@@ -139,7 +139,7 @@ function handleRangeWheel(e: WheelEvent) {
             {#snippet trigger()}
                 <input type="checkbox" bind:checked={playAtMoodStart} class="checkbox checkbox-sm checkbox-primary" />
             {/snippet}
-            Plays when starting Mood?
+            Play element when Mood starts
         </Tooltip>
     {/if}
 </div>

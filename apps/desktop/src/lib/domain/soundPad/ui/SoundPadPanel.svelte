@@ -23,7 +23,7 @@ let showForm = $derived(!!page.state.editPad)
     </div>
 
     {#if showForm}
-        <div class="shrink-0 p-4 border-base-content/10 border-t" transition:fly={{y: 200}}>
+        <div class="max-h-[75%] shrink-0 p-4 border-base-content/10 border-t flex flex-col" transition:fly={{y: 200}}>
             <Form onCancel={() => showForm = false}/>
         </div>
     {/if}

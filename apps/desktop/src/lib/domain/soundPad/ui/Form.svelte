@@ -123,15 +123,15 @@ const { containerRef } = useSortable({
 })
 </script>
 
-<form use:enhance>
-    <div class="space-y-4">
-        <div class="flex-center justify-between text-sm">
-            Create a new Sound Pad
-            <button type="button" class="btn btn-ghost btn-circle btn-sm" onclick={cancel}>
-                <XIcon class="size-4 text-muted"/>
-            </button>
-        </div>
+<form use:enhance class="flex flex-col min-h-0">
+    <div class="flex-center justify-between text-sm shrink-0 mb-4">
+        <span class="line-clamp-1 text-ellipsis">{page.state.editPad ? `Edit ${page.state.editPad.name}` : 'Create a new Sound Pad'}</span>
+        <button type="button" class="btn btn-ghost btn-circle btn-sm" onclick={cancel}>
+            <XIcon class="size-4 text-muted"/>
+        </button>
+    </div>
 
+    <div class="flex-1 min-h-0 overflow-y-auto space-y-4">
         <div class="fieldset">
             <label class="label" for="name">Name</label>
             <input type="text" class="input" name="url" placeholder="Name of the pad" {...$constraints.name}
@@ -244,15 +244,15 @@ const { containerRef } = useSortable({
                 />
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary btn-block">
-            {#if page.state.editPad}
-                <Check/>
-                Update Pad
-            {:else}
-                <PlusIcon/>
-                Add Sound Pad
-            {/if}
-        </button>
     </div>
+
+    <button type="submit" class="btn btn-primary btn-block shrink-0 mt-4">
+        {#if page.state.editPad}
+            <Check/>
+            Update Pad
+        {:else}
+            <PlusIcon/>
+            Add Sound Pad
+        {/if}
+    </button>
 </form>
