@@ -7,6 +7,7 @@ import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.sve
 import type { SoundSample } from '$lib/domain/soundSample/_types'
 import { sampleIcons } from '$lib/domain/soundSample/ui/sampleIcons'
 import { formatTime } from '$lib/engine/volume'
+import Tooltip from "$lib/components/Tooltip.svelte";
 
 const samples = liveQuery(() => db.sample.toArray())
 </script>
@@ -18,14 +19,20 @@ const samples = liveQuery(() => db.sample.toArray())
 
         <li class="list-row px-4 py-2 text-sm hover:bg-base-300 flex-center">
             <div class="flex-center">
-                <Icon class="size-4"/>
+                <Tooltip>
+                    {#snippet trigger()}
+                        <Icon class="size-4"/>
+                    {/snippet}
+
+                    <span class="capitalize">{sample.category}</span>
+                </Tooltip>
                 <div>{sample.name} <span class="text-xs text-muted">({formatTime(sample.duration)})</span></div>
+            </div>
+
+            <div class="ml-auto flex-center">
                 <div {@attach ref}>
                     <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>
-            </div>
-
-            <div class="ml-auto">
                 <QuickPreviewPlayer src={sample.src} contentType={sample.contentType} />
             </div>
         </li>
