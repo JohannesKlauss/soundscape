@@ -1,11 +1,9 @@
 <script lang="ts">
 import { liveQuery } from 'dexie'
-import { toast } from 'svelte-sonner'
 import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import { db } from '$lib/db'
-import { useDroppable } from '$lib/dnd'
-import type { SoundPad, SoundPadType } from '$lib/domain/soundPad/_types'
+import type { SoundPadType } from '$lib/domain/soundPad/_types'
 import SetElement from '$lib/domain/soundSet/ui/elements/SetElement.svelte'
 
 interface Props {
@@ -39,22 +37,6 @@ const mood = $derived(
   loadMood(page.url.searchParams.has('viewMoodId') ? parseInt(page.url.searchParams.get('viewMoodId')!) : 0),
 )
 
-const { ref, isDropTarget } = useDroppable<SoundPad>({
-  id: 'pad',
-  onDrop: async (data) => {
-    if (!editable) {
-      toast.warning('Sound Set is locked')
-
-      return
-    }
-
-    await db.setHasPads.add({
-      setId,
-      padId: data.id,
-    })
-  },
-})
-
 async function onDelete(padId: number) {
   const confirm = await confirmModal('Remove Pad', `Do you really want to remove this pad from this Sound Set?`)
 
@@ -64,7 +46,7 @@ async function onDelete(padId: number) {
 }
 </script>
 
-<div class="outline-0 outline-primary rounded" class:!outline={isDropTarget.current} {@attach ref}>
+<div class="outline-0 outline-primary rounded">
     <div class="grid grid-cols-6 gap-6 w-full justify-evenly items-center place-content-center place-items-center">
         {#each $pads as pad}
             <SetElement {pad} volume={$mood?.elements?.[pad.id]?.volume} {editable} {onDelete} {onChangeSettingsForMood}/>

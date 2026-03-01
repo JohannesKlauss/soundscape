@@ -34,6 +34,18 @@ getTransport().on('globalStop', () => {
   _state.playingPadIds.clear()
 })
 
+async function loadSampleBuffers(sampleIds: number[]) {
+  const samples = await db.sample.where('id').anyOf(sampleIds).toArray()
+
+  await Promise.all(
+    samples.map(async (s) => {
+      if (!_sampleBuffers.has(s.id)) {
+        _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
+      }
+    }),
+  )
+}
+
 export function getElementPlayer(padId: number): ElementPlayer {
   const player = elementPlayers.get(padId)
 
@@ -52,18 +64,8 @@ export async function loadSoundSet(setId: number) {
     .where('id')
     .anyOf(setHasPads.map((s) => s.padId))
     .toArray()
-  const samples = await db.sample
-    .where('id')
-    .anyOf(pads.flatMap((p) => p.sampleIds))
-    .toArray()
 
-  await Promise.all(
-    samples.map(async (s) => {
-      if (!_sampleBuffers.has(s.id)) {
-        _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
-      }
-    }),
-  )
+  await loadSampleBuffers(pads.flatMap((p) => p.sampleIds))
 
   pads.forEach(pad => {
     if (!elementPlayers.has(pad.id)) {
@@ -81,18 +83,25 @@ export async function updateElementPlayer(pad: SoundPad) {
     return
   }
 
-  const samples = await db.sample.where('id').anyOf(pad.sampleIds).toArray()
-
-  await Promise.all(
-    samples.map(async (s) => {
-      if (!_sampleBuffers.has(s.id)) {
-        _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
-      }
-    }),
-  )
+  await loadSampleBuffers(pad.sampleIds)
 
   _state.playingPadIds.delete(pad.id)
   player.updatePad(pad)
+}
+
+export async function ensureElementPlayer(padId: number) {
+  if (elementPlayers.has(padId)) {
+    return
+  }
+
+  const pad = await db.pad.get(padId)
+
+  if (!pad) {
+    return
+  }
+
+  await loadSampleBuffers(pad.sampleIds)
+  elementPlayers.set(pad.id, new ElementPlayer(pad))
 }
 
 export async function playMood(mood: Mood) {

@@ -7,9 +7,9 @@ import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
-import { DragOverlay, useDraggable } from '$lib/dnd'
 import { padToForm, padTypeToLabel, type SoundPad } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
+import {ensureElementPlayer} from "$lib/engine/engine.svelte";
 
 interface Props {
   children?: Snippet
@@ -21,6 +21,8 @@ const pads = liveQuery(() => db.pad.toArray())
 
 async function moveToSet(padId: number) {
   const setId = parseInt(page.params?.id ?? '0', 10)
+
+  await ensureElementPlayer(padId)
 
   if (setId > 0) {
     await db.setHasPads.add({
@@ -55,11 +57,10 @@ async function deletePad(padId: number) {
 
 <ul class="text-lg">
     {#each $pads as pad}
-        {@const {ref, dragInstanceId} = useDraggable({id: 'pad', data: pad})}
         {@const Icon = padIcons[pad.type]}
 
         <li>
-            <div class="py-2 px-4 text-sm hover:bg-base-300 flex-center justify-start cursor-pointer group" {@attach ref}>
+            <div class="py-2 px-4 text-sm hover:bg-base-300 flex-center justify-start cursor-pointer group">
                 {#if page.route.id?.startsWith('/sets/[id]')}
                     <Tooltip triggerProps={{onclick: () => moveToSet(pad.id), class: "btn btn-primary btn-ghost btn-circle btn-sm"}}>
                         {#snippet trigger()}
@@ -97,11 +98,5 @@ async function deletePad(padId: number) {
                 </Tooltip>
             </div>
         </li>
-
-        <DragOverlay {dragInstanceId} offset={{x: 0, y: 0}}>
-            <div class="flex-center min-w-50 bg-base-300 drop-shadow-2xl border border-base-content/10 px-2 py-2 text-sm rounded w-fit max-w-fit">
-                <div>{pad.name}</div>
-            </div>
-        </DragOverlay>
     {/each}
 </ul>
