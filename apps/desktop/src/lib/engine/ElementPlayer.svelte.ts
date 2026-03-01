@@ -54,9 +54,6 @@ export class ElementPlayer {
   }
 
   fadeTo(targetVolume: number, durationSeconds: number) {
-    console.log('fade to', targetVolume, durationSeconds)
-
-    this.#crossfader.output.gain.cancelScheduledValues(0)
     this.#crossfader.output.gain.rampTo(targetVolume, durationSeconds)
     this.#lastVolume = targetVolume
     this.targetVolume = targetVolume
