@@ -17,6 +17,9 @@ interface Props {
 
 let { setId, mood }: Props = $props()
 
+const isActive = $derived(engineState.activeMoodId === mood.id)
+const isFadingOut = $derived(isActive && engineState.isFadingOut)
+
 let isRenaming = $state(false)
 let renameValue = $state(mood.name)
 
@@ -96,9 +99,9 @@ function editMood() {
 </script>
 
 <div class={["group w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start text-sm", page.url.searchParams.get('viewMoodId') === mood.id.toString() && "bg-primary/30 hover:bg-primary/30"]}>
-    <button class={["btn btn-circle btn-xs hover:btn-secondary", engineState.activeMoodId === mood.id && "btn-secondary"]}
+    <button class={["btn btn-circle btn-xs hover:btn-secondary", isActive && !isFadingOut && "btn-secondary", isFadingOut && "btn-secondary animate-pulse"]}
             type="button" onclick={() => playMood(mood)}>
-        {#if engineState.activeMoodId === mood.id}
+        {#if isActive && !isFadingOut}
             <PauseIcon class="size-3"/>
         {:else}
             <PlayIcon class="size-3"/>
@@ -113,7 +116,7 @@ function editMood() {
             {@attach renameRef}
         />
     {:else}
-        <span class={["cursor-pointer", engineState.activeMoodId === mood.id && "text-secondary"]}
+        <span class={["cursor-pointer", isActive && !isFadingOut && "text-secondary", isFadingOut && "text-secondary animate-pulse"]}
               onclick={handleNameClick}
               ondblclick={handleNameDblClick}>{mood.name}</span>
     {/if}

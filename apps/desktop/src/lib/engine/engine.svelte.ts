@@ -11,11 +11,13 @@ import { readBufferFromSamplesFile } from '$lib/fileSystem'
 type EngineState = {
   isLoading: boolean
   activeMoodId?: number
+  isFadingOut: boolean
   playingPadIds: SvelteSet<number>
 }
 
 const _state = $state<EngineState>({
   isLoading: false,
+  isFadingOut: false,
   playingPadIds: new SvelteSet<number>(),
 })
 
@@ -31,6 +33,7 @@ const elementPlayers = new SvelteMap<number, ElementPlayer>()
 
 getTransport().on('globalStop', () => {
   _state.activeMoodId = undefined
+  _state.isFadingOut = false
   _state.playingPadIds.clear()
 })
 
@@ -115,8 +118,11 @@ export async function playMood(mood: Mood) {
       _state.playingPadIds.delete(id)
     })
 
+    _state.isFadingOut = true
+
     getTransport().schedule(() => {
       _state.activeMoodId = undefined
+      _state.isFadingOut = false
     }, `+${CROSSFADE_SECONDS_BETWEEN_MOODS}`)
   } else if (!_state.activeMoodId) {
     Object.entries(mood.elements).forEach(([idString, config]) => {
@@ -177,5 +183,6 @@ export async function playMood(mood: Mood) {
     })
 
     _state.activeMoodId = mood.id
+    _state.isFadingOut = false
   }
 }
