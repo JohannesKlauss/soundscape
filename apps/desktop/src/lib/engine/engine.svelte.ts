@@ -88,10 +88,15 @@ export async function playMood(mood: Mood) {
       _state.activeMoodId = undefined
     }, `+${CROSSFADE_SECONDS_BETWEEN_MOODS}`)
   } else if (!_state.activeMoodId) {
-    Object.keys(mood.elements).forEach((idString) => {
+    Object.entries(mood.elements).forEach(([idString, config]) => {
       const id = parseInt(idString, 10)
+      const player = elementPlayers.get(id)
 
-      elementPlayers.get(id)?.play(0)
+      if (player) {
+        player.setTargetVolume(config.volume)
+        player.play(0, CROSSFADE_SECONDS_BETWEEN_MOODS)
+      }
+
       _state.playingPadIds.add(id)
     })
 
@@ -110,6 +115,7 @@ export async function playMood(mood: Mood) {
 
     const fadeOutIds = previousIds.difference(newIds)
     const fadeInIds = newIds.difference(previousIds)
+    const commonIds = previousIds.intersection(newIds)
 
     fadeOutIds.forEach((idString) => {
       const id = parseInt(idString, 10)
@@ -118,11 +124,25 @@ export async function playMood(mood: Mood) {
       _state.playingPadIds.delete(id)
     })
 
+    commonIds.forEach((idString) => {
+      const id = parseInt(idString, 10)
+      const player = elementPlayers.get(id)
+
+      if (player) {
+        player.fadeTo(mood.elements[id].volume, CROSSFADE_SECONDS_BETWEEN_MOODS)
+      }
+    })
+
     fadeInIds.forEach((idString) => {
       const id = parseInt(idString, 10)
+      const player = elementPlayers.get(id)
 
-      elementPlayers.get(id)?.play(0)
-      _state.playingPadIds.add(id)
+      if (player) {
+        player.setTargetVolume(mood.elements[id].volume)
+        player.play(0, CROSSFADE_SECONDS_BETWEEN_MOODS)
+
+        _state.playingPadIds.add(id)
+      }
     })
 
     _state.activeMoodId = mood.id

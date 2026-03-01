@@ -15,6 +15,7 @@ export class ElementPlayer {
 
   #lastVolume = 1
 
+  targetVolume = $state(1)
   isPlaying = $state(false)
   isStopping = $state(false)
 
@@ -42,8 +43,23 @@ export class ElementPlayer {
   }
 
   set volume(volume: number) {
-    //this.#crossfader.output.gain.value = volume
+    this.#crossfader.output.gain.rampTo(volume, 0.05)
     this.#lastVolume = volume
+    this.targetVolume = volume
+  }
+
+  setTargetVolume(volume: number) {
+    this.#lastVolume = volume
+    this.targetVolume = volume
+  }
+
+  fadeTo(targetVolume: number, durationSeconds: number) {
+    console.log('fade to', targetVolume, durationSeconds)
+
+    this.#crossfader.output.gain.cancelScheduledValues(0)
+    this.#crossfader.output.gain.rampTo(targetVolume, durationSeconds)
+    this.#lastVolume = targetVolume
+    this.targetVolume = targetVolume
   }
 
   #cleanup() {
@@ -61,7 +77,7 @@ export class ElementPlayer {
     this.#crossfader.fade.value = 0
   }
 
-  play(startingVolume: number = 0) {
+  play(startingVolume: number = 0, fadeInSeconds?: number) {
     if (this.currentPlayer?.state === 'started' && !this.isStopping) {
       return
     }
@@ -76,7 +92,7 @@ export class ElementPlayer {
       return
     }
 
-    const fadeInTime = Math.min(buffer.duration, this.#pad.fadeInSeconds)
+    const fadeInTime = fadeInSeconds ?? Math.min(buffer.duration, this.#pad.fadeInSeconds)
 
     if (this.currentPlayer?.state === 'started' && this.isStopping) {
       this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)

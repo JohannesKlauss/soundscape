@@ -6,7 +6,7 @@ import { page } from '$app/state'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
-import {getElementPlayer} from '$lib/engine/engine.svelte'
+import {getElementPlayer, CROSSFADE_SECONDS_BETWEEN_MOODS} from '$lib/engine/engine.svelte'
 
 interface Props {
   pad: SoundPad
@@ -26,16 +26,13 @@ const player = $derived(getElementPlayer(pad.id))
 
 let animationFrame: number
 
-$effect(() => {
-  player.volume = volume.current
-})
-
 watch(
   () => volumeFromMood,
   () => {
     volume.set(volumeFromMood, {
-      duration: player.isPlaying ? 5000 : 0,
+      duration: player.isPlaying ? CROSSFADE_SECONDS_BETWEEN_MOODS * 1000 : 0,
     })
+    // Audio gain is handled by the engine via fadeTo/play — no player.volume assignment here
   },
 )
 
@@ -77,8 +74,10 @@ function handleRangeWheel(e: WheelEvent) {
   e.preventDefault()
 
   const delta = e.deltaY < 0 ? -0.01 : 0.01
+  const newVal = Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
 
-  volume.target = Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
+  volume.target = newVal
+  player.volume = newVal
 }
 </script>
 
@@ -106,7 +105,11 @@ function handleRangeWheel(e: WheelEvent) {
             {#snippet trigger()}
                 <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" step="0.01"
                        value={volume.current}
-                       oninput={e => volume.set(parseFloat(e.target.value), {duration: 50})}
+                       oninput={e => {
+                         const val = parseFloat((e.target as HTMLInputElement).value)
+                         volume.set(val, {duration: 50})
+                         player.volume = val
+                       }}
                        onwheel={handleRangeWheel}/>
             {/snippet}
 
