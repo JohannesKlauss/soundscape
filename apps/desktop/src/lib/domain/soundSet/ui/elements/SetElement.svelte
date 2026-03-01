@@ -117,10 +117,13 @@ function handleRangeWheel(e: WheelEvent) {
         </Tooltip>
 
         {#if editable}
-            <button onclick={() => onDelete?.(pad.id)} type="button"
-                    class="opacity-0 group-hover:opacity-100 transition-opacity btn btn-xs btn-ghost btn-error btn-circle absolute -left-4 -top-1">
-                <XIcon class="size-3"/>
-            </button>
+            <Tooltip triggerProps={{class: "transition-opacity btn btn-xs btn-ghost btn-error btn-circle absolute -left-4 -top-1", onclick: () => onDelete?.(pad.id)}}>
+                {#snippet trigger()}
+                    <XIcon class="size-3"/>
+                {/snippet}
+
+                Remove Sound Pad from Set
+            </Tooltip>
         {/if}
     </div>
 

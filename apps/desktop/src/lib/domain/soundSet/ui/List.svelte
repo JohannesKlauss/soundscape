@@ -7,7 +7,7 @@ import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
-import CreateNewMood from '$lib/domain/soundSet/mood/ui/CreateNew.svelte'
+import AddMoodMood from '$lib/domain/soundSet/mood/ui/AddMood.svelte'
 import MoodListItem from '$lib/domain/soundSet/mood/ui/MoodListItem.svelte'
 import FormSet from '$lib/domain/soundSet/ui/Form.svelte'
 
@@ -79,7 +79,7 @@ async function deleteSet(set: SoundSet) {
 
         {#if page.url.pathname.startsWith(pathname)}
             <li>
-                <CreateNewMood setId={set.id}/>
+                <AddMoodMood setId={set.id}/>
             </li>
 
             {#each set.moods as mood}

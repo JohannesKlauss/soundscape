@@ -54,7 +54,9 @@ const { form, constraints, submit, reset, validateForm, enhance } = superForm(de
     <Dialog bind:open={open} onConfirm={() => submit()}>
         {#snippet trigger(props)}
             <button class="w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start cursor-pointer text-sm" {...props}>
-                <PlusIcon class="size-4"/>
+                <div class="btn btn-xs btn-circle btn-ghost">
+                    <PlusIcon class="size-4"/>
+                </div>
                 Add Mood
             </button>
         {/snippet}
