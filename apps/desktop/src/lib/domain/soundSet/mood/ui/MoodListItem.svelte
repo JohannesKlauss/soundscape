@@ -37,6 +37,22 @@ function cancelRename() {
 
 const { ref: renameRef } = useInlineRename({ onSave: saveName, onCancel: cancelRename })
 
+let clickTimer: ReturnType<typeof setTimeout> | null = null
+
+function handleNameClick() {
+  if (clickTimer) clearTimeout(clickTimer)
+  clickTimer = setTimeout(() => {
+    clickTimer = null
+    playMood(mood)
+  }, 250)
+}
+
+function handleNameDblClick() {
+  if (clickTimer) { clearTimeout(clickTimer); clickTimer = null }
+  isRenaming = true
+  renameValue = mood.name
+}
+
 async function deleteMood() {
   const confirmed = await confirmModal(
     'Delete Mood',
@@ -97,10 +113,9 @@ function editMood() {
             {@attach renameRef}
         />
     {:else}
-        <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
         <span class={["cursor-pointer", engineState.activeMoodId === mood.id && "text-secondary"]}
-              onclick={() => playMood(mood)}
-              ondblclick={() => { isRenaming = true; renameValue = mood.name }}>{mood.name}</span>
+              onclick={handleNameClick}
+              ondblclick={handleNameDblClick}>{mood.name}</span>
     {/if}
 
     <div class="flex-center ml-auto">
