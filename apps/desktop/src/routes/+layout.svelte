@@ -4,7 +4,7 @@ import { Toaster } from 'svelte-sonner'
 import '../app.css'
 import AlertDialog from '$lib/components/AlertDialog.svelte'
 import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
-import SoundSampleSheet from '$lib/domain/soundSample/ui/SoundSampleSheet.svelte'
+import LibrarySheet from '$lib/domain/soundSample/ui/LibrarySheet.svelte'
 import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
 import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
@@ -38,7 +38,7 @@ let { children }: Props = $props()
                 </div>
 
                 <div class="mt-auto">
-                    <SoundSampleSheet/>
+                    <LibrarySheet/>
                 </div>
             </div>
             <div class="w-160 min-h-0">

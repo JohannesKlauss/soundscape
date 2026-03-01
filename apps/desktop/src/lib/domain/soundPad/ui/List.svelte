@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ChevronLeft, Pen, Trash } from '@lucide/svelte'
+import { ChevronLeft, Pen, Trash, Search } from '@lucide/svelte'
 import { liveQuery } from 'dexie'
 import type { Snippet } from 'svelte'
 import { replaceState } from '$app/navigation'
@@ -10,6 +10,8 @@ import { db } from '$lib/db'
 import { padToForm, padTypeToLabel, type SoundPad } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
 import {ensureElementPlayer} from "$lib/engine/engine.svelte";
+import {fade} from "svelte/transition";
+import Fuse from "fuse.js";
 
 interface Props {
   children?: Snippet
@@ -17,7 +19,22 @@ interface Props {
 
 let { children }: Props = $props()
 
+let searchText = $state('')
+
 const pads = liveQuery(() => db.pad.toArray())
+
+const filteredPads = $derived.by(() => {
+  if (searchText.length < 2) {
+    return $pads
+  }
+
+  const f = new Fuse($pads, {
+    keys: ['name'],
+    minMatchCharLength: 2,
+  })
+
+  return f.search(searchText).map(r => r.item).toSorted((a, b) => a.id - b.id)
+})
 
 async function moveToSet(padId: number) {
   const setId = parseInt(page.params?.id ?? '0', 10)
@@ -52,11 +69,13 @@ async function deletePad(padId: number) {
 <div class="p-4 text-muted flex-center justify-between sticky top-0 bg-base-100">
     <span>Sound Pads</span>
 
+    {@render searchInput()}
+
     {@render children?.()}
 </div>
 
 <ul class="text-lg">
-    {#each $pads as pad}
+    {#each filteredPads as pad}
         {@const Icon = padIcons[pad.type]}
 
         <li>
@@ -100,3 +119,16 @@ async function deletePad(padId: number) {
         </li>
     {/each}
 </ul>
+
+{#snippet searchInput()}
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+    <label class="input input-sm w-40" transition:fade={{duration: 250}} onclick={e => e.stopPropagation()}>
+        <Search class="size-3"/>
+        <input
+                type="text"
+                required
+                placeholder="Search Pads"
+                bind:value={searchText}
+        />
+    </label>
+{/snippet}

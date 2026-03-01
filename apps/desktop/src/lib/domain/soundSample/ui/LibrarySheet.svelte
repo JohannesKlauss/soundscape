@@ -16,7 +16,7 @@ let searchText = $state('')
 const samples = liveQuery(() => db.sample.toArray())
 
 const filteredSamples = $derived.by(() => {
-  if (searchText.length === 0) {
+  if (searchText.length < 2) {
     return $samples
   }
 
