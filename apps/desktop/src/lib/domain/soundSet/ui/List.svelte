@@ -1,7 +1,6 @@
 <script lang="ts">
 import { Pen, SwordsIcon, Trash } from '@lucide/svelte'
 import { liveQuery } from 'dexie'
-import { goto } from '$app/navigation'
 import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
@@ -47,6 +46,9 @@ async function deleteSet(set: SoundSet) {
 
 const activeSet = $derived($soundSets?.find(s => page.url.pathname.startsWith(`/sets/${s.id}`)))
 
+let editingSet = $state<SoundSet | undefined>(undefined)
+let editOpen = $state(false)
+
 const { containerRef } = useSortable<Mood>({
   id: 'mood',
   get items() {
@@ -77,7 +79,7 @@ const { containerRef } = useSortable<Mood>({
                 <SwordsIcon class="size-5"/>
                 {set.name}
 
-                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => goto(`/sets/${set.id}/edit`)}}>
+                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: (e) => { e.preventDefault(); editingSet = set; editOpen = true }}}>
                     {#snippet trigger()}
                         <Pen class="size-4"/>
                     {/snippet}
@@ -110,3 +112,7 @@ const { containerRef } = useSortable<Mood>({
         {/if}
     {/each}
 </ul>
+
+{#if editingSet}
+    <FormSet set={editingSet} bind:open={editOpen} showTrigger={false} />
+{/if}

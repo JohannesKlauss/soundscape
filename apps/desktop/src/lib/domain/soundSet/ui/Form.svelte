@@ -11,9 +11,10 @@ import { type SoundSet, SoundSetCreationSchema } from '$lib/domain/soundSet/_typ
 interface Props {
   set?: SoundSet
   open?: boolean
+  showTrigger?: boolean
 }
 
-let { set, open = $bindable(false) }: Props = $props()
+let { set, open = $bindable(false), showTrigger = true }: Props = $props()
 
 const validators = zod4(SoundSetCreationSchema)
 
@@ -21,6 +22,7 @@ const { form, constraints, submit, reset, errors, validateForm, enhance } = supe
   validators,
   SPA: true,
   validationMethod: 'oninput',
+  dataType: 'json',
   id: set ? `edit-set-${set.id}` : 'new-set',
   onSubmit: async () => {
     const res = await validateForm()
@@ -53,21 +55,23 @@ const { form, constraints, submit, reset, errors, validateForm, enhance } = supe
 <form use:enhance>
     <Dialog bind:open={open} onConfirm={() => submit()} confirmDisabled={$form.name.trim().length < 3}>
         {#snippet trigger(props)}
-            <Tooltip triggerProps={{class:"btn btn-sm btn-circle btn-ghost", ...props}}>
-                {#snippet trigger()}
-                    <PlusIcon class="size-4"/>
-                {/snippet}
+            {#if showTrigger}
+                <Tooltip triggerProps={{class:"btn btn-sm btn-circle btn-ghost", ...props}}>
+                    {#snippet trigger()}
+                        <PlusIcon class="size-4"/>
+                    {/snippet}
 
-                Create new Sound Set
-            </Tooltip>
+                    Create new Sound Set
+                </Tooltip>
+            {/if}
         {/snippet}
 
         {#snippet title()}
-          New Sound Set
+          {set ? 'Edit' : 'New'} Sound Set
         {/snippet}
 
         {#snippet description()}
-          Create a new Sound Set
+          {set ? 'Edit the Sound Set' : 'Create a new Sound Set'}
         {/snippet}
 
         <fieldset class="fieldset">
