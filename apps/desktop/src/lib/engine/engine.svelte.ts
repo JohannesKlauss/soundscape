@@ -1,4 +1,4 @@
-import { SvelteMap } from 'svelte/reactivity'
+import {SvelteMap, SvelteSet} from 'svelte/reactivity'
 import { toast } from 'svelte-sonner'
 import { getContext, getTransport } from 'tone'
 import { goto } from '$app/navigation'
@@ -10,12 +10,12 @@ import { readBufferFromSamplesFile } from '$lib/fileSystem'
 type EngineState = {
   isLoading: boolean
   activeMoodId?: number
-  playingPadIds: number[]
+  playingPadIds: SvelteSet<number>
 }
 
 const _state = $state<EngineState>({
   isLoading: false,
-  playingPadIds: [],
+  playingPadIds: new SvelteSet<number>(),
 })
 
 export const CROSSFADE_SECONDS_BETWEEN_MOODS = 5
@@ -27,6 +27,11 @@ const _sampleBuffers = new Map<number, AudioBuffer>()
 export const sampleBuffers: ReadonlyMap<number, AudioBuffer> = _sampleBuffers
 
 const elementPlayers = new SvelteMap<number, ElementPlayer>()
+
+getTransport().on('globalStop', () => {
+  _state.activeMoodId = undefined
+  _state.playingPadIds.clear()
+})
 
 export function getElementPlayer(padId: number): ElementPlayer {
   const player = elementPlayers.get(padId)
@@ -72,16 +77,22 @@ export async function playMood(mood: Mood) {
   await goto(`?viewMoodId=${mood.id}`)
 
   if (_state.activeMoodId === mood.id) {
-    Object.keys(mood.elements).forEach((id) => {
-      elementPlayers.get(parseInt(id, 10))?.stop()
+    Object.keys(mood.elements).forEach((idString) => {
+      const id = parseInt(idString, 10)
+
+      elementPlayers.get(id)?.stop()
+      _state.playingPadIds.delete(id)
     })
 
     getTransport().schedule(() => {
       _state.activeMoodId = undefined
     }, `+${CROSSFADE_SECONDS_BETWEEN_MOODS}`)
   } else if (!_state.activeMoodId) {
-    Object.keys(mood.elements).forEach((id) => {
-      elementPlayers.get(parseInt(id, 10))?.play(0)
+    Object.keys(mood.elements).forEach((idString) => {
+      const id = parseInt(idString, 10)
+
+      elementPlayers.get(id)?.play(0)
+      _state.playingPadIds.add(id)
     })
 
     _state.activeMoodId = mood.id
@@ -100,12 +111,18 @@ export async function playMood(mood: Mood) {
     const fadeOutIds = previousIds.difference(newIds)
     const fadeInIds = newIds.difference(previousIds)
 
-    fadeOutIds.forEach((id) => {
-      elementPlayers.get(parseInt(id, 10))?.stop(CROSSFADE_SECONDS_BETWEEN_MOODS)
+    fadeOutIds.forEach((idString) => {
+      const id = parseInt(idString, 10)
+
+      elementPlayers.get(id)?.stop(CROSSFADE_SECONDS_BETWEEN_MOODS)
+      _state.playingPadIds.delete(id)
     })
 
-    fadeInIds.forEach((id) => {
-      elementPlayers.get(parseInt(id, 10))?.play(0)
+    fadeInIds.forEach((idString) => {
+      const id = parseInt(idString, 10)
+
+      elementPlayers.get(id)?.play(0)
+      _state.playingPadIds.add(id)
     })
 
     _state.activeMoodId = mood.id

@@ -6,7 +6,7 @@ import { page } from '$app/state'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
-import { getElementPlayer } from '$lib/engine/engine.svelte'
+import {getElementPlayer} from '$lib/engine/engine.svelte'
 
 interface Props {
   pad: SoundPad
@@ -16,11 +16,11 @@ interface Props {
   editable?: boolean
 }
 
-let { pad, volume: initVolume = 1, editable = false, onDelete, onChangeSettingsForMood }: Props = $props()
+let { pad, volume: volumeFromMood = .75, editable = false, onDelete, onChangeSettingsForMood }: Props = $props()
 
 let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
 let progress = $state(0)
-let volume = $state(new Tween(initVolume, { duration: 0 }))
+let volume = $state(new Tween(volumeFromMood, { duration: 0 }))
 
 const player = $derived(getElementPlayer(pad.id))
 
@@ -31,9 +31,9 @@ $effect(() => {
 })
 
 watch(
-  () => initVolume,
+  () => volumeFromMood,
   () => {
-    volume.set(initVolume, {
+    volume.set(volumeFromMood, {
       duration: player.isPlaying ? 5000 : 0,
     })
   },

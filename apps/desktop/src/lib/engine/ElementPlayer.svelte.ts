@@ -42,13 +42,11 @@ export class ElementPlayer {
   }
 
   set volume(volume: number) {
-    this.#crossfader.output.gain.value = volume
+    //this.#crossfader.output.gain.value = volume
     this.#lastVolume = volume
   }
 
   #cleanup() {
-    console.log('cleanup', this.#pad.name)
-
     if (this.#scheduledEventId !== null) {
       getTransport().clear(this.#scheduledEventId)
       this.#scheduledEventId = null
@@ -64,8 +62,6 @@ export class ElementPlayer {
   }
 
   play(startingVolume: number = 0) {
-    console.log('play', this.#pad.name)
-
     if (this.currentPlayer?.state === 'started' && !this.isStopping) {
       return
     }
@@ -83,8 +79,6 @@ export class ElementPlayer {
     const fadeInTime = Math.min(buffer.duration, this.#pad.fadeInSeconds)
 
     if (this.currentPlayer?.state === 'started' && this.isStopping) {
-      console.log('fade back up', this.#pad.name)
-
       this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)
 
       this.isPlaying = true
@@ -124,8 +118,6 @@ export class ElementPlayer {
           return
         }
 
-        console.log('onstop', this.#pad.name)
-
         this.isPlaying = false
         this.lastPlayedSampleId = undefined
 
@@ -141,8 +133,6 @@ export class ElementPlayer {
 
     this.#clearScheduledStop()
 
-    console.log('stop', this.#pad.name, fadeOutSeconds)
-
     const fadeOutTime = fadeOutSeconds ?? Math.max(0.01, this.#pad.fadeOutSeconds)
 
     this.#crossfader.output.gain.rampTo(0, fadeOutTime)
@@ -150,11 +140,7 @@ export class ElementPlayer {
     this.isStopping = true
 
     this.#scheduledStopId = getTransport().scheduleOnce(() => {
-      const player = this.currentPlayer
-
-      if (player) {
-        console.log('call clean up from stop', this.#pad.name)
-
+      if (this.currentPlayer) {
         this.currentPlayer.onstop = () => {}
         this.currentPlayer.stop()
         this.#cleanup()
@@ -192,8 +178,6 @@ export class ElementPlayer {
 
     this.#activeSlot = this.#activeSlot === 'a' ? 'b' : 'a'
 
-    console.log('fade to', this.#activeSlot, crossfadeDuration)
-
     this.lastPlayedSampleId = nextSampleId
 
     this.#scheduledEventId = getTransport().scheduleOnce(
@@ -223,8 +207,6 @@ export class ElementPlayer {
 
   #clearScheduledStop() {
     if (this.#scheduledStopId !== null) {
-      console.log('clear stop', this.#pad.name)
-
       getTransport().clear(this.#scheduledStopId)
       this.#scheduledStopId = null
     }
