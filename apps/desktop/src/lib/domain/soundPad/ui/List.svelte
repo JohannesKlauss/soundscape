@@ -2,12 +2,13 @@
 import { ChevronLeft, Pen, Trash, Search } from '@lucide/svelte'
 import { liveQuery } from 'dexie'
 import type { Snippet } from 'svelte'
+import { SvelteSet } from 'svelte/reactivity'
 import { replaceState } from '$app/navigation'
 import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
-import { padToForm, padTypeToLabel, type SoundPad } from '$lib/domain/soundPad/_types'
+import { padToForm, padTypeToLabel, type SoundPad, type SoundPadType } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
 import {ensureElementPlayer} from "$lib/engine/engine.svelte";
 import {fade} from "svelte/transition";
@@ -20,15 +21,27 @@ interface Props {
 let { children }: Props = $props()
 
 let searchText = $state('')
+let activeTypeFilters = new SvelteSet<SoundPadType>()
+
+function toggleTypeFilter(type: SoundPadType) {
+  if (activeTypeFilters.has(type)) activeTypeFilters.delete(type)
+  else activeTypeFilters.add(type)
+}
 
 const pads = liveQuery(() => db.pad.toArray())
 
 const filteredPads = $derived.by(() => {
-  if (searchText.length < 2) {
-    return $pads
+  let result = $pads
+
+  if (activeTypeFilters.size > 0) {
+    result = result?.filter(p => activeTypeFilters.has(p.type))
   }
 
-  const f = new Fuse($pads, {
+  if (!result || searchText.length < 2) {
+    return result
+  }
+
+  const f = new Fuse(result, {
     keys: ['name'],
     minMatchCharLength: 2,
     threshold: 0.3,
@@ -67,12 +80,29 @@ async function deletePad(padId: number) {
 }
 </script>
 
-<div class="p-4 text-muted flex-center justify-between sticky top-0 bg-base-100">
+<div class="p-4 text-muted flex-center justify-between sticky top-0 bg-base-100 z-10">
     <span>Sound Pads</span>
 
+    {@render children?.()}
+</div>
+
+<div class="px-4 py-2 flex-center sticky top-16 bg-base-100 z-10">
     {@render searchInput()}
 
-    {@render children?.()}
+    {#each Object.entries(padIcons) as [type, Icon]}
+        {@const padType = type as SoundPadType}
+        <Tooltip triggerProps={{
+            class: `btn btn-xs btn-circle ${activeTypeFilters.has(padType) ? 'btn-primary' : 'btn-ghost'}`,
+            type: 'button',
+            onclick: () => toggleTypeFilter(padType)
+        }}>
+            {#snippet trigger()}
+                <Icon class="size-3"/>
+            {/snippet}
+
+            {padTypeToLabel[padType]}
+        </Tooltip>
+    {/each}
 </div>
 
 <ul class="text-lg">
@@ -123,7 +153,7 @@ async function deletePad(padId: number) {
 
 {#snippet searchInput()}
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-    <label class="input input-sm w-40" transition:fade={{duration: 250}} onclick={e => e.stopPropagation()}>
+    <label class="input input-sm" transition:fade={{duration: 250}} onclick={e => e.stopPropagation()}>
         <Search class="size-3"/>
         <input
                 type="text"
