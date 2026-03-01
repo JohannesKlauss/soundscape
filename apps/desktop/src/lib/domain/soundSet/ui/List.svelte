@@ -6,6 +6,7 @@ import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
+import { useSortable } from '$lib/dnd'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
 import AddMoodMood from '$lib/domain/soundSet/mood/ui/AddMood.svelte'
 import MoodListItem from '$lib/domain/soundSet/mood/ui/MoodListItem.svelte'
@@ -24,6 +25,7 @@ const soundSets = liveQuery(async () => {
   return Promise.all(
     sets.map(async (set) => {
       const moods = await db.mood.where('id').anyOf(set.moodIds).toArray()
+      moods.sort((a, b) => set.moodIds.indexOf(a.id) - set.moodIds.indexOf(b.id))
 
       return {
         ...set,
@@ -42,6 +44,22 @@ async function deleteSet(set: SoundSet) {
     await db.set.delete(set.id)
   }
 }
+
+const activeSet = $derived($soundSets?.find(s => page.url.pathname.startsWith(`/sets/${s.id}`)))
+
+const { containerRef } = useSortable<Mood>({
+  id: 'mood',
+  get items() {
+    return activeSet?.moods ?? []
+  },
+  async onSort(items) {
+    if (!activeSet) return
+
+    await db.set.update(activeSet.id, {
+      moodIds: items.map(m => m.id),
+    })
+  },
+})
 </script>
 
 <div class="p-4 text-muted flex-center justify-between">
@@ -82,11 +100,13 @@ async function deleteSet(set: SoundSet) {
                 <AddMoodMood setId={set.id}/>
             </li>
 
-            {#each set.moods as mood}
-                <li>
-                    <MoodListItem setId={set.id} {mood} />
-                </li>
-            {/each}
+            <ul {@attach containerRef}>
+                {#each set.moods as mood}
+                    <li>
+                        <MoodListItem setId={set.id} {mood} />
+                    </li>
+                {/each}
+            </ul>
         {/if}
     {/each}
 </ul>
