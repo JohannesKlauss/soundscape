@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Pause, Play } from '@lucide/svelte'
 import type { ClassValue } from 'svelte/elements'
-import { previewPlayerState, previewSource, stopPreviewSource } from '$lib/domain/previewPlayer/previewPlayer.svelte'
+import { previewFromUrl, previewPlayerState, previewSource, stopPreviewSource } from '$lib/domain/previewPlayer/previewPlayer.svelte'
 
 interface Props {
   src: string
@@ -20,7 +20,11 @@ async function togglePlay() {
     return
   }
 
-  await previewSource(src, contentType)
+  if (src.startsWith('https')) {
+    await previewFromUrl(src)
+  } else {
+    await previewSource(src, contentType)
+  }
 }
 </script>
 

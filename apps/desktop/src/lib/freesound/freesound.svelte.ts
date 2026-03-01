@@ -12,6 +12,9 @@ type FreesoundState = {
 	isAuthenticated: boolean
 	totalCount: number
 	currentQuery: string
+	currentPage: number
+	hasMore: boolean
+	isLoadingMore: boolean
 }
 
 const _state = $state<FreesoundState>({
@@ -21,6 +24,9 @@ const _state = $state<FreesoundState>({
 	isAuthenticated: hasStoredTokens(),
 	totalCount: 0,
 	currentQuery: '',
+	currentPage: 1,
+	hasMore: false,
+	isLoadingMore: false,
 })
 
 export const freesoundState: Readonly<FreesoundState> = _state
@@ -57,6 +63,9 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
 		_state.error = null
 		_state.totalCount = 0
 		_state.currentQuery = ''
+		_state.currentPage = 1
+		_state.hasMore = false
+		_state.isLoadingMore = false
 		return
 	}
 
@@ -67,13 +76,15 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
 		abortController = new AbortController()
 
 		try {
-			const response = await searchSounds(trimmed, options)
+			const response = await searchSounds(trimmed, { ...options, page: 1 })
 
 			// Only apply results if this is still the current query
 			if (_state.currentQuery === trimmed) {
 				_state.results = response.results
 				_state.totalCount = response.count
 				_state.error = null
+				_state.currentPage = 1
+				_state.hasMore = response.next !== null
 			}
 		} catch (err) {
 			// Ignore abort errors (from superseded searches)
@@ -85,6 +96,8 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
 				_state.error = err instanceof Error ? err.message : 'Search failed'
 				_state.results = []
 				_state.totalCount = 0
+				_state.currentPage = 1
+				_state.hasMore = false
 			}
 		} finally {
 			if (_state.currentQuery === trimmed) {
@@ -92,6 +105,41 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
 			}
 		}
 	}, FREESOUND_SEARCH_DEBOUNCE_MS)
+}
+
+/**
+ * Load the next page of Freesound results and append them.
+ * No-op if there are no more results or a load is already in progress.
+ */
+export async function loadNextFreesoundPage(): Promise<void> {
+	if (!_state.hasMore || _state.isLoadingMore || _state.currentQuery.length < 2) {
+		return
+	}
+
+	_state.isLoadingMore = true
+
+	const nextPage = _state.currentPage + 1
+	const query = _state.currentQuery
+
+	try {
+		const response = await searchSounds(query, { page: nextPage })
+
+		// Only apply if the query hasn't changed while we were fetching
+		if (_state.currentQuery === query) {
+			_state.results = [..._state.results, ...response.results]
+			_state.totalCount = response.count
+			_state.currentPage = nextPage
+			_state.hasMore = response.next !== null
+		}
+	} catch (err) {
+		if (_state.currentQuery === query) {
+			_state.error = err instanceof Error ? err.message : 'Failed to load more results'
+		}
+	} finally {
+		if (_state.currentQuery === query) {
+			_state.isLoadingMore = false
+		}
+	}
 }
 
 /** Clear all search results and reset state. */
@@ -111,6 +159,9 @@ export function clearFreesoundResults(): void {
 	_state.error = null
 	_state.totalCount = 0
 	_state.currentQuery = ''
+	_state.currentPage = 1
+	_state.hasMore = false
+	_state.isLoadingMore = false
 }
 
 // ── Download helpers ──────────────────────────────────────────────────

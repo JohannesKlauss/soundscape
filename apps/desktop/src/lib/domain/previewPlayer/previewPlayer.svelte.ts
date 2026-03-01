@@ -37,7 +37,18 @@ export async function previewSource(src: string, contentType: string) {
   }
 }
 
+export async function previewFromUrl(url: string) {
+	if (previewPlayer.state === 'started') {
+		previewPlayer.stop()
+	}
+
+	await previewPlayer.load(url)
+
+	previewPlayer.start()
+	_state.currentPlayingSource = url
+}
+
 export async function stopPreviewSource() {
-  previewPlayer.stop()
-  _state.currentPlayingSource = undefined
+	previewPlayer.stop()
+	_state.currentPlayingSource = undefined
 }

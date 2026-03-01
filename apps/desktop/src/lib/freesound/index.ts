@@ -14,6 +14,7 @@ export {
 	searchFreesound,
 	clearFreesoundResults,
 	downloadFreesoundSample,
+	loadNextFreesoundPage,
 	updateAuthState,
 } from '$lib/freesound/freesound.svelte'
 
