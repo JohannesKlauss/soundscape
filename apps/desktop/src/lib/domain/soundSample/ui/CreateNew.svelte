@@ -88,7 +88,7 @@ async function onAddAudio() {
     {#snippet trigger(props)}
         <Tooltip>
             {#snippet trigger()}
-                <button type="button" class="btn btn-ghost btn-circle btn-primary btn-sm tooltip" {...props}>
+                <button type="button" class="btn btn-ghost btn-circle btn-sm tooltip" {...props}>
                     <PlusIcon class="w-4 h-4"/>
                 </button>
             {/snippet}

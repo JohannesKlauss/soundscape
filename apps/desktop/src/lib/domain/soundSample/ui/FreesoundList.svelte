@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AudioWaveform, Download, GripVertical, Search, Star } from '@lucide/svelte'
+import { AudioWaveform, Download, GripVertical, Search, Star, PlusIcon } from '@lucide/svelte'
 import { DragOverlay, useDraggable } from '$lib/dnd'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import type { FreesoundSound } from '$lib/freesound'
@@ -16,6 +16,10 @@ function formatDownloads(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`
   return String(n)
+}
+
+async function onAddSampleToLibrary(name: string, url: string) {
+
 }
 </script>
 
@@ -69,6 +73,13 @@ function formatDownloads(n: number): string {
             </div>
 
             <div class="ml-auto flex-center">
+                <Tooltip triggerProps={{class: "btn btn-ghost btn-circle btn-sm", onclick: () => onAddSampleToLibrary(sound.name, sound.previews['preview-hq-mp3'])}}>
+                    {#snippet trigger()}
+                        <PlusIcon class="size-3"/>
+                    {/snippet}
+
+                    Save Sample to Library
+                </Tooltip>
                 <div {@attach ref}>
                     <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>
