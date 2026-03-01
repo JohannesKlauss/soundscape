@@ -1,13 +1,15 @@
 <script lang="ts">
-import { Pen, SwordsIcon, Trash } from '@lucide/svelte'
+import { SwordsIcon, Trash } from '@lucide/svelte'
 import { liveQuery } from 'dexie'
+import { goto } from '$app/navigation'
 import { page } from '$app/state'
+import { useInlineRename } from '$lib/attachments'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import { useSortable } from '$lib/dnd'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
-import AddMoodMood from '$lib/domain/soundSet/mood/ui/AddMood.svelte'
+import AddMood from '$lib/domain/soundSet/mood/ui/AddMood.svelte'
 import MoodListItem from '$lib/domain/soundSet/mood/ui/MoodListItem.svelte'
 import FormSet from '$lib/domain/soundSet/ui/Form.svelte'
 
@@ -46,8 +48,25 @@ async function deleteSet(set: SoundSet) {
 
 const activeSet = $derived($soundSets?.find(s => page.url.pathname.startsWith(`/sets/${s.id}`)))
 
-let editingSet = $state<SoundSet | undefined>(undefined)
-let editOpen = $state(false)
+let renamingSetId = $state<number | null>(null)
+let renameSetValue = $state('')
+
+async function saveSetName() {
+  if (renamingSetId == null) return
+  const set = $soundSets?.find(s => s.id === renamingSetId)
+  if (!set) { renamingSetId = null; return }
+  const trimmed = renameSetValue.trim()
+  if (trimmed.length >= 3 && trimmed !== set.name) {
+    await db.set.update(set.id, { name: trimmed })
+  }
+  renamingSetId = null
+}
+
+function cancelSetRename() {
+  renamingSetId = null
+}
+
+const { ref: setRenameRef } = useInlineRename({ onSave: saveSetName, onCancel: cancelSetRename })
 
 const { containerRef } = useSortable<Mood>({
   id: 'mood',
@@ -75,31 +94,36 @@ const { containerRef } = useSortable<Mood>({
         {@const pathname = `/sets/${set.id}`}
         {@const isActive = page.url.pathname === pathname}
         <li>
-            <a href={pathname} data-sveltekit-noscroll class={["group py-2 px-4 hover:bg-base-300 flex-center justify-start cursor-pointer", isActive && "bg-primary hover:bg-primary"]}>
+            <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+            <div class={["group py-2 px-4 hover:bg-base-300 flex-center justify-start cursor-pointer", isActive && "bg-primary hover:bg-primary"]}
+                 onclick={() => goto(pathname, { noScroll: true })}>
                 <SwordsIcon class="size-5"/>
-                {set.name}
 
-                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: (e) => { e.preventDefault(); editingSet = set; editOpen = true }}}>
-                    {#snippet trigger()}
-                        <Pen class="size-4"/>
-                    {/snippet}
+                {#if renamingSetId === set.id}
+                    <input
+                        type="text"
+                        class="input input-sm w-40"
+                        bind:value={renameSetValue}
+                        onclick={(e) => e.stopPropagation()}
+                        {@attach setRenameRef}
+                    />
+                {:else}
+                    <span ondblclick={(e) => { e.stopPropagation(); renamingSetId = set.id; renameSetValue = set.name }}>{set.name}</span>
+                {/if}
 
-                    Edit Set
-                </Tooltip>
-
-                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-error btn-sm ml-2 opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => deleteSet(set)}}>
+                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-error btn-sm ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: (e) => { e.stopPropagation(); deleteSet(set) }}}>
                     {#snippet trigger()}
                         <Trash class="size-4"/>
                     {/snippet}
 
                     Delete Set
                 </Tooltip>
-            </a>
+            </div>
         </li>
 
         {#if page.url.pathname.startsWith(pathname)}
             <li>
-                <AddMoodMood setId={set.id}/>
+                <AddMood setId={set.id}/>
             </li>
 
             <ul {@attach containerRef}>
@@ -112,7 +136,3 @@ const { containerRef } = useSortable<Mood>({
         {/if}
     {/each}
 </ul>
-
-{#if editingSet}
-    <FormSet set={editingSet} bind:open={editOpen} showTrigger={false} />
-{/if}

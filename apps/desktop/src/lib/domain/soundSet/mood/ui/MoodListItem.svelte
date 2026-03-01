@@ -2,6 +2,7 @@
 import { PauseIcon, Pen, PlayIcon, Trash } from '@lucide/svelte'
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
+import { useInlineRename } from '$lib/attachments'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
@@ -15,6 +16,26 @@ interface Props {
 }
 
 let { setId, mood }: Props = $props()
+
+let isRenaming = $state(false)
+let renameValue = $state(mood.name)
+
+async function saveName() {
+  const trimmed = renameValue.trim()
+  if (trimmed.length >= 3 && trimmed !== mood.name) {
+    await db.mood.update(mood.id, { name: trimmed })
+  } else {
+    renameValue = mood.name
+  }
+  isRenaming = false
+}
+
+function cancelRename() {
+  renameValue = mood.name
+  isRenaming = false
+}
+
+const { ref: renameRef } = useInlineRename({ onSave: saveName, onCancel: cancelRename })
 
 async function deleteMood() {
   const confirmed = await confirmModal(
@@ -68,9 +89,19 @@ function editMood() {
         {/if}
     </button>
 
-    <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-    <span class={["cursor-pointer", engineState.activeMoodId === mood.id && "text-secondary"]}
-          onclick={() => playMood(mood)}>{mood.name}</span>
+    {#if isRenaming}
+        <input
+            type="text"
+            class="input input-xs w-32"
+            bind:value={renameValue}
+            {@attach renameRef}
+        />
+    {:else}
+        <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+        <span class={["cursor-pointer", engineState.activeMoodId === mood.id && "text-secondary"]}
+              onclick={() => playMood(mood)}
+              ondblclick={() => { isRenaming = true; renameValue = mood.name }}>{mood.name}</span>
+    {/if}
 
     <div class="flex-center ml-auto">
         <Tooltip

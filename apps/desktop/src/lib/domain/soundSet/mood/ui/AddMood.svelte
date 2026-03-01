@@ -57,16 +57,16 @@ const { form, constraints, submit, reset, validateForm, enhance } = superForm(de
                 <div class="btn btn-xs btn-circle btn-ghost">
                     <PlusIcon class="size-4"/>
                 </div>
-                Add Mood
+                Add New Mood
             </button>
         {/snippet}
 
         {#snippet title()}
-            New Mood
+            Add New Mood
         {/snippet}
 
         {#snippet description()}
-            Create a new mood
+            Add a new mood to the set
         {/snippet}
 
         <fieldset class="fieldset">
