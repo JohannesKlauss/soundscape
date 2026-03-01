@@ -4,6 +4,7 @@ import { getContext, getTransport } from 'tone'
 import { goto } from '$app/navigation'
 import { db } from '$lib/db'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
+import type { SoundPad } from '$lib/domain/soundPad/_types'
 import { ElementPlayer } from '$lib/engine/ElementPlayer.svelte'
 import { readBufferFromSamplesFile } from '$lib/fileSystem'
 
@@ -71,6 +72,27 @@ export async function loadSoundSet(setId: number) {
   })
 
   _state.isLoading = false
+}
+
+export async function updateElementPlayer(pad: SoundPad) {
+  const player = elementPlayers.get(pad.id)
+
+  if (!player) {
+    return
+  }
+
+  const samples = await db.sample.where('id').anyOf(pad.sampleIds).toArray()
+
+  await Promise.all(
+    samples.map(async (s) => {
+      if (!_sampleBuffers.has(s.id)) {
+        _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
+      }
+    }),
+  )
+
+  _state.playingPadIds.delete(pad.id)
+  player.updatePad(pad)
 }
 
 export async function playMood(mood: Mood) {

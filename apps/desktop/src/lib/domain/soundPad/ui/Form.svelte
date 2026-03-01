@@ -21,6 +21,7 @@ import { useDroppable, useSortable } from '$lib/dnd'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
 import type { SoundSample } from '$lib/domain/soundSample/_types'
+import { updateElementPlayer } from '$lib/engine/engine.svelte'
 import { formatTime } from '$lib/engine/volume'
 
 interface Props {
@@ -60,6 +61,13 @@ const { form, constraints, enhance, reset, validateForm } = superForm(defaults(p
 
     if (page.state.editPad) {
       await db.pad.update(page.state.editPad.id, data)
+
+      const updatedPad = await db.pad.get(page.state.editPad.id)
+
+      if (updatedPad) {
+        await updateElementPlayer(updatedPad)
+      }
+
       toast.success('Updated pad')
     } else {
       await db.pad.add(data)

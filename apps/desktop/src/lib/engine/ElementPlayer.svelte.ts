@@ -53,6 +53,14 @@ export class ElementPlayer {
     this.targetVolume = volume
   }
 
+  updatePad(pad: SoundPad) {
+    if (this.isPlaying) {
+      this.stop()
+    }
+
+    this.#pad = pad
+  }
+
   fadeTo(targetVolume: number, durationSeconds: number) {
     this.#crossfader.output.gain.rampTo(targetVolume, durationSeconds)
     this.#lastVolume = targetVolume
