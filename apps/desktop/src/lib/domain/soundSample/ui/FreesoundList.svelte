@@ -69,7 +69,6 @@ function formatDownloads(n: number): string {
             </div>
 
             <div class="ml-auto flex-center">
-                <span class="text-xs text-muted mr-2 text-nowrap whitespace-nowrap">via freesound.org</span>
                 <div {@attach ref}>
                     <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>

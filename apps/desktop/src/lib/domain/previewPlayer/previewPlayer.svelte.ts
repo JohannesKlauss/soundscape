@@ -1,4 +1,4 @@
-import { Player } from 'tone'
+import {getTransport, Player} from 'tone'
 import { readFileFromSamplesDirectory } from '$lib/fileSystem'
 
 type State = {
@@ -15,6 +15,13 @@ const previewPlayer = new Player().toDestination()
 
 previewPlayer.fadeIn = 0.05
 previewPlayer.fadeOut = 0.05
+previewPlayer.onstop = () => {
+	_state.currentPlayingSource = undefined
+}
+
+getTransport().on('globalStop', () => {
+  previewPlayer.stop()
+})
 
 export async function previewSource(src: string, contentType: string) {
   if (previewPlayer.state === 'started') {

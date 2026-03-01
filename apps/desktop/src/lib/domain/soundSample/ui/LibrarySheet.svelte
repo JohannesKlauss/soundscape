@@ -10,6 +10,7 @@ import List from '$lib/domain/soundSample/ui/List.svelte'
 import ReindexLibrary from '$lib/domain/soundSample/ui/ReindexLibrary.svelte'
 import { freesoundState, searchFreesound, loadNextFreesoundPage, clearFreesoundResults } from '$lib/freesound'
 import Fuse from 'fuse.js'
+import {stopPreviewSource} from "$lib/domain/previewPlayer/previewPlayer.svelte";
 
 let open = $state(false)
 let searchText = $state('')
@@ -32,17 +33,16 @@ const filteredSamples = $derived.by(() => {
   return f.search(searchText).map(r => r.item).toSorted((a, b) => a.id - b.id)
 })
 
-// Trigger freesound search alongside local search
 $effect(() => {
   if (searchText.length >= 2) {
     open = true
     searchFreesound(searchText)
+    stopPreviewSource()
   } else {
     clearFreesoundResults()
   }
 })
 
-// Infinite scroll: observe sentinel to load next page
 $effect(() => {
   if (!sentinel || !scrollContainer) return
 
@@ -91,6 +91,10 @@ $effect(() => {
                 <div class="flex items-center justify-center py-4">
                     <span class="loading loading-spinner loading-sm"></span>
                 </div>
+            {:else if filteredSamples?.length === 0 && freesoundState.totalCount === 0}
+                <div class="flex items-center justify-center py-4 text-muted">
+                    No results found.
+                </div>
             {/if}
 
             {#if freesoundState.error}
@@ -112,6 +116,7 @@ $effect(() => {
                 required
                 placeholder="Search Library & freesound.org"
                 bind:value={searchText}
+                onkeydown={e => e.stopPropagation()}
         />
     </label>
 {/snippet}
