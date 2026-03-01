@@ -42,6 +42,21 @@ async function onDelete(padId: number) {
 
   if (confirm) {
     await db.setHasPads.where(['setId', 'padId']).equals([setId, padId]).delete()
+
+    const set = await db.set.get(setId)
+
+    if (set?.moodIds.length) {
+      const moods = await db.mood.where('id').anyOf(set.moodIds).toArray()
+
+      await db.mood.bulkUpdate(
+        moods
+          .filter((mood) => padId in mood.elements)
+          .map((mood) => {
+            const { [padId]: _, ...rest } = mood.elements
+            return { key: mood.id, changes: { elements: rest } }
+          }),
+      )
+    }
   }
 }
 </script>
