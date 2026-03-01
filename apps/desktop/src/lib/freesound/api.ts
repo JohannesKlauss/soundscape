@@ -17,15 +17,12 @@ export class FreesoundApiError extends Error {
 }
 
 /**
- * Low-level fetch wrapper that injects token authentication.
- * Uses API key (Token auth) by default, or Bearer token for OAuth2-protected endpoints.
+ * Low-level fetch wrapper that injects API key token authentication.
  */
-async function fetchApi(url: string, bearerToken?: string): Promise<Response> {
-	const headers: Record<string, string> = bearerToken
-		? { Authorization: `Bearer ${bearerToken}` }
-		: { Authorization: `Token ${FREESOUND_API_KEY}` }
-
-	const res = await fetch(url, { headers })
+async function fetchApi(url: string): Promise<Response> {
+	const res = await fetch(url, {
+		headers: { Authorization: `Token ${FREESOUND_API_KEY}` },
+	})
 
 	if (!res.ok) {
 		const body = await res.text().catch(() => 'Unknown error')
@@ -64,25 +61,7 @@ export async function searchSounds(
 }
 
 /**
- * Download the original sound file. Requires an OAuth2 access token.
- * Returns the raw audio blob and content type.
- */
-export async function downloadSound(
-	soundId: number,
-	accessToken: string,
-): Promise<{ blob: Blob; contentType: string }> {
-	const url = `${FREESOUND_BASE_URL}/sounds/${soundId}/download/`
-	const res = await fetchApi(url, accessToken)
-
-	const contentType = res.headers.get('content-type') ?? 'audio/mpeg'
-	const blob = await res.blob()
-
-	return { blob, contentType }
-}
-
-/**
- * Fetch the HQ MP3 preview of a sound. No OAuth2 required.
- * Useful as a fallback when user is not authenticated.
+ * Download the HQ MP3 preview of a sound. No authentication required beyond API key.
  */
 export async function downloadPreview(previewUrl: string): Promise<{ blob: Blob; contentType: string }> {
 	const res = await fetch(previewUrl)

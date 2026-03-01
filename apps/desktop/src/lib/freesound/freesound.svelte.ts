@@ -1,7 +1,6 @@
 import type { FreesoundSearchOptions, FreesoundSound } from '$lib/freesound/_types'
-import { downloadPreview, downloadSound, searchSounds } from '$lib/freesound/api'
+import { downloadPreview, searchSounds } from '$lib/freesound/api'
 import { FREESOUND_SEARCH_DEBOUNCE_MS } from '$lib/freesound/config'
-import { getValidAccessToken, hasStoredTokens } from '$lib/freesound/oauth'
 
 // ── Reactive state ────────────────────────────────────────────────────
 
@@ -9,7 +8,6 @@ type FreesoundState = {
 	results: FreesoundSound[]
 	isSearching: boolean
 	error: string | null
-	isAuthenticated: boolean
 	totalCount: number
 	currentQuery: string
 	currentPage: number
@@ -21,7 +19,6 @@ const _state = $state<FreesoundState>({
 	results: [],
 	isSearching: false,
 	error: null,
-	isAuthenticated: hasStoredTokens(),
 	totalCount: 0,
 	currentQuery: '',
 	currentPage: 1,
@@ -167,39 +164,13 @@ export function clearFreesoundResults(): void {
 // ── Download helpers ──────────────────────────────────────────────────
 
 /**
- * Download a Freesound sample.
- * Tries to download the original file via OAuth2 if authenticated,
- * falls back to the HQ MP3 preview otherwise.
+ * Download a Freesound sample's HQ MP3 preview.
  */
 export async function downloadFreesoundSample(
 	sound: FreesoundSound,
 ): Promise<{ blob: Blob; contentType: string; fileName: string }> {
-	let blob: Blob
-	let contentType: string
-
-	const accessToken = await getValidAccessToken()
-
-	if (accessToken) {
-		// Download original quality via OAuth2
-		const result = await downloadSound(sound.id, accessToken)
-		blob = result.blob
-		contentType = result.contentType
-	} else {
-		// Fall back to HQ MP3 preview
-		const result = await downloadPreview(sound.previews['preview-hq-mp3'])
-		blob = result.blob
-		contentType = result.contentType
-	}
-
-	const ext = contentType.includes('mpeg') || contentType.includes('mp3') ? 'mp3' : sound.type
-	const fileName = `${sound.name}-${sound.id}.${ext}`
+	const { blob, contentType } = await downloadPreview(sound.previews['preview-hq-mp3'])
+	const fileName = `${sound.name}-${sound.id}.mp3`
 
 	return { blob, contentType, fileName }
-}
-
-/**
- * Update the authentication state (call after OAuth2 flow completes).
- */
-export function updateAuthState(): void {
-	_state.isAuthenticated = hasStoredTokens()
 }

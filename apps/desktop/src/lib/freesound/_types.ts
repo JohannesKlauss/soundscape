@@ -18,7 +18,6 @@ export type FreesoundSound = {
 	avg_rating: number
 	num_downloads: number
 	previews: FreesoundPreviews
-	download: string
 	username: string
 	license: string
 	type: string
@@ -29,13 +28,6 @@ export type FreesoundSearchResponse = {
 	next: string | null
 	previous: string | null
 	results: FreesoundSound[]
-}
-
-export type FreesoundOAuthTokens = {
-	access_token: string
-	refresh_token: string
-	expires_in: number
-	scope: string
 }
 
 export type FreesoundSearchOptions = {
