@@ -20,19 +20,18 @@ let {samples }: Props = $props()
         {@const Icon = sampleIcons[sample.category]}
 
         <li class="list-row px-4 py-2 text-sm hover:bg-base-100 flex-center group">
-            <div class="flex-center">
-                <Tooltip>
-                    {#snippet trigger()}
-                        <Icon class="size-4"/>
-                    {/snippet}
+            <Tooltip>
+                {#snippet trigger()}
+                    <Icon class="size-4"/>
+                {/snippet}
 
-                    <span class="capitalize">{sample.category}</span>
-                </Tooltip>
-                <div>{sample.name} <span class="text-xs text-muted">({formatTime(sample.duration)})</span></div>
-            </div>
+                <span class="capitalize">{sample.category}</span>
+            </Tooltip>
+            <span class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">{sample.name}</span>
+            <span class="text-xs text-muted tabular-nums min-w-12 text-right">{formatTime(sample.duration)}</span>
 
-            <div class="ml-auto flex-center opacity-0 group-hover:opacity-100">
-                <div {@attach ref}>
+            <div class="ml-4 flex-center opacity-0 group-hover:opacity-100">
+                <div {@attach ref} class="btn btn-circle btn-sm btn-ghost">
                     <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>
                 <QuickPreviewPlayer src={sample.src} contentType={sample.contentType} />

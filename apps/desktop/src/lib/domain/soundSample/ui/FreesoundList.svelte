@@ -38,51 +38,50 @@ function onAddSampleToLibrary(name: string, url: string) {
 <ul class="list">
     {#each sounds as sound (sound.id)}
         <li class="list-row px-4 py-2 text-sm hover:bg-base-100 flex-center">
-            <div class="flex-center">
-                <Tooltip side="left">
+            <Tooltip side="left">
+                {#snippet trigger()}
+                    <Search class="size-4 text-info"/>
+                {/snippet}
+
+                Freesound result
+            </Tooltip>
+            <span class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
+                {#if sound.name.length > 40}
+                    <Tooltip>
+                        {#snippet trigger()}
+                            {sound.name.substring(0, 40)}...
+                        {/snippet}
+
+                        {sound.name}
+                    </Tooltip>
+                {:else}
+                    {sound.name}
+                {/if}
+            </span>
+            <div class="grid grid-cols-3 gap-2 ml-2 text-right w-40">
+                <Tooltip>
                     {#snippet trigger()}
-                        <Search class="size-4 text-info"/>
+                        <span class="flex-center gap-0.5 text-xs text-muted text-nowrap whitespace-nowrap">
+                            <Star class="size-3"/>{sound.avg_rating.toFixed(1)}
+                        </span>
                     {/snippet}
 
-                    Freesound result
+                    Average rating
                 </Tooltip>
-                <div class="line-clamp-1">
-                    {#if sound.name.length > 40}
-                        <Tooltip>
-                            {#snippet trigger()}
-                                {sound.name.substring(0, 40)}...
-                            {/snippet}
+                <Tooltip>
+                    {#snippet trigger()}
+                        <span class="flex-center gap-0.5 text-xs text-muted text-nowrap whitespace-nowrap">
+                            <Download class="size-3"/>{formatDownloads(sound.num_downloads)}
+                        </span>
+                    {/snippet}
 
-                            {sound.name}
-                        </Tooltip>
-                    {:else}
-                        <span class="text-ellipsis">{sound.name}</span>
-                    {/if}
-                    <span class="text-xs text-muted">({formatTime(sound.duration)})</span>
-                </div>
-                <div class="flex-center gap-2 ml-2">
-                    <Tooltip>
-                        {#snippet trigger()}
-                            <span class="flex-center gap-0.5 text-xs text-muted text-nowrap whitespace-nowrap">
-                                <Star class="size-3"/>{sound.avg_rating.toFixed(1)}
-                            </span>
-                        {/snippet}
-
-                        Average rating
-                    </Tooltip>
-                    <Tooltip>
-                        {#snippet trigger()}
-                            <span class="flex-center gap-0.5 text-xs text-muted text-nowrap whitespace-nowrap">
-                                <Download class="size-3"/>{formatDownloads(sound.num_downloads)}
-                            </span>
-                        {/snippet}
-
-                        Downloads
-                    </Tooltip>
-                </div>
+                    Downloads
+                </Tooltip>
+                <span class="text-xs text-muted text-right">{formatTime(sound.duration)}</span>
             </div>
 
-            <div class="ml-auto flex-center">
+
+            <div class="ml-4 flex-center">
                 <Tooltip triggerProps={{class: "btn btn-ghost btn-circle btn-sm", onclick: () => onAddSampleToLibrary(sound.name, sound.previews['preview-hq-mp3'])}}>
                     {#snippet trigger()}
                         <PlusIcon class="size-3"/>
