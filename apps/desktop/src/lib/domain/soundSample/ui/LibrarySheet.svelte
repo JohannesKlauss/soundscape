@@ -112,18 +112,7 @@ $effect(() => {
     </BottomSheet>
 
     {#if dropNewSampleState.isDraggingFile}
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div
-            class="absolute inset-0 z-50 flex items-center justify-center bg-primary/10 border-2 border-dashed border-primary rounded-lg backdrop-blur-sm"
-            ondrop={handleOverlayDrop}
-            ondragover={handleOverlayDragOver}
-        >
-            <div class="flex flex-col items-center gap-2 pointer-events-none">
-                <Upload class="size-8 text-primary" />
-                <span class="text-sm font-medium text-primary">Drop audio file to add to library</span>
-                <span class="text-xs text-primary/60">MP3, WAV, OGG, FLAC, AAC, M4A, WebM</span>
-            </div>
-        </div>
+        {@render dropzone()}
     {/if}
 </div>
 
@@ -139,4 +128,19 @@ $effect(() => {
                 onkeydown={e => e.stopPropagation()}
         />
     </label>
+{/snippet}
+
+{#snippet dropzone()}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+            class="absolute inset-0 z-50 flex items-center justify-center bg-primary/10 border-2 border-dashed border-primary rounded-lg backdrop-blur-sm"
+            ondrop={handleOverlayDrop}
+            ondragover={handleOverlayDragOver}
+    >
+        <div class="flex flex-col items-center gap-2 pointer-events-none">
+            <Upload class="size-8 text-primary" />
+            <span class="text-sm font-medium text-primary">Drop audio file to add to library</span>
+            <span class="text-xs text-primary/60">MP3, WAV, OGG, FLAC, AAC, M4A, WebM</span>
+        </div>
+    </div>
 {/snippet}
