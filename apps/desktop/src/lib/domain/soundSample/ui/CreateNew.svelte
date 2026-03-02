@@ -193,7 +193,7 @@ function resetForm() {
 </script>
 
 <Dialog bind:open={open} onConfirm={isReady ? onAddAudio : () => null} confirmDisabled={!isReady}
-        confirmText="Add to library">
+        confirmText="Add to library" onCancel={() => resetForm()}>
     {#snippet trigger(props)}
         {#if showTrigger}
             <Tooltip>
