@@ -1,7 +1,5 @@
 <script lang="ts">
 import { AudioWaveform, GripVertical } from '@lucide/svelte'
-import { liveQuery } from 'dexie'
-import { db } from '$lib/db'
 import { DragOverlay, useDraggable } from '$lib/dnd'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import type { SoundSample } from '$lib/domain/soundSample/_types'

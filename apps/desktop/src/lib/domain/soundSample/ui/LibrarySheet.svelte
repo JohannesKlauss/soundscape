@@ -1,7 +1,8 @@
 <script lang="ts">
-import { Library, Search } from '@lucide/svelte'
+import { Library, Search, Upload } from '@lucide/svelte'
 import { Collapsible } from 'bits-ui'
 import { liveQuery } from 'dexie'
+import { toast } from 'svelte-sonner'
 import BottomSheet from '$lib/components/BottomSheet.svelte'
 import { db } from '$lib/db'
 import CreateNew from '$lib/domain/soundSample/ui/CreateNew.svelte'
@@ -9,6 +10,7 @@ import FreesoundList from '$lib/domain/soundSample/ui/FreesoundList.svelte'
 import List from '$lib/domain/soundSample/ui/List.svelte'
 import ReindexLibrary from '$lib/domain/soundSample/ui/ReindexLibrary.svelte'
 import { freesoundState, searchFreesound, loadNextFreesoundPage, clearFreesoundResults } from '$lib/freesound'
+import { mimeToExt } from '$lib/fileSystem'
 import Fuse from 'fuse.js'
 import {stopPreviewSource} from "$lib/domain/previewPlayer/previewPlayer.svelte";
 
@@ -16,6 +18,78 @@ let open = $state(false)
 let searchText = $state('')
 let scrollContainer: HTMLDivElement | undefined = $state()
 let sentinel: HTMLDivElement | undefined = $state()
+
+let createNewOpen = $state(false)
+let createNewName = $state('')
+let createNewFile = $state<File | null>(null)
+let isDraggingFile = $state(false)
+let dragCounter = 0
+
+function hasFiles(e: DragEvent) {
+  return e.dataTransfer?.types?.includes('Files') ?? false
+}
+
+$effect(() => {
+  function onWindowDragEnter(e: DragEvent) {
+    if (!hasFiles(e)) return
+    dragCounter++
+    isDraggingFile = true
+  }
+
+  function onWindowDragLeave(_e: DragEvent) {
+    dragCounter--
+    if (dragCounter <= 0) {
+      dragCounter = 0
+      isDraggingFile = false
+    }
+  }
+
+  function onWindowDragOver(e: DragEvent) {
+    if (hasFiles(e)) e.preventDefault()
+  }
+
+  function onWindowDrop(e: DragEvent) {
+    dragCounter = 0
+    isDraggingFile = false
+    // Only prevent default if not handled by the overlay (fallback safety)
+    if (hasFiles(e)) e.preventDefault()
+  }
+
+  window.addEventListener('dragenter', onWindowDragEnter)
+  window.addEventListener('dragleave', onWindowDragLeave)
+  window.addEventListener('dragover', onWindowDragOver)
+  window.addEventListener('drop', onWindowDrop)
+
+  return () => {
+    window.removeEventListener('dragenter', onWindowDragEnter)
+    window.removeEventListener('dragleave', onWindowDragLeave)
+    window.removeEventListener('dragover', onWindowDragOver)
+    window.removeEventListener('drop', onWindowDrop)
+  }
+})
+
+function handleOverlayDrop(e: DragEvent) {
+  e.preventDefault()
+  e.stopPropagation()
+  dragCounter = 0
+  isDraggingFile = false
+
+  const dropped = e.dataTransfer?.files?.[0]
+  if (!dropped) return
+
+  if (!mimeToExt[dropped.type]) {
+    toast.error(`Unsupported file type: ${dropped.type || 'unknown'}`)
+    return
+  }
+
+  createNewFile = dropped
+  createNewName = dropped.name.replace(/\.[^.]+$/, '')
+  createNewOpen = true
+}
+
+function handleOverlayDragOver(e: DragEvent) {
+  e.preventDefault()
+}
 
 const samples = liveQuery(() => db.sample.toArray())
 
@@ -61,7 +135,7 @@ $effect(() => {
 })
 </script>
 
-<div class="bg-base-100">
+<div class="bg-base-100 relative">
     <BottomSheet bind:open={open}>
         {#snippet title()}
             <Collapsible.Trigger class="flex-center justify-start w-full">
@@ -76,7 +150,7 @@ $effect(() => {
             </Collapsible.Trigger>
 
             <ReindexLibrary numSamples={$samples.length}/>
-            <div class="ml-auto"><CreateNew/></div>
+            <div class="ml-auto"><CreateNew bind:open={createNewOpen} bind:name={createNewName} bind:file={createNewFile}/></div>
         {/snippet}
 
         <div class="max-h-[50vh] overflow-y-scroll" bind:this={scrollContainer}>
@@ -105,6 +179,21 @@ $effect(() => {
             <div bind:this={sentinel} class="h-1"></div>
         </div>
     </BottomSheet>
+
+    {#if isDraggingFile}
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div
+            class="absolute inset-0 z-50 flex items-center justify-center bg-primary/10 border-2 border-dashed border-primary rounded-lg backdrop-blur-sm"
+            ondrop={handleOverlayDrop}
+            ondragover={handleOverlayDragOver}
+        >
+            <div class="flex flex-col items-center gap-2 pointer-events-none">
+                <Upload class="size-8 text-primary" />
+                <span class="text-sm font-medium text-primary">Drop audio file to add to library</span>
+                <span class="text-xs text-primary/60">MP3, WAV, OGG, FLAC, AAC, M4A, WebM</span>
+            </div>
+        </div>
+    {/if}
 </div>
 
 {#snippet searchInput()}

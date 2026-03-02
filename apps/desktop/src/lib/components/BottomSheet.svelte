@@ -31,7 +31,7 @@ let { open = $bindable(false), title, trigger: collapsibleTrigger, children, ...
         </Tooltip>
     </div>
 
-    <Collapsible.Content class="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up space-y-2 overflow-hidden font-mono text-[15px] tracking-[0.01em]">
+    <Collapsible.Content class="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up space-y-2 overflow-hidden text-[15px] tracking-[0.01em]">
         {@render children?.()}
     </Collapsible.Content>
 </Collapsible.Root>

@@ -13,15 +13,15 @@ interface Props {
   open?: boolean
   url?: string
   name?: string
+  file?: File | null
   showTrigger?: boolean
 }
 
-let { open = $bindable(false), url = $bindable(''), name = $bindable(''), showTrigger = true }: Props = $props()
+let { open = $bindable(false), url = $bindable(''), name = $bindable(''), file = $bindable<File | null>(null), showTrigger = true }: Props = $props()
 
 let category = $state<SoundSampleCategory>('music')
 let isAudio = $state(false)
 let isYoutube = $state(false)
-let file = $state<File | null>(null)
 let isDraggingOver = $state(false)
 let fileInputEl: HTMLInputElement | undefined = $state()
 
