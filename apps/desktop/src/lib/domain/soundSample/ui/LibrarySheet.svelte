@@ -37,7 +37,7 @@ let open = $state(false)
 let searchText = $state('')
 let scrollContainer: HTMLDivElement | undefined = $state()
 let activeCategoryFilters = new SvelteSet<SoundSampleCategory>()
-let sortValue = $state<SortOption>('name-asc')
+let sortValue = $state<SortOption | null>(null)
 
 function toggleCategoryFilter(cat: SoundSampleCategory) {
   if (activeCategoryFilters.has(cat)) activeCategoryFilters.delete(cat)
@@ -74,7 +74,7 @@ const filteredSamples = $derived.by(() => {
     result = f.search(searchText).map(r => r.item)
   }
 
-  return result ? applySorting(result, sortValue) : result
+  return result && sortValue ? applySorting(result, sortValue) : result
 })
 
 $effect(() => {
@@ -103,7 +103,6 @@ $effect(() => {
             </Collapsible.Trigger>
 
             <ReindexLibrary numSamples={$samples.length}/>
-            {@render sortSelect()}
             <div class="ml-auto">
                 <CreateNew bind:open={dropNewSampleState.createNewOpen} bind:name={dropNewSampleState.createNewName} bind:file={dropNewSampleState.createNewFile}/>
             </div>
@@ -140,8 +139,8 @@ $effect(() => {
 {/snippet}
 
 {#snippet sortSelect()}
-    <Select.Root type="single" value={sortValue} onValueChange={(v) => { if (v) sortValue = v as SortOption }}>
-        <Select.Trigger class="btn btn-ghost btn-circle btn-sm">
+    <Select.Root type="single" value={sortValue ?? undefined} onValueChange={(v) => { sortValue = (v as SortOption) ?? null }}>
+        <Select.Trigger class={["btn btn-circle btn-sm", sortValue ? 'btn-primary' : 'btn-ghost']}>
             <ArrowUpDown class="size-4"/>
         </Select.Trigger>
         <Select.Portal>
@@ -151,13 +150,20 @@ $effect(() => {
                         {option.label}
                     </Select.Item>
                 {/each}
+                {#if sortValue}
+                    <div class="border-t border-base-content/10 mt-1 pt-1">
+                        <button class="cursor-pointer rounded px-3 py-1.5 text-sm text-error hover:bg-base-300 w-full text-left outline-none" onclick={() => sortValue = null}>
+                            Remove sort
+                        </button>
+                    </div>
+                {/if}
             </Select.Content>
         </Select.Portal>
     </Select.Root>
 {/snippet}
 
 {#snippet categoryFilter()}
-    <div class="px-4 py-2 flex-center gap-1">
+    <div class="px-4 py-2 flex-center gap-1 border-b border-base-content/10">
         <div class="join">
             <button
                 class={["btn btn-xs join-item", activeCategoryFilters.size === 0 ? 'btn-primary' : 'btn-ghost']}
@@ -175,6 +181,10 @@ $effect(() => {
                     {categoryLabels[category]}
                 </button>
             {/each}
+        </div>
+
+        <div class="ml-auto">
+            {@render sortSelect()}
         </div>
     </div>
 {/snippet}
