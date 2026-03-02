@@ -1,6 +1,7 @@
 <script lang="ts">
 import { AudioWaveform, GripVertical, Tags } from '@lucide/svelte'
 import { Popover } from 'bits-ui'
+import { useInlineRename } from '$lib/attachments'
 import { DragOverlay, useDraggable } from '$lib/dnd'
 import { db } from '$lib/db'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
@@ -18,6 +19,7 @@ let { samples }: Props = $props()
 
 const MAX_VISIBLE_TAGS = 3
 
+// Tag editing
 let editingTags = $state<{ sampleId: number; tags: string[] } | null>(null)
 
 function onPopoverToggle(sample: SoundSample, isOpen: boolean) {
@@ -29,6 +31,24 @@ function onPopoverToggle(sample: SoundSample, isOpen: boolean) {
     editingTags = null
   }
 }
+
+// Inline rename
+let renamingSampleId = $state<number | null>(null)
+let renameValue = $state('')
+
+function saveSampleName() {
+  const trimmed = renameValue.trim()
+  if (renamingSampleId !== null && trimmed.length >= 3) {
+    db.sample.update(renamingSampleId, { name: trimmed })
+  }
+  renamingSampleId = null
+}
+
+function cancelRename() {
+  renamingSampleId = null
+}
+
+const { ref: renameRef } = useInlineRename({ onSave: saveSampleName, onCancel: cancelRename })
 </script>
 
 <ul class="list">
@@ -44,7 +64,19 @@ function onPopoverToggle(sample: SoundSample, isOpen: boolean) {
 
                 <span class="capitalize">{sample.category}</span>
             </Tooltip>
-            <span class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">{sample.name}</span>
+            {#if renamingSampleId === sample.id}
+                <input
+                    type="text"
+                    class="input input-sm flex-1"
+                    bind:value={renameValue}
+                    {@attach renameRef}
+                />
+            {:else}
+                <span
+                    class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap cursor-default"
+                    ondblclick={() => { renamingSampleId = sample.id; renameValue = sample.name }}
+                >{sample.name}</span>
+            {/if}
 
             {#if sample.tags?.length}
                 <div class="flex-center gap-1 ml-2">
