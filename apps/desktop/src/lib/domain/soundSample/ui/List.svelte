@@ -21,7 +21,7 @@ let {samples }: Props = $props()
         {@const {ref, dragInstanceId} = useDraggable<SoundSample>({id: 'sample', data: sample})}
         {@const Icon = sampleIcons[sample.category]}
 
-        <li class="list-row px-4 py-2 text-sm hover:bg-base-300 flex-center">
+        <li class="list-row px-4 py-2 text-sm bg-base-300 hover:bg-base-100 flex-center group">
             <div class="flex-center">
                 <Tooltip>
                     {#snippet trigger()}
@@ -33,7 +33,7 @@ let {samples }: Props = $props()
                 <div>{sample.name} <span class="text-xs text-muted">({formatTime(sample.duration)})</span></div>
             </div>
 
-            <div class="ml-auto flex-center">
+            <div class="ml-auto flex-center opacity-0 group-hover:opacity-100">
                 <div {@attach ref}>
                     <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>

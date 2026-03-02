@@ -86,7 +86,7 @@ async function deletePad(padId: number) {
     {@render children?.()}
 </div>
 
-<div class="px-4 py-2 flex-center sticky top-16 bg-base-100 z-10">
+<div class="px-4 py-2 flex-center sticky top-16 bg-base-100 z-10 shadow-xl">
     {@render searchInput()}
 
     {#each Object.entries(padIcons) as [type, Icon]}
