@@ -5,9 +5,9 @@ import { useInlineRename } from '$lib/attachments'
 import { DragOverlay, useDraggable } from '$lib/dnd'
 import { db } from '$lib/db'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
-import type { SoundSample } from '$lib/domain/soundSample/_types'
-import { sampleIcons } from '$lib/domain/soundSample/ui/sampleIcons'
-import TagInput from '$lib/domain/soundSample/ui/TagInput.svelte'
+import type { SoundSample } from '$lib/domain/library/_types'
+import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
+import TagInput from '$lib/domain/library/ui/TagInput.svelte'
 import { formatTime } from '$lib/engine/volume'
 import Tooltip from "$lib/components/Tooltip.svelte";
 
@@ -56,7 +56,7 @@ const { ref: renameRef } = useInlineRename({ onSave: saveSampleName, onCancel: c
         {@const {ref, dragInstanceId} = useDraggable<SoundSample>({id: 'sample', data: sample})}
         {@const Icon = sampleIcons[sample.category]}
 
-        <li class="list-row px-4 py-2 text-sm hover:bg-base-100 flex-center group">
+        <li {@attach ref} class="list-row px-4 py-2 text-sm hover:bg-base-100 flex-center group cursor-grab">
             <Tooltip>
                 {#snippet trigger()}
                     <Icon class="size-4"/>
@@ -73,7 +73,7 @@ const { ref: renameRef } = useInlineRename({ onSave: saveSampleName, onCancel: c
                 />
             {:else}
                 <span
-                    class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap cursor-default"
+                    class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap"
                     ondblclick={() => { renamingSampleId = sample.id; renameValue = sample.name }}
                 >{sample.name}</span>
             {/if}
@@ -117,9 +117,7 @@ const { ref: renameRef } = useInlineRename({ onSave: saveSampleName, onCancel: c
                     </Popover.Portal>
                 </Popover.Root>
 
-                <div {@attach ref} class="btn btn-circle btn-sm btn-ghost">
-                    <GripVertical class="size-4 text-muted cursor-grab"/>
-                </div>
+                <GripVertical class="size-4 text-muted"/>
                 <QuickPreviewPlayer src={sample.src} contentType={sample.contentType} />
             </div>
         </li>

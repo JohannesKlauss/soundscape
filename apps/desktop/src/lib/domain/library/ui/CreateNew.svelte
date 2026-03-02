@@ -5,9 +5,9 @@ import { Player } from 'tone'
 import Dialog from '$lib/components/Dialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
-import type { SoundSampleCategory } from '$lib/domain/soundSample/_types'
-import SamplePlayer from '$lib/domain/soundSample/ui/SamplePlayer.svelte'
-import TagInput from '$lib/domain/soundSample/ui/TagInput.svelte'
+import type { SoundSampleCategory } from '$lib/domain/library/_types'
+import SamplePlayer from '$lib/domain/library/ui/SamplePlayer.svelte'
+import TagInput from '$lib/domain/library/ui/TagInput.svelte'
 import { getExtensionFromContentType, mimeToExt, writeFileToSamplesDirectory } from '$lib/fileSystem'
 
 interface Props {

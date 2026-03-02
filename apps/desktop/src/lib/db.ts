@@ -1,6 +1,6 @@
 import { Dexie, type EntityTable } from 'dexie'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
-import type { SoundSample } from '$lib/domain/soundSample/_types'
+import type { SoundSample } from '$lib/domain/library/_types'
 import type { SoundSet, SoundSetHasPad } from '$lib/domain/soundSet/_types'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
 

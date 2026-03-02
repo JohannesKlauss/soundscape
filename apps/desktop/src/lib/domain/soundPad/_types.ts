@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { db } from '$lib/db'
-import { SoundSampleSchema } from '$lib/domain/soundSample/_types'
+import { SoundSampleSchema } from '$lib/domain/library/_types'
 
 export const SoundPadCreationSchema = z
   .object({

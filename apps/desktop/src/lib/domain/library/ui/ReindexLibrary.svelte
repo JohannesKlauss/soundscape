@@ -4,7 +4,7 @@ import { getContext, Player } from 'tone'
 import Dialog from '$lib/components/Dialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
-import type { SoundSample } from '$lib/domain/soundSample/_types'
+import type { SoundSample } from '$lib/domain/library/_types'
 import { readBufferFromSamplesFile } from '$lib/fileSystem'
 
 interface Props {

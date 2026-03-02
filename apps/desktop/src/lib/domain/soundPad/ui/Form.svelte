@@ -20,7 +20,7 @@ import { db } from '$lib/db'
 import { useDroppable, useSortable } from '$lib/dnd'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
-import type { SoundSample } from '$lib/domain/soundSample/_types'
+import type { SoundSample } from '$lib/domain/library/_types'
 import { updateElementPlayer } from '$lib/engine/engine.svelte'
 import { formatTime } from '$lib/engine/volume'
 

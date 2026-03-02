@@ -5,16 +5,16 @@ import { liveQuery } from 'dexie'
 import { SvelteSet } from 'svelte/reactivity'
 import BottomSheet from '$lib/components/BottomSheet.svelte'
 import { db } from '$lib/db'
-import type { SoundSampleCategory } from '$lib/domain/soundSample/_types'
-import CreateNew from '$lib/domain/soundSample/ui/CreateNew.svelte'
-import List from '$lib/domain/soundSample/ui/List.svelte'
-import ReindexLibrary from '$lib/domain/soundSample/ui/ReindexLibrary.svelte'
-import { sampleIcons } from '$lib/domain/soundSample/ui/sampleIcons'
+import type { SoundSampleCategory } from '$lib/domain/library/_types'
+import CreateNew from '$lib/domain/library/ui/CreateNew.svelte'
+import List from '$lib/domain/library/ui/List.svelte'
+import ReindexLibrary from '$lib/domain/library/ui/ReindexLibrary.svelte'
+import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
 import { searchFreesound, clearFreesoundResults } from '$lib/freesound'
 import Fuse from 'fuse.js'
 import {stopPreviewSource} from "$lib/domain/previewPlayer/previewPlayer.svelte";
-import {dropNewSampleDnd, dropNewSampleState} from "$lib/domain/soundSample/ui/dropNewSample.svelte";
-import FreesoundSearch from "$lib/domain/soundSample/ui/FreesoundSearch.svelte";
+import {dropNewSampleDnd, dropNewSampleState} from "$lib/domain/library/ui/dropNewSample.svelte";
+import FreesoundSearch from "$lib/domain/library/ui/FreesoundSearch.svelte";
 
 const categoryLabels: Record<SoundSampleCategory, string> = {
   music: 'Music',
@@ -179,7 +179,7 @@ $effect(() => {
 {/snippet}
 
 {#snippet sortSelect()}
-    <Select.Root type="single" value={sortValue ?? undefined} onValueChange={(v) => { sortValue = (v as SortOption) ?? null }}>
+    <Select.Root type="single" value={sortValue ?? undefined} onValueChange={(v) => { sortValue = v ?? null }}>
         <Select.Trigger class={["btn btn-circle btn-sm", sortValue ? 'btn-primary' : 'btn-ghost']}>
             <ArrowUpDown class="size-4"/>
         </Select.Trigger>
@@ -192,7 +192,7 @@ $effect(() => {
                 {/each}
                 {#if sortValue}
                     <div class="border-t border-base-content/10 mt-1 pt-1">
-                        <button class="cursor-pointer rounded px-3 py-1.5 text-sm text-error hover:bg-base-300 w-full text-left outline-none" onclick={() => sortValue = null}>
+                        <button type="button" class="cursor-pointer rounded px-3 py-1.5 text-sm text-error hover:bg-base-300 w-full text-left outline-none" onclick={() => sortValue = null}>
                             Remove sort
                         </button>
                     </div>
@@ -205,7 +205,7 @@ $effect(() => {
 {#snippet filter()}
     <div class="px-4 py-2 flex-center gap-1 border-b border-base-content/10">
         <div class="join">
-            <button
+            <button type="button"
                 class={["btn btn-xs join-item", activeCategoryFilters.size === 0 ? 'btn-primary' : 'btn-ghost']}
                 onclick={() => activeCategoryFilters.clear()}
             >
@@ -213,7 +213,7 @@ $effect(() => {
             </button>
             {#each Object.entries(sampleIcons) as [cat, Icon]}
                 {@const category = cat as SoundSampleCategory}
-                <button
+                <button type="button"
                     class={["btn btn-xs join-item", activeCategoryFilters.has(category) ? 'btn-primary' : 'btn-ghost']}
                     onclick={() => toggleCategoryFilter(category)}
                 >
@@ -232,7 +232,7 @@ $effect(() => {
 {#snippet tagFilter()}
     <div class="px-4 py-1.5 flex items-center gap-1 overflow-x-auto border-b border-base-content/10">
         {#each availableTags as tag (tag)}
-            <button
+            <button type="button"
                 class={["btn btn-xs shrink-0", activeTagFilters.has(tag) ? 'btn-primary' : 'btn-ghost bg-base-content/5']}
                 onclick={() => toggleTagFilter(tag)}
             >
@@ -240,7 +240,7 @@ $effect(() => {
             </button>
         {/each}
         {#if activeTagFilters.size > 0}
-            <button class="btn btn-xs btn-ghost text-error shrink-0 ml-1" onclick={() => activeTagFilters.clear()}>
+            <button type="button" class="btn btn-xs btn-ghost text-error shrink-0 ml-1" onclick={() => activeTagFilters.clear()}>
                 <X class="size-3"/> Clear
             </button>
         {/if}

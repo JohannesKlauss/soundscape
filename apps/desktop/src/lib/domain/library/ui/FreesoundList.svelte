@@ -4,7 +4,7 @@ import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.sve
 import type { FreesoundSound } from '$lib/freesound'
 import { formatTime } from '$lib/engine/volume'
 import Tooltip from '$lib/components/Tooltip.svelte'
-import CreateNew from "$lib/domain/soundSample/ui/CreateNew.svelte";
+import CreateNew from "$lib/domain/library/ui/CreateNew.svelte";
 
 interface Props {
   sounds: FreesoundSound[]
