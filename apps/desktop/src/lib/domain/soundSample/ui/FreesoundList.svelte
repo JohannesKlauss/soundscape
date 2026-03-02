@@ -37,7 +37,7 @@ function onAddSampleToLibrary(name: string, url: string) {
 
 <ul class="list">
     {#each sounds as sound (sound.id)}
-        <li class="list-row px-4 py-2 text-sm hover:bg-base-300 flex-center">
+        <li class="list-row px-4 py-2 text-sm hover:bg-base-100 flex-center">
             <div class="flex-center">
                 <Tooltip side="left">
                     {#snippet trigger()}

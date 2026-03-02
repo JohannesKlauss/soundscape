@@ -5,18 +5,17 @@ import { liveQuery } from 'dexie'
 import BottomSheet from '$lib/components/BottomSheet.svelte'
 import { db } from '$lib/db'
 import CreateNew from '$lib/domain/soundSample/ui/CreateNew.svelte'
-import FreesoundList from '$lib/domain/soundSample/ui/FreesoundList.svelte'
 import List from '$lib/domain/soundSample/ui/List.svelte'
 import ReindexLibrary from '$lib/domain/soundSample/ui/ReindexLibrary.svelte'
-import { freesoundState, searchFreesound, loadNextFreesoundPage, clearFreesoundResults } from '$lib/freesound'
+import { searchFreesound, clearFreesoundResults } from '$lib/freesound'
 import Fuse from 'fuse.js'
 import {stopPreviewSource} from "$lib/domain/previewPlayer/previewPlayer.svelte";
 import {dropNewSampleDnd, dropNewSampleState} from "$lib/domain/soundSample/ui/dropNewSample.svelte";
+import FreesoundSearch from "$lib/domain/soundSample/ui/FreesoundSearch.svelte";
 
 let open = $state(false)
 let searchText = $state('')
 let scrollContainer: HTMLDivElement | undefined = $state()
-let sentinel: HTMLDivElement | undefined = $state()
 
 const samples = liveQuery(() => db.sample.toArray())
 
@@ -45,23 +44,6 @@ $effect(() => {
     clearFreesoundResults()
   }
 })
-
-$effect(() => {
-  if (!sentinel || !scrollContainer) return
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (entries[0].isIntersecting && freesoundState.hasMore && !freesoundState.isLoadingMore) {
-        loadNextFreesoundPage()
-      }
-    },
-    { root: scrollContainer, threshold: 0.1 },
-  )
-
-  observer.observe(sentinel)
-
-  return () => observer.disconnect()
-})
 </script>
 
 <div class="bg-base-100 relative">
@@ -84,30 +66,10 @@ $effect(() => {
             </div>
         {/snippet}
 
-        <div class="max-h-[50vh] overflow-y-scroll" bind:this={scrollContainer}>
+        <div class="max-h-[50vh] overflow-y-scroll bg-base-300" bind:this={scrollContainer}>
             <List samples={filteredSamples}/>
 
-            {#if freesoundState.results.length > 0}
-                <div class="divider text-xs text-muted px-4 my-0">freesound.org ({freesoundState.totalCount} results)</div>
-                <FreesoundList sounds={freesoundState.results}/>
-            {/if}
-
-            {#if freesoundState.isSearching || freesoundState.isLoadingMore}
-                <div class="flex items-center justify-center py-4">
-                    <span class="loading loading-spinner loading-sm"></span>
-                </div>
-            {:else if filteredSamples?.length === 0 && freesoundState.totalCount === 0}
-                <div class="flex items-center justify-center py-4 text-muted">
-                    No results found.
-                </div>
-            {/if}
-
-            {#if freesoundState.error}
-                <div class="text-xs text-error text-center py-2">{freesoundState.error}</div>
-            {/if}
-
-            <!-- Sentinel element for infinite scroll -->
-            <div bind:this={sentinel} class="h-1"></div>
+            <FreesoundSearch {scrollContainer} isSearchActive={searchText.length >= 2}/>
         </div>
     </BottomSheet>
 

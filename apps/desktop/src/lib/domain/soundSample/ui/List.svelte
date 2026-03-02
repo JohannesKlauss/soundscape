@@ -19,7 +19,7 @@ let {samples }: Props = $props()
         {@const {ref, dragInstanceId} = useDraggable<SoundSample>({id: 'sample', data: sample})}
         {@const Icon = sampleIcons[sample.category]}
 
-        <li class="list-row px-4 py-2 text-sm bg-base-300 hover:bg-base-100 flex-center group">
+        <li class="list-row px-4 py-2 text-sm hover:bg-base-100 flex-center group">
             <div class="flex-center">
                 <Tooltip>
                     {#snippet trigger()}
