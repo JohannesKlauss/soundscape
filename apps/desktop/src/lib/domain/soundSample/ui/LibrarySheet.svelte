@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ArrowUpDown, Library, Search, Upload } from '@lucide/svelte'
+import { ArrowUpDown, Library, Search, Upload, X } from '@lucide/svelte'
 import { Collapsible, Select } from 'bits-ui'
 import { liveQuery } from 'dexie'
 import { SvelteSet } from 'svelte/reactivity'
@@ -37,11 +37,17 @@ let open = $state(false)
 let searchText = $state('')
 let scrollContainer: HTMLDivElement | undefined = $state()
 let activeCategoryFilters = new SvelteSet<SoundSampleCategory>()
+let activeTagFilters = new SvelteSet<string>()
 let sortValue = $state<SortOption | null>(null)
 
 function toggleCategoryFilter(cat: SoundSampleCategory) {
   if (activeCategoryFilters.has(cat)) activeCategoryFilters.delete(cat)
   else activeCategoryFilters.add(cat)
+}
+
+function toggleTagFilter(tag: string) {
+  if (activeTagFilters.has(tag)) activeTagFilters.delete(tag)
+  else activeTagFilters.add(tag)
 }
 
 const samples = liveQuery(() => db.sample.toArray())
@@ -61,12 +67,40 @@ function applySorting<T extends { name: string; duration: number; id: number }>(
   })
 }
 
+// Samples after category filter only (used to derive available tags)
+const categoryFilteredSamples = $derived.by(() => {
+  return activeCategoryFilters.size > 0
+    ? $samples?.filter(s => activeCategoryFilters.has(s.category))
+    : $samples
+})
+
+// All unique tags from category-filtered samples, sorted alphabetically
+const availableTags = $derived.by(() => {
+  if (!categoryFilteredSamples) return []
+  const tagSet = new Set<string>()
+  for (const s of categoryFilteredSamples) {
+    for (const t of s.tags ?? []) tagSet.add(t)
+  }
+  return [...tagSet].sort()
+})
+
 const filteredSamples = $derived.by(() => {
-  let result = activeCategoryFilters.size > 0 ? $samples.filter(s => activeCategoryFilters.has(s.category)) : $samples
+  let result = categoryFilteredSamples
+
+  // Tag filter (AND logic: sample must have ALL selected tags)
+  if (result && activeTagFilters.size > 0) {
+    result = result.filter(s => {
+      const sampleTags = s.tags ?? []
+      for (const tag of activeTagFilters) {
+        if (!sampleTags.includes(tag)) return false
+      }
+      return true
+    })
+  }
 
   if (result && searchText.length >= 2) {
     const f = new Fuse(result, {
-      keys: ['name'],
+      keys: ['name', 'tags'],
       minMatchCharLength: 2,
       threshold: 0.3,
     })
@@ -91,16 +125,18 @@ $effect(() => {
 <div class="bg-base-100 relative">
     <BottomSheet bind:open={open}>
         {#snippet title()}
-            <Collapsible.Trigger class="flex-center justify-start w-full">
-                <Library class="size-4"/>
-                {#if $samples?.length !== filteredSamples?.length}
-                    <span class="text-sm opacity-60 tracking-wide">Show {filteredSamples.length} (of {$samples?.length}) Sample{$samples?.length !== 1 ? 's' : null} in Library</span>
-                {:else}
-                    <span class="text-sm opacity-60 tracking-wide">{$samples?.length} Sample{$samples?.length !== 1 ? 's' : null} in Library</span>
-                {/if}
+            <div class="flex-center justify-start w-full">
+                <Collapsible.Trigger class="flex-center justify-start w-full">
+                    <Library class="size-4"/>
+                    {#if $samples?.length !== filteredSamples?.length}
+                        <span class="text-sm opacity-60 tracking-wide">Show {filteredSamples.length} (of {$samples?.length}) Sample{$samples?.length !== 1 ? 's' : null} in Library</span>
+                    {:else}
+                        <span class="text-sm opacity-60 tracking-wide">{$samples?.length} Sample{$samples?.length !== 1 ? 's' : null} in Library</span>
+                    {/if}
+                </Collapsible.Trigger>
 
                 {@render searchInput()}
-            </Collapsible.Trigger>
+            </div>
 
             <ReindexLibrary numSamples={$samples.length}/>
             <div class="ml-auto">
@@ -109,9 +145,13 @@ $effect(() => {
         {/snippet}
 
         <div class="bg-base-300">
-            {@render categoryFilter()}
+            {@render filter()}
 
-            <div class="max-h-[50vh] overflow-y-scroll" bind:this={scrollContainer}>
+            {#if availableTags.length > 0}
+                {@render tagFilter()}
+            {/if}
+
+            <div class="min-h-[50vh] max-h-[50vh] overflow-y-scroll" bind:this={scrollContainer}>
                 <List samples={filteredSamples}/>
 
                 <FreesoundSearch {scrollContainer} isSearchActive={searchText.length >= 2}/>
@@ -162,7 +202,7 @@ $effect(() => {
     </Select.Root>
 {/snippet}
 
-{#snippet categoryFilter()}
+{#snippet filter()}
     <div class="px-4 py-2 flex-center gap-1 border-b border-base-content/10">
         <div class="join">
             <button
@@ -186,6 +226,24 @@ $effect(() => {
         <div class="ml-auto">
             {@render sortSelect()}
         </div>
+    </div>
+{/snippet}
+
+{#snippet tagFilter()}
+    <div class="px-4 py-1.5 flex items-center gap-1 overflow-x-auto border-b border-base-content/10">
+        {#each availableTags as tag (tag)}
+            <button
+                class={["btn btn-xs shrink-0", activeTagFilters.has(tag) ? 'btn-primary' : 'btn-ghost bg-base-content/5']}
+                onclick={() => toggleTagFilter(tag)}
+            >
+                {tag}
+            </button>
+        {/each}
+        {#if activeTagFilters.size > 0}
+            <button class="btn btn-xs btn-ghost text-error shrink-0 ml-1" onclick={() => activeTagFilters.clear()}>
+                <X class="size-3"/> Clear
+            </button>
+        {/if}
     </div>
 {/snippet}
 

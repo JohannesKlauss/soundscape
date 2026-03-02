@@ -1,9 +1,12 @@
 <script lang="ts">
-import { AudioWaveform, GripVertical } from '@lucide/svelte'
+import { AudioWaveform, GripVertical, Tags } from '@lucide/svelte'
+import { Popover } from 'bits-ui'
 import { DragOverlay, useDraggable } from '$lib/dnd'
+import { db } from '$lib/db'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import type { SoundSample } from '$lib/domain/soundSample/_types'
 import { sampleIcons } from '$lib/domain/soundSample/ui/sampleIcons'
+import TagInput from '$lib/domain/soundSample/ui/TagInput.svelte'
 import { formatTime } from '$lib/engine/volume'
 import Tooltip from "$lib/components/Tooltip.svelte";
 
@@ -11,7 +14,21 @@ interface Props {
   samples: SoundSample[]
 }
 
-let {samples }: Props = $props()
+let { samples }: Props = $props()
+
+const MAX_VISIBLE_TAGS = 3
+
+let editingTags = $state<{ sampleId: number; tags: string[] } | null>(null)
+
+function onPopoverToggle(sample: SoundSample, isOpen: boolean) {
+  if (isOpen) {
+    editingTags = { sampleId: sample.id, tags: [...(sample.tags ?? [])] }
+  } else if (editingTags?.sampleId === sample.id) {
+    db.sample.update(editingTags.sampleId, { tags: $state.snapshot(editingTags.tags) })
+
+    editingTags = null
+  }
+}
 </script>
 
 <ul class="list">
@@ -28,9 +45,46 @@ let {samples }: Props = $props()
                 <span class="capitalize">{sample.category}</span>
             </Tooltip>
             <span class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">{sample.name}</span>
+
+            {#if sample.tags?.length}
+                <div class="flex-center gap-1 ml-2">
+                    {#each sample.tags.slice(0, MAX_VISIBLE_TAGS) as tag (tag)}
+                        <span class="badge badge-sm bg-base-content/10 text-base-content/60">{tag}</span>
+                    {/each}
+
+                    {#if sample.tags.length > MAX_VISIBLE_TAGS}
+                        <Tooltip>
+                            {#snippet trigger()}
+                                <span class="badge badge-sm bg-base-content/10 text-base-content/40">+{sample.tags.length - MAX_VISIBLE_TAGS}</span>
+                            {/snippet}
+
+                            {sample.tags.slice(MAX_VISIBLE_TAGS).join(', ')}
+                        </Tooltip>
+                    {/if}
+                </div>
+            {/if}
+
             <span class="text-xs text-muted tabular-nums min-w-12 text-right">{formatTime(sample.duration)}</span>
 
             <div class="ml-4 flex-center opacity-0 group-hover:opacity-100">
+                <Popover.Root onOpenChange={(isOpen) => onPopoverToggle(sample, isOpen)}>
+                    <Popover.Trigger class="btn btn-circle btn-sm btn-ghost">
+                        <Tags class="size-4 text-muted"/>
+                    </Popover.Trigger>
+                    <Popover.Portal>
+                        <Popover.Content
+                            class="z-50 rounded-box bg-base-200 shadow-xl p-3 w-72 animate-in fade-in-0 zoom-in-95"
+                            sideOffset={4}
+                            side="top"
+                        >
+                            {#if editingTags?.sampleId === sample.id}
+                                <div class="text-xs text-muted mb-2">Edit tags for {sample.name}</div>
+                                <TagInput bind:tags={editingTags.tags}/>
+                            {/if}
+                        </Popover.Content>
+                    </Popover.Portal>
+                </Popover.Root>
+
                 <div {@attach ref} class="btn btn-circle btn-sm btn-ghost">
                     <GripVertical class="size-4 text-muted cursor-grab"/>
                 </div>

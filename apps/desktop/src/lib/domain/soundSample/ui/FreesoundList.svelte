@@ -15,6 +15,7 @@ let { sounds }: Props = $props()
 let createNewOpen = $state(false)
 let createNewUrl = $state('')
 let createNewName = $state('')
+let createNewTags = $state<string[]>([])
 
 function formatDownloads(n: number): string {
   if (n >= 1_000_000) {
@@ -28,9 +29,10 @@ function formatDownloads(n: number): string {
   return String(n)
 }
 
-function onAddSampleToLibrary(name: string, url: string) {
+function onAddSampleToLibrary(name: string, url: string, tags: string[]) {
   createNewName = name
   createNewUrl = url
+  createNewTags = tags.slice(0, 5).map(t => t.toLowerCase())
   createNewOpen = true
 }
 </script>
@@ -58,6 +60,24 @@ function onAddSampleToLibrary(name: string, url: string) {
                     {sound.name}
                 {/if}
             </span>
+
+            {#if sound.tags.length > 0}
+                <div class="flex-center gap-1 ml-2">
+                    {#each sound.tags.slice(0, 3) as tag (tag)}
+                        <span class="badge badge-xs bg-base-content/10 text-base-content/60">{tag}</span>
+                    {/each}
+                    {#if sound.tags.length > 3}
+                        <Tooltip>
+                            {#snippet trigger()}
+                                <span class="badge badge-xs bg-base-content/10 text-base-content/40">+{sound.tags.length - 3}</span>
+                            {/snippet}
+
+                            {sound.tags.slice(3).join(', ')}
+                        </Tooltip>
+                    {/if}
+                </div>
+            {/if}
+
             <div class="grid grid-cols-3 gap-2 ml-2 text-right w-40">
                 <Tooltip>
                     {#snippet trigger()}
@@ -80,14 +100,13 @@ function onAddSampleToLibrary(name: string, url: string) {
                 <span class="text-xs text-muted text-right">{formatTime(sound.duration)}</span>
             </div>
 
-
             <div class="ml-4 flex-center">
-                <Tooltip triggerProps={{class: "btn btn-ghost btn-circle btn-sm", onclick: () => onAddSampleToLibrary(sound.name, sound.previews['preview-hq-mp3'])}}>
+                <Tooltip triggerProps={{class: "btn btn-ghost btn-circle btn-sm", onclick: () => onAddSampleToLibrary(sound.name, sound.previews['preview-hq-mp3'], sound.tags)}}>
                     {#snippet trigger()}
                         <PlusIcon class="size-3"/>
                     {/snippet}
 
-                    Save Sample to Library
+                    Add Sample to Library
                 </Tooltip>
                 <QuickPreviewPlayer src={sound.previews['preview-hq-mp3']} contentType="audio/mpeg" />
             </div>
@@ -95,4 +114,4 @@ function onAddSampleToLibrary(name: string, url: string) {
     {/each}
 </ul>
 
-<CreateNew bind:open={createNewOpen} bind:url={createNewUrl} bind:name={createNewName} showTrigger={false} />
+<CreateNew bind:open={createNewOpen} bind:url={createNewUrl} bind:name={createNewName} bind:tags={createNewTags} showTrigger={false} />

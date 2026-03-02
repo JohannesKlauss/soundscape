@@ -7,6 +7,7 @@ import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/soundSample/_types'
 import SamplePlayer from '$lib/domain/soundSample/ui/SamplePlayer.svelte'
+import TagInput from '$lib/domain/soundSample/ui/TagInput.svelte'
 import { getExtensionFromContentType, mimeToExt, writeFileToSamplesDirectory } from '$lib/fileSystem'
 
 interface Props {
@@ -14,10 +15,11 @@ interface Props {
   url?: string
   name?: string
   file?: File | null
+  tags?: string[]
   showTrigger?: boolean
 }
 
-let { open = $bindable(false), url = $bindable(''), name = $bindable(''), file = $bindable<File | null>(null), showTrigger = true }: Props = $props()
+let { open = $bindable(false), url = $bindable(''), name = $bindable(''), file = $bindable<File | null>(null), tags = $bindable<string[]>([]), showTrigger = true }: Props = $props()
 
 let category = $state<SoundSampleCategory>('music')
 let isAudio = $state(false)
@@ -151,6 +153,7 @@ async function addFromUrl() {
     src: fileName,
     duration: player.buffer.duration,
     type: 'web',
+    tags: $state.snapshot(tags),
   })
 
   resetForm()
@@ -172,6 +175,7 @@ async function addFromFile() {
     src: fileName,
     duration: player.buffer.duration,
     type: 'local',
+    tags: $state.snapshot(tags),
   })
 
   resetForm()
@@ -182,6 +186,7 @@ function resetForm() {
   name = ''
   url = ''
   file = null
+  tags = []
   isAudio = false
   isYoutube = false
   category = 'music'
@@ -254,11 +259,17 @@ function resetForm() {
             </label>
         </div>
 
-        {#if isAudio}
-            <div class="divider"></div>
-            <SamplePlayer {player}/>
-        {/if}
     </div>
+
+    <div class="fieldset">
+        <span class="label">Tags</span>
+        <TagInput bind:tags placeholder="Add tag and press Enter..."/>
+    </div>
+
+    {#if isAudio}
+        <div class="divider"></div>
+        <SamplePlayer {player}/>
+    {/if}
 </Dialog>
 
 {#snippet dropZone()}

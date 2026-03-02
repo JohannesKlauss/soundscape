@@ -20,4 +20,12 @@ db.version(1).stores({
   mood: '++id',
 })
 
+db.version(2).stores({
+  set: '++id',
+  sample: '++id, *tags',
+  pad: '++id',
+  setHasPads: '[setId+padId],setId,padId',
+  mood: '++id',
+})
+
 export { db }
