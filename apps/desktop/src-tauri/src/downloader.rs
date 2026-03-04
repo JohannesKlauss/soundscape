@@ -4,6 +4,7 @@ use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::sync::Mutex;
+use yt_dlp::client::deps::Libraries;
 use yt_dlp::model::selector::{AudioCodecPreference, AudioQuality};
 use yt_dlp::Downloader;
 
@@ -78,7 +79,8 @@ fn emit_progress(app: &AppHandle, status: &str, percent: Option<f64>) {
 
 // -- Commands --
 
-/// Check for / download the yt-dlp and ffmpeg binaries.
+/// Download and set up the yt-dlp and ffmpeg binaries in the app data directory.
+/// Binaries are fully managed by the app — no system dependencies required.
 /// Emits `dependency-status` events while working.
 #[tauri::command]
 pub async fn ensure_dependencies(
@@ -112,14 +114,40 @@ pub async fn ensure_dependencies(
 
     let (libs_dir, output_dir) = get_dirs(&app)?;
 
-    // `with_new_binaries` downloads missing binaries automatically.
-    // If they already exist on disk the call is essentially a no-op.
-    let downloader = Downloader::with_new_binaries(libs_dir, &output_dir)
-        .await
-        .map_err(|e| format!("Failed to install binaries: {e}"))?
-        .build()
-        .await
-        .map_err(|e| format!("Failed to build downloader: {e}"))?;
+    let yt_dlp_path = libs_dir.join("yt-dlp");
+    let ffmpeg_path = libs_dir.join("ffmpeg");
+
+    let downloader = if yt_dlp_path.exists() && ffmpeg_path.exists() {
+        // Binaries already downloaded — use them directly, no network calls
+        let libraries = Libraries::new(yt_dlp_path.clone(), ffmpeg_path);
+        Downloader::builder(libraries, &output_dir)
+            .build()
+            .await
+            .map_err(|e| format!("Failed to build downloader: {e}"))?
+    } else {
+        // First run — download both binaries from GitHub releases
+        Downloader::with_new_binaries(&libs_dir, &output_dir)
+            .await
+            .map_err(|e| format!("Failed to install binaries: {e}"))?
+            .build()
+            .await
+            .map_err(|e| format!("Failed to build downloader: {e}"))?
+    };
+
+    // The yt-dlp crate doesn't set the executable bit on the yt-dlp binary
+    // (it does for ffmpeg). Fix that here so the binary can actually run.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if yt_dlp_path.exists() {
+            let mut perms = std::fs::metadata(&yt_dlp_path)
+                .map_err(|e| format!("Failed to read yt-dlp permissions: {e}"))?
+                .permissions();
+            perms.set_mode(0o755);
+            std::fs::set_permissions(&yt_dlp_path, perms)
+                .map_err(|e| format!("Failed to set yt-dlp executable bit: {e}"))?;
+        }
+    }
 
     *state.downloader.lock().await = Some(downloader);
 

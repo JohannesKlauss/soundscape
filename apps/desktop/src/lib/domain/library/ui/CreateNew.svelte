@@ -1,4 +1,5 @@
 <script lang="ts">
+import { untrack } from 'svelte'
 import { AudioWaveform, Loader2, Music, PlusIcon, Sparkle } from '@lucide/svelte'
 import { toast } from 'svelte-sonner'
 import { Player } from 'tone'
@@ -28,6 +29,7 @@ let { open = $bindable(false), url = $bindable(''), name = $bindable(''), file =
 let category = $state<SoundSampleCategory>('music')
 let isAudio = $state(false)
 let isYoutube = $state(false)
+let isFetching = $state(false)
 let ytInfo = $state<{ title: string; duration: number; tags: string[] } | null>(null)
 
 const player = new Player().toDestination()
@@ -37,7 +39,7 @@ const source = $derived<'url' | 'file' | null>(file ? 'file' : url.length > 0 ? 
 
 $effect(() => {
   if (url.length > 0 && url.startsWith('http') && !file) {
-    loadAudioFromUrl()
+    untrack(() => loadAudioFromUrl())
   }
 })
 
@@ -48,35 +50,38 @@ $effect(() => {
 })
 
 async function loadAudioFromUrl() {
+  if (isFetching) {
+    return
+  }
+
+  isFetching = true
+  isAudio = false
+  isYoutube = false
+  ytInfo = null
+  name = ''
+  tags = []
+
   try {
     await player.load(url)
     isAudio = true
-    isYoutube = false
-    ytInfo = null
   } catch {
-    // Not a direct audio URL — try yt-dlp if dependencies are ready
-    isAudio = false
-
-    if (ytDlpState.ready) {
-      try {
-        const info = await fetchAudioInfo(url)
-        isYoutube = true
-        ytInfo = info
-
-        if (!name || name.length === 0) {
-          name = info.title
-        }
-        if (tags.length === 0 && info.tags.length > 0) {
-          tags = info.tags
-        }
-      } catch {
-        toast.error('URL is not a recognized audio source.')
-        isYoutube = false
-        ytInfo = null
-      }
-    } else {
-      toast.error('URL is not an audio file.')
+    if (!ytDlpState.ready) {
+      return
     }
+
+    try {
+      const info = await fetchAudioInfo(url)
+      isYoutube = true
+      ytInfo = info
+      name = info.title
+      tags = info.tags
+    } catch (e) {
+      toast.error(`Failed to fetch audio info: ${e}`)
+      isYoutube = false
+      ytInfo = null
+    }
+  } finally {
+    isFetching = false
   }
 }
 
@@ -245,9 +250,14 @@ function resetForm() {
 
     <div class="fieldset">
         <label class="label" for="url">Link to URL</label>
-        <input type="text" class="input w-full" name="url"
-               placeholder="https://example.com/media.mp3 or YouTube link"
-               bind:value={url} disabled={!!file}/>
+        <div class="relative">
+            <input type="text" class="input w-full pr-10" name="url"
+                   placeholder="https://example.com/media.mp3 or YouTube link"
+                   bind:value={url} disabled={!!file || isFetching}/>
+            {#if isFetching}
+                <Loader2 class="size-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-muted" />
+            {/if}
+        </div>
     </div>
 
     <div class="fieldset">
