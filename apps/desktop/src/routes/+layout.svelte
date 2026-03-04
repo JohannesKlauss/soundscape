@@ -6,6 +6,7 @@ import AlertDialog from '$lib/components/AlertDialog.svelte'
 import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
 import LibrarySheet from '$lib/domain/library/ui/LibrarySheet.svelte'
 import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
+import DependencyIndicator from '$lib/domain/library/ui/DependencyIndicator.svelte'
 import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
 
@@ -23,7 +24,10 @@ let { children }: Props = $props()
                 <h1 class="text-5xl bg-base-100/40 p-1">SØUND/SCAPE<sup class="text-xl">______vØ.1 a1pha</sup></h1>
             </div>
 
-            <GlobalControl/>
+            <div class="flex items-center gap-4">
+                <DependencyIndicator/>
+                <GlobalControl/>
+            </div>
         </div>
 
         <AudioContext/>

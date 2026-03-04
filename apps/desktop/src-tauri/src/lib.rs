@@ -1,3 +1,5 @@
+mod downloader;
+
 use std::sync::Arc;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
@@ -5,6 +7,8 @@ use tauri::Emitter;
 use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 use tokio_tungstenite::accept_async;
+
+use crate::downloader::DownloaderState;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 struct SceneCommand {
@@ -72,7 +76,15 @@ async fn start_websocket_server(app: tauri::AppHandle) -> Result<String, String>
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![start_websocket_server])
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_window_state::Builder::default().build())
+        .manage(DownloaderState::default())
+        .invoke_handler(tauri::generate_handler![
+            start_websocket_server,
+            downloader::ensure_dependencies,
+            downloader::fetch_audio_info,
+            downloader::download_audio,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -63,6 +63,7 @@ function applySorting<T extends { name: string; duration: number; id: number }>(
       case 'duration-desc': return b.duration - a.duration
       case 'newest': return b.id - a.id
       case 'oldest': return a.id - b.id
+      default: return b.id - a.id
     }
   })
 }

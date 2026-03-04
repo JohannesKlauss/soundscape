@@ -10,6 +10,7 @@ import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
 import TagInput from '$lib/domain/library/ui/TagInput.svelte'
 import { formatTime } from '$lib/engine/volume'
 import Tooltip from "$lib/components/Tooltip.svelte";
+import {previewPlayerState} from "$lib/domain/previewPlayer/previewPlayer.svelte";
 
 interface Props {
   samples: SoundSample[]
@@ -52,7 +53,7 @@ const { ref: renameRef } = useInlineRename({ onSave: saveSampleName, onCancel: c
 </script>
 
 <ul class="list">
-    {#each samples as sample}
+    {#each samples as sample (sample.id)}
         {@const {ref, dragInstanceId} = useDraggable<SoundSample>({id: 'sample', data: sample})}
         {@const Icon = sampleIcons[sample.category]}
 
@@ -98,7 +99,7 @@ const { ref: renameRef } = useInlineRename({ onSave: saveSampleName, onCancel: c
 
             <span class="text-xs text-muted tabular-nums min-w-12 text-right">{formatTime(sample.duration)}</span>
 
-            <div class="ml-4 flex-center opacity-0 group-hover:opacity-100">
+            <div class={["ml-4 flex-center opacity-0 group-hover:opacity-100"]}>
                 <Popover.Root onOpenChange={(isOpen) => onPopoverToggle(sample, isOpen)}>
                     <Popover.Trigger class="btn btn-circle btn-sm btn-ghost">
                         <Tags class="size-4 text-muted"/>

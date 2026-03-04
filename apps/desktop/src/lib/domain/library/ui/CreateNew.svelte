@@ -1,14 +1,18 @@
 <script lang="ts">
-import { AudioWaveform, Music, PlusIcon, Sparkle, Upload } from '@lucide/svelte'
+import { AudioWaveform, Loader2, Music, PlusIcon, Sparkle } from '@lucide/svelte'
 import { toast } from 'svelte-sonner'
 import { Player } from 'tone'
+import { readFile, remove } from '@tauri-apps/plugin-fs'
+
 import Dialog from '$lib/components/Dialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/library/_types'
+import DropZone from '$lib/domain/library/ui/DropZone.svelte'
 import SamplePlayer from '$lib/domain/library/ui/SamplePlayer.svelte'
 import TagInput from '$lib/domain/library/ui/TagInput.svelte'
-import { getExtensionFromContentType, mimeToExt, writeFileToSamplesDirectory } from '$lib/fileSystem'
+import { ytDlpState, fetchAudioInfo, downloadAudio } from '$lib/domain/library/ui/ytDlpState.svelte'
+import { getExtensionFromContentType, writeFileToSamplesDirectory } from '$lib/fileSystem'
 
 interface Props {
   open?: boolean
@@ -24,14 +28,11 @@ let { open = $bindable(false), url = $bindable(''), name = $bindable(''), file =
 let category = $state<SoundSampleCategory>('music')
 let isAudio = $state(false)
 let isYoutube = $state(false)
-let isDraggingOver = $state(false)
-let fileInputEl: HTMLInputElement | undefined = $state()
+let ytInfo = $state<{ title: string; duration: number; tags: string[] } | null>(null)
 
 const player = new Player().toDestination()
 
-const acceptedMimes = Object.keys(mimeToExt).join(',')
-
-const isReady = $derived(isAudio && name.trim().length >= 3)
+const isReady = $derived((isAudio || isYoutube) && name.trim().length >= 3)
 const source = $derived<'url' | 'file' | null>(file ? 'file' : url.length > 0 ? 'url' : null)
 
 $effect(() => {
@@ -51,9 +52,31 @@ async function loadAudioFromUrl() {
     await player.load(url)
     isAudio = true
     isYoutube = false
+    ytInfo = null
   } catch {
-    toast.error('URL is not an audio file.')
+    // Not a direct audio URL — try yt-dlp if dependencies are ready
     isAudio = false
+
+    if (ytDlpState.ready) {
+      try {
+        const info = await fetchAudioInfo(url)
+        isYoutube = true
+        ytInfo = info
+
+        if (!name || name.length === 0) {
+          name = info.title
+        }
+        if (tags.length === 0 && info.tags.length > 0) {
+          tags = info.tags
+        }
+      } catch {
+        toast.error('URL is not a recognized audio source.')
+        isYoutube = false
+        ytInfo = null
+      }
+    } else {
+      toast.error('URL is not an audio file.')
+    }
   }
 }
 
@@ -63,6 +86,7 @@ async function loadAudioFromFile(f: File) {
     await player.load(objectUrl)
     isAudio = true
     isYoutube = false
+    ytInfo = null
 
     if (!name || name.length === 0) {
       name = f.name.replace(/\.[^.]+$/, '')
@@ -74,57 +98,51 @@ async function loadAudioFromFile(f: File) {
   }
 }
 
-function handleFileSelect(e: Event) {
-  const input = e.target as HTMLInputElement
-  const selected = input.files?.[0]
-  if (!selected) return
-
-  if (!mimeToExt[selected.type]) {
-    toast.error(`Unsupported file type: ${selected.type}`)
-    return
-  }
-
+function handleFileSelected(f: File) {
   url = ''
-  file = selected
-}
-
-function handleDrop(e: DragEvent) {
-  e.preventDefault()
-  isDraggingOver = false
-
-  const dropped = e.dataTransfer?.files?.[0]
-  if (!dropped) return
-
-  if (!mimeToExt[dropped.type]) {
-    toast.error(`Unsupported file type: ${dropped.type || 'unknown'}`)
-    return
-  }
-
-  url = ''
-  file = dropped
-}
-
-function handleDragOver(e: DragEvent) {
-  e.preventDefault()
-  isDraggingOver = true
-}
-
-function handleDragLeave(e: DragEvent) {
-  e.preventDefault()
-  isDraggingOver = false
+  file = f
 }
 
 function clearFile() {
   file = null
   isAudio = false
-  if (fileInputEl) fileInputEl.value = ''
 }
 
 async function onAddAudio() {
-  if (source === 'file' && file) {
+  if (isYoutube) {
+    await addFromYoutube()
+  } else if (source === 'file' && file) {
     await addFromFile()
   } else if (source === 'url') {
     await addFromUrl()
+  }
+}
+
+async function addFromYoutube() {
+  try {
+    const result = await downloadAudio(url)
+
+    const fileBytes = await readFile(result.file_path)
+    const blob = new Blob([fileBytes], { type: result.content_type })
+
+    const fileName = `${name}-${crypto.randomUUID().slice(0, 8)}.mp3`
+    await writeFileToSamplesDirectory(fileName, blob)
+
+    db.sample.add({
+      category,
+      name,
+      contentType: result.content_type,
+      src: fileName,
+      duration: result.duration,
+      type: 'yt',
+      tags: $state.snapshot(tags),
+    })
+
+    await remove(result.file_path).catch(() => {})
+
+    resetForm()
+  } catch (e) {
+    toast.error(`Download failed: ${e}`)
   }
 }
 
@@ -189,16 +207,16 @@ function resetForm() {
   tags = []
   isAudio = false
   isYoutube = false
+  ytInfo = null
   category = 'music'
-
-  if (fileInputEl) {
-    fileInputEl.value = ''
-  }
 }
 </script>
 
-<Dialog bind:open={open} onConfirm={isReady ? onAddAudio : () => null} confirmDisabled={!isReady}
-        confirmText="Add to library" onCancel={() => resetForm()}>
+<Dialog bind:open={open}
+        onConfirm={isReady && !ytDlpState.isDownloading ? onAddAudio : () => null}
+        confirmDisabled={!isReady || ytDlpState.isDownloading}
+        confirmText={ytDlpState.isDownloading ? 'Downloading...' : 'Add to library'}
+        onCancel={() => resetForm()}>
     {#snippet trigger(props)}
         {#if showTrigger}
             <Tooltip>
@@ -218,17 +236,18 @@ function resetForm() {
     {/snippet}
 
     {#snippet description()}
-        Add a sample from a URL or drop a file from your computer
+        Add a sample from a URL, YouTube link, or drop a file from your computer
     {/snippet}
 
-    {@render dropZone()}
+    <DropZone {file} onFileSelected={handleFileSelected} onClear={clearFile} />
 
     <div class="divider text-xs text-muted my-2">OR</div>
 
     <div class="fieldset">
         <label class="label" for="url">Link to URL</label>
-        <input type="text" class="input w-full" name="url" placeholder="https://example.com/media.mp3" bind:value={url}
-               disabled={!!file}/>
+        <input type="text" class="input w-full" name="url"
+               placeholder="https://example.com/media.mp3 or YouTube link"
+               bind:value={url} disabled={!!file}/>
     </div>
 
     <div class="fieldset">
@@ -258,7 +277,6 @@ function resetForm() {
                 Atmosphere
             </label>
         </div>
-
     </div>
 
     <div class="fieldset">
@@ -266,46 +284,27 @@ function resetForm() {
         <TagInput bind:tags placeholder="Add tag and press Enter..."/>
     </div>
 
-    {#if isAudio}
+    {#if ytDlpState.isDownloading}
+        <div class="divider"></div>
+        <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-2 text-sm text-muted">
+                <Loader2 class="size-4 animate-spin" />
+                <span>{ytDlpState.downloadStatus}</span>
+            </div>
+            {#if ytDlpState.downloadPercent != null}
+                <progress class="progress progress-primary w-full" value={ytDlpState.downloadPercent} max="100"></progress>
+            {/if}
+        </div>
+    {:else if isYoutube && ytInfo}
+        <div class="divider"></div>
+        <div class="text-sm text-muted space-y-1">
+            <p>Audio will be extracted from: <strong class="text-base-content">{ytInfo.title}</strong></p>
+            {#if ytInfo.duration > 0}
+                <p>Duration: {Math.floor(ytInfo.duration / 60)}:{String(Math.floor(ytInfo.duration % 60)).padStart(2, '0')}</p>
+            {/if}
+        </div>
+    {:else if isAudio}
         <div class="divider"></div>
         <SamplePlayer {player}/>
     {/if}
 </Dialog>
-
-{#snippet dropZone()}
-    <!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->
-    <div
-            class={["border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer", isDraggingOver ? "border-primary bg-primary/10" : "border-base-content/20 hover:border-base-content/40"]}
-            role="button"
-            tabindex="0"
-            ondrop={handleDrop}
-            ondragover={handleDragOver}
-            ondragleave={handleDragLeave}
-            onclick={() => fileInputEl?.click()}
-            onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputEl?.click() }}
-    >
-        <input
-                bind:this={fileInputEl}
-                type="file"
-                accept={acceptedMimes}
-                class="hidden"
-                onchange={handleFileSelect}
-        />
-
-        {#if file}
-            <div class="flex flex-col items-center gap-1">
-                <Upload class="size-6 text-primary" />
-                <span class="text-sm font-medium">{file.name}</span>
-                <span class="text-xs text-muted">{(file.size / 1024).toFixed(0)} KB</span>
-                <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-                <span class="text-xs text-error cursor-pointer underline" onclick={(e) => { e.stopPropagation(); clearFile() }}>Remove</span>
-            </div>
-        {:else}
-            <div class="flex flex-col items-center gap-1">
-                <Upload class="size-6 text-muted" />
-                <span class="text-sm text-muted">Drop an audio file here or click to browse</span>
-                <span class="text-xs text-muted">MP3, WAV, OGG, FLAC, AAC, M4A, WebM</span>
-            </div>
-        {/if}
-    </div>
-{/snippet}

@@ -4,6 +4,14 @@
     "svelte": {
       "type": "remote",
       "url": "https://mcp.svelte.dev/mcp"
+    },
+    "tauri-mcp": {
+      "type": "local",
+      "command": ["tauri-mcp", "serve"],
+      "enabled": true,
+      "environment": {
+        "TAURI_MCP_LOG_LEVEL": "info"
+      }
     }
   }
 }

@@ -131,14 +131,6 @@ async function deletePad(padId: number) {
 
                 <span class="text-ellipsis line-clamp-1" onclick={() => editPad(pad)}>{pad.name}</span>
 
-                <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-sm ml-auto opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => editPad(pad)}}>
-                    {#snippet trigger()}
-                        <Pen class="size-4"/>
-                    {/snippet}
-
-                    Edit Pad
-                </Tooltip>
-
                 <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-error btn-sm ml-2 opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => deletePad(pad.id)}}>
                     {#snippet trigger()}
                         <Trash class="size-4"/>

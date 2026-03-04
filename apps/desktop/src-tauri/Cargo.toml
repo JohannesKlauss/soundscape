@@ -25,3 +25,6 @@ serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.28.0"
 futures-util = "0.3"
+yt-dlp = "2.4.0"
+tauri-plugin-fs = "2"
+tauri-plugin-window-state = "2"
