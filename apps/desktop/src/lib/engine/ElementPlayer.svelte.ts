@@ -66,6 +66,23 @@ export class ElementPlayer {
     this.#pad = pad
   }
 
+  dispose() {
+    this.#clearScheduledStop()
+
+    if (this.isPlaying) {
+      this.#cleanup()
+    }
+
+    this.#sourceA?.disconnect()
+    this.#sourceB?.disconnect()
+    this.#crossfader.dispose()
+
+    this.#audioA.removeAttribute('src')
+    this.#audioA.load()
+    this.#audioB.removeAttribute('src')
+    this.#audioB.load()
+  }
+
   fadeTo(targetVolume: number, durationSeconds: number) {
     this.#crossfader.output.gain.rampTo(targetVolume, durationSeconds)
     this.#lastVolume = targetVolume

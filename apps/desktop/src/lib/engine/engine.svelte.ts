@@ -53,6 +53,17 @@ async function loadSampleSources(sampleIds: number[]) {
   )
 }
 
+export function removeElementPlayer(padId: number) {
+  const player = elementPlayers.get(padId)
+
+  if (player) {
+    player.dispose()
+    elementPlayers.delete(padId)
+  }
+
+  _state.playingPadIds.delete(padId)
+}
+
 export function getElementPlayer(padId: number): ElementPlayer {
   const player = elementPlayers.get(padId)
 

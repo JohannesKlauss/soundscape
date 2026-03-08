@@ -36,7 +36,7 @@ function onKeydown(e: KeyboardEvent) {
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div
-    class="flex flex-wrap items-center input w-full gap-1 px-2 py-1.5 min-h-9 cursor-text focus-within:border-primary/50 transition-colors"
+    class="flex flex-wrap items-center textarea w-full gap-1 px-2 py-1.5 min-h-9 cursor-text focus-within:border-primary/50 transition-colors"
     onclick={() => inputEl?.focus()}
 >
     {#each tags as tag (tag)}

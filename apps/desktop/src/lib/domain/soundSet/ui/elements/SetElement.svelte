@@ -32,7 +32,6 @@ watch(
     volume.set(volumeFromMood, {
       duration: player.isPlaying ? CROSSFADE_SECONDS_BETWEEN_MOODS * 1000 : 0,
     })
-    // Audio gain is handled by the engine via fadeTo/play — no player.volume assignment here
   },
 )
 

@@ -35,6 +35,7 @@ Soundscape is a pen & paper tabletop RPG audio scenery creation tool. It's a Tau
 - **Grid/tile views** for the library. The user explicitly rejected this because it limits the amount of info that can be displayed. List views only.
 - **Unnecessary `$effect` wrappers** when a module is always mounted (singleton lifecycle). Only use `$effect` for cleanup when the component can actually unmount.
 - **Using daisyUI markup for complex interactive components** (dropdowns, selects, popovers). Always use bits-ui for these and style them with daisyUI classes.
+- Comments and inline if return statements
 
 ## Architecture Notes
 

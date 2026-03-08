@@ -3,6 +3,7 @@ import { liveQuery } from 'dexie'
 import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import { db } from '$lib/db'
+import { removeElementPlayer } from '$lib/engine/engine.svelte'
 import type { SoundPadType } from '$lib/domain/soundPad/_types'
 import SetElement from '$lib/domain/soundSet/ui/elements/SetElement.svelte'
 
@@ -41,6 +42,8 @@ async function onDelete(padId: number) {
   const confirm = await confirmModal('Remove Pad', `Do you really want to remove the pad from this Soundscape?`)
 
   if (confirm) {
+    removeElementPlayer(padId)
+
     await db.setHasPads.where(['setId', 'padId']).equals([setId, padId]).delete()
 
     const set = await db.set.get(setId)
