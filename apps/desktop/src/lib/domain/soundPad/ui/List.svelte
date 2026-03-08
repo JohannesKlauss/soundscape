@@ -129,6 +129,7 @@ async function deletePad(padId: number) {
                     {padTypeToLabel[pad.type]}
                 </Tooltip>
 
+                <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
                 <span class="text-ellipsis line-clamp-1" onclick={() => editPad(pad)}>{pad.name}</span>
 
                 <Tooltip triggerProps={{class:"btn btn-circle btn-ghost btn-error btn-sm ml-2 opacity-0 transition-opacity group-hover:opacity-100", type: 'button', onclick: () => deletePad(pad.id)}}>

@@ -15,7 +15,8 @@
         "title": "Soundscape",
         "width": 1920,
         "height": 1080,
-        "visible": false
+        "visible": false,
+        "dragDropEnabled": false
       }
     ],
     "security": {

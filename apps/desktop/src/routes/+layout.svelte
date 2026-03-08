@@ -1,6 +1,8 @@
 <script lang="ts">
 import { Tooltip } from 'bits-ui'
 import { Toaster } from 'svelte-sonner'
+import { onMount } from 'svelte'
+import { saveWindowState, StateFlags } from '@tauri-apps/plugin-window-state'
 import '../app.css'
 import AlertDialog from '$lib/components/AlertDialog.svelte'
 import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
@@ -15,6 +17,18 @@ interface Props {
 }
 
 let { children }: Props = $props()
+
+onMount(() => {
+  function onBeforeUnload() {
+    saveWindowState(StateFlags.ALL)
+  }
+
+  window.addEventListener('beforeunload', onBeforeUnload)
+
+  return () => {
+    window.removeEventListener('beforeunload', onBeforeUnload)
+  }
+})
 </script>
 
 <Tooltip.Provider delayDuration={0}>

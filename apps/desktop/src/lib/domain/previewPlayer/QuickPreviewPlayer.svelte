@@ -15,7 +15,7 @@ const isPlaying = $derived(previewPlayerState.currentPlayingSource === src)
 
 async function togglePlay() {
   if (isPlaying) {
-    await stopPreviewSource()
+    stopPreviewSource()
 
     return
   }
