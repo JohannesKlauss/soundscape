@@ -3,7 +3,6 @@ import { untrack } from 'svelte'
 import { AudioWaveform, Loader2, Music, PlusIcon, Sparkle } from '@lucide/svelte'
 import { toast } from 'svelte-sonner'
 import { Player } from 'tone'
-import { readFile, remove } from '@tauri-apps/plugin-fs'
 
 import Dialog from '$lib/components/Dialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
@@ -12,7 +11,8 @@ import type { SoundSampleCategory } from '$lib/domain/library/_types'
 import DropZone from '$lib/domain/library/ui/DropZone.svelte'
 import SamplePlayer from '$lib/domain/library/ui/SamplePlayer.svelte'
 import TagInput from '$lib/domain/library/ui/TagInput.svelte'
-import { ytDlpState, fetchAudioInfo, downloadAudio } from '$lib/domain/library/ui/ytDlpState.svelte'
+import YoutubeImport from '$lib/domain/library/ui/YoutubeImport.svelte'
+import { ytDlpState } from '$lib/domain/library/ui/ytDlpState.svelte'
 import { getExtensionFromContentType, writeFileToSamplesDirectory } from '$lib/fileSystem'
 
 interface Props {
@@ -30,7 +30,8 @@ let category = $state<SoundSampleCategory>('music')
 let isAudio = $state(false)
 let isYoutube = $state(false)
 let isFetching = $state(false)
-let ytInfo = $state<{ title: string; duration: number; tags: string[] } | null>(null)
+
+let youtubeImport: ReturnType<typeof YoutubeImport> | undefined
 
 const player = new Player().toDestination()
 
@@ -50,38 +51,21 @@ $effect(() => {
 })
 
 async function loadAudioFromUrl() {
-  if (isFetching) {
-    return
-  }
+  if (isFetching) return
 
-  isFetching = true
   isAudio = false
   isYoutube = false
-  ytInfo = null
   name = ''
   tags = []
 
   try {
+    isFetching = true
     await player.load(url)
     isAudio = true
-  } catch {
-    if (!ytDlpState.ready) {
-      return
-    }
-
-    try {
-      const info = await fetchAudioInfo(url)
-      isYoutube = true
-      ytInfo = info
-      name = info.title
-      tags = info.tags
-    } catch (e) {
-      toast.error(`Failed to fetch audio info: ${e}`)
-      isYoutube = false
-      ytInfo = null
-    }
-  } finally {
     isFetching = false
+  } catch {
+    isFetching = false
+    await youtubeImport?.probe()
   }
 }
 
@@ -91,7 +75,7 @@ async function loadAudioFromFile(f: File) {
     await player.load(objectUrl)
     isAudio = true
     isYoutube = false
-    ytInfo = null
+    youtubeImport?.reset()
 
     if (!name || name.length === 0) {
       name = f.name.replace(/\.[^.]+$/, '')
@@ -115,39 +99,11 @@ function clearFile() {
 
 async function onAddAudio() {
   if (isYoutube) {
-    await addFromYoutube()
+    await youtubeImport?.add()
   } else if (source === 'file' && file) {
     await addFromFile()
   } else if (source === 'url') {
     await addFromUrl()
-  }
-}
-
-async function addFromYoutube() {
-  try {
-    const result = await downloadAudio(url)
-
-    const fileBytes = await readFile(result.file_path)
-    const blob = new Blob([fileBytes], { type: result.content_type })
-
-    const fileName = `${name}-${crypto.randomUUID().slice(0, 8)}.mp3`
-    await writeFileToSamplesDirectory(fileName, blob)
-
-    db.sample.add({
-      category,
-      name,
-      contentType: result.content_type,
-      src: fileName,
-      duration: result.duration,
-      type: 'yt',
-      tags: $state.snapshot(tags),
-    })
-
-    await remove(result.file_path).catch(() => {})
-
-    resetForm()
-  } catch (e) {
-    toast.error(`Download failed: ${e}`)
   }
 }
 
@@ -212,7 +168,7 @@ function resetForm() {
   tags = []
   isAudio = false
   isYoutube = false
-  ytInfo = null
+  youtubeImport?.reset()
   category = 'music'
 }
 </script>
@@ -294,26 +250,13 @@ function resetForm() {
         <TagInput bind:tags placeholder="Add tag and press Enter..."/>
     </div>
 
-    {#if ytDlpState.isDownloading}
-        <div class="divider"></div>
-        <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-2 text-sm text-muted">
-                <Loader2 class="size-4 animate-spin" />
-                <span>{ytDlpState.downloadStatus}</span>
-            </div>
-            {#if ytDlpState.downloadPercent != null}
-                <progress class="progress progress-primary w-full" value={ytDlpState.downloadPercent} max="100"></progress>
-            {/if}
-        </div>
-    {:else if isYoutube && ytInfo}
-        <div class="divider"></div>
-        <div class="text-sm text-muted space-y-1">
-            <p>Audio will be extracted from: <strong class="text-base-content">{ytInfo.title}</strong></p>
-            {#if ytInfo.duration > 0}
-                <p>Duration: {Math.floor(ytInfo.duration / 60)}:{String(Math.floor(ytInfo.duration % 60)).padStart(2, '0')}</p>
-            {/if}
-        </div>
-    {:else if isAudio}
+    <YoutubeImport bind:this={youtubeImport}
+                   {url} bind:name bind:tags {category}
+                   bind:isYoutube bind:isFetching
+                   disabled={!!file}
+                   onAdded={resetForm} />
+
+    {#if isAudio}
         <div class="divider"></div>
         <SamplePlayer {player}/>
     {/if}

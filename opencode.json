@@ -7,11 +7,7 @@
     },
     "tauri-mcp": {
       "type": "local",
-      "command": ["tauri-mcp", "serve"],
-      "enabled": true,
-      "environment": {
-        "TAURI_MCP_LOG_LEVEL": "info"
-      }
+      "command": ["npx", "-y", "@hypothesi/tauri-mcp-server"]
     }
   }
 }
