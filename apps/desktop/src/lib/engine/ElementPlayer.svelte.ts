@@ -1,12 +1,14 @@
-import { CrossFade, getTransport, Player } from 'tone'
+import { CrossFade, connect, getContext, getTransport } from 'tone'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
-import {sampleBuffers} from '$lib/engine/engine.svelte'
+import { sampleUrls, sampleDurations } from '$lib/engine/engine.svelte'
 
 export class ElementPlayer {
   #pad: SoundPad
 
-  #playerA = new Player()
-  #playerB = new Player()
+  #audioA = new Audio()
+  #audioB = new Audio()
+  #sourceA: MediaElementAudioSourceNode | null = null
+  #sourceB: MediaElementAudioSourceNode | null = null
   #crossfader = new CrossFade({ fade: 0 }).toDestination()
 
   #activeSlot: 'a' | 'b' = 'a'
@@ -22,24 +24,27 @@ export class ElementPlayer {
   lastPlayedSampleId: number | undefined = undefined
 
   duration = 0
-  startedAt = 0
 
   constructor(_pad: SoundPad) {
     this.#pad = _pad
-    this.#playerA.connect(this.#crossfader.a)
-    this.#playerB.connect(this.#crossfader.b)
+
+    const ctx = getContext().rawContext as AudioContext
+    this.#sourceA = ctx.createMediaElementSource(this.#audioA)
+    this.#sourceB = ctx.createMediaElementSource(this.#audioB)
+    connect(this.#sourceA, this.#crossfader.a)
+    connect(this.#sourceB, this.#crossfader.b)
 
     getTransport().on('globalStop', () => {
       this.stop()
     })
   }
 
-  get currentPlayer() {
+  get currentAudio(): HTMLAudioElement | undefined {
     if (!this.isPlaying) {
       return undefined
     }
 
-    return this.#activeSlot === 'a' ? this.#playerA : this.#playerB
+    return this.#activeSlot === 'a' ? this.#audioA : this.#audioB
   }
 
   set volume(volume: number) {
@@ -73,6 +78,11 @@ export class ElementPlayer {
       this.#scheduledEventId = null
     }
 
+    this.#audioA.pause()
+    this.#audioA.currentTime = 0
+    this.#audioB.pause()
+    this.#audioB.currentTime = 0
+
     this.isPlaying = false
     this.isStopping = false
     this.lastPlayedSampleId = undefined
@@ -83,23 +93,24 @@ export class ElementPlayer {
   }
 
   play(startingVolume: number = 0, fadeInSeconds?: number) {
-    if (this.currentPlayer?.state === 'started' && !this.isStopping) {
+    if (this.currentAudio && !this.currentAudio.paused && !this.isStopping) {
       return
     }
 
     this.#clearScheduledStop()
 
     const sampleId = this.#getNextSampleId()
-    const buffer = sampleBuffers.get(sampleId)
+    const url = sampleUrls.get(sampleId)
+    const sampleDuration = sampleDurations.get(sampleId)
 
-    if (!buffer) {
-      console.error(`No buffer found for sample ${sampleId}`)
+    if (!url || sampleDuration === undefined) {
+      console.error(`No URL/duration found for sample ${sampleId}`)
       return
     }
 
-    const fadeInTime = fadeInSeconds ?? Math.min(buffer.duration, this.#pad.fadeInSeconds)
+    const fadeInTime = fadeInSeconds ?? Math.min(sampleDuration, this.#pad.fadeInSeconds)
 
-    if (this.currentPlayer?.state === 'started' && this.isStopping) {
+    if (this.currentAudio && !this.currentAudio.paused && this.isStopping) {
       this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)
 
       this.isPlaying = true
@@ -112,43 +123,42 @@ export class ElementPlayer {
     this.#crossfader.output.gain.value = startingVolume
     this.#crossfader.fade.value = 0
 
-    this.#playerA.onstop = () => {}
-    this.#playerB.onstop = () => {}
-
-    this.#playerA.stop()
-    this.#playerB.stop()
-    this.#playerA.buffer.set(buffer)
-    this.#playerA.start()
+    this.#audioA.pause()
+    this.#audioB.pause()
+    this.#audioA.src = url
+    this.#audioA.currentTime = 0
+    this.#audioA.play()
 
     this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)
 
-    this.startedAt = this.#playerA.now()
     this.isPlaying = true
     this.isStopping = false
     this.lastPlayedSampleId = sampleId
-    this.duration = this.#playerA.buffer.duration
+    this.duration = sampleDuration
 
     if (this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
       this.#scheduledEventId = getTransport().scheduleOnce(
         this.#crossfadeToNextSample.bind(this),
-        `+${Math.max(0, this.#playerA.buffer.duration - this.#pad.crossfade)}`,
+        `+${Math.max(0, sampleDuration - this.#pad.crossfade)}`,
       )
     } else {
-      this.#playerA.onstop = () => {
+
+      const handler = () => {
         if (this.isStopping || this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
           return
         }
 
         this.isPlaying = false
         this.lastPlayedSampleId = undefined
-
-        this.#playerA.onstop = () => {}
+        this.#audioA.removeEventListener('ended', handler)
       }
+
+      this.#audioA.addEventListener('ended', handler)
     }
   }
 
   stop(fadeOutSeconds?: number) {
-    if (!this.isPlaying || !this.currentPlayer || this.isStopping) {
+    if (!this.isPlaying || !this.currentAudio || this.isStopping) {
       return
     }
 
@@ -161,11 +171,7 @@ export class ElementPlayer {
     this.isStopping = true
 
     this.#scheduledStopId = getTransport().scheduleOnce(() => {
-      if (this.currentPlayer) {
-        this.currentPlayer.onstop = () => {}
-        this.currentPlayer.stop()
-        this.#cleanup()
-      }
+      this.#cleanup()
     }, `+${fadeOutTime}`)
   }
 
@@ -175,25 +181,23 @@ export class ElementPlayer {
     }
 
     const nextSampleId = this.#getNextSampleId()
-    const buffer = sampleBuffers.get(nextSampleId)
+    const url = sampleUrls.get(nextSampleId)
+    const nextDuration = sampleDurations.get(nextSampleId)
 
-    if (!buffer) {
-      console.error(`No buffer found for sample ${nextSampleId}`)
+    if (!url || nextDuration === undefined) {
+      console.error(`No URL/duration found for sample ${nextSampleId}`)
       return
     }
 
-    const nextPlayer = this.#activeSlot === 'a' ? this.#playerB : this.#playerA
+    const nextAudio = this.#activeSlot === 'a' ? this.#audioB : this.#audioA
     const fadeTarget = this.#activeSlot === 'a' ? 1 : 0
 
-    const crossfadeDuration = Math.min(this.#pad.crossfade, nextPlayer.buffer.duration)
+    const crossfadeDuration = Math.min(this.#pad.crossfade, nextDuration)
 
-    nextPlayer.stop()
-
-    if (nextPlayer.buffer.get() !== buffer) {
-      nextPlayer.buffer.set(buffer)
-    }
-
-    nextPlayer.start()
+    nextAudio.pause()
+    nextAudio.src = url
+    nextAudio.currentTime = 0
+    nextAudio.play()
 
     this.#crossfader.fade.rampTo(fadeTarget, crossfadeDuration)
 
@@ -203,12 +207,11 @@ export class ElementPlayer {
 
     this.#scheduledEventId = getTransport().scheduleOnce(
       this.#crossfadeToNextSample.bind(this),
-      `+${Math.max(0, nextPlayer.buffer.duration - this.#pad.crossfade)}`,
+      `+${Math.max(0, nextDuration - this.#pad.crossfade)}`,
     )
 
-    getTransport().scheduleOnce(t => {
-      this.startedAt = t
-      this.duration = Math.max(0, nextPlayer.buffer.duration - crossfadeDuration)
+    getTransport().scheduleOnce(() => {
+      this.duration = Math.max(0, nextDuration - crossfadeDuration)
     }, `+${crossfadeDuration}`)
   }
 

@@ -61,8 +61,8 @@ function updateProgress() {
     return
   }
 
-  if (player.isPlaying && player.currentPlayer) {
-    const currentTime = player.currentPlayer.now() - player.startedAt
+  if (player.isPlaying && player.currentAudio) {
+    const currentTime = player.currentAudio.currentTime
 
     progress = Math.max(0, Math.min(1, currentTime / player.duration))
 

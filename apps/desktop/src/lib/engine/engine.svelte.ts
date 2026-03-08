@@ -1,12 +1,12 @@
 import {SvelteMap, SvelteSet} from 'svelte/reactivity'
 import { toast } from 'svelte-sonner'
-import { getContext, getTransport } from 'tone'
+import { getTransport } from 'tone'
 import { goto } from '$app/navigation'
 import { db } from '$lib/db'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
 import { ElementPlayer } from '$lib/engine/ElementPlayer.svelte'
-import { readBufferFromSamplesFile } from '$lib/fileSystem'
+import { readFileFromSamplesDirectory } from '$lib/fileSystem'
 
 type EngineState = {
   isLoading: boolean
@@ -25,9 +25,11 @@ export const CROSSFADE_SECONDS_BETWEEN_MOODS = 5
 
 export const engineState = _state as Readonly<EngineState>
 
-const _sampleBuffers = new Map<number, AudioBuffer>()
+const _sampleUrls = new Map<number, string>()
+const _sampleDurations = new Map<number, number>()
 
-export const sampleBuffers: ReadonlyMap<number, AudioBuffer> = _sampleBuffers
+export const sampleUrls: ReadonlyMap<number, string> = _sampleUrls
+export const sampleDurations: ReadonlyMap<number, number> = _sampleDurations
 
 const elementPlayers = new SvelteMap<number, ElementPlayer>()
 
@@ -37,13 +39,15 @@ getTransport().on('globalStop', () => {
   _state.playingPadIds.clear()
 })
 
-async function loadSampleBuffers(sampleIds: number[]) {
+async function loadSampleSources(sampleIds: number[]) {
   const samples = await db.sample.where('id').anyOf(sampleIds).toArray()
 
   await Promise.all(
     samples.map(async (s) => {
-      if (!_sampleBuffers.has(s.id)) {
-        _sampleBuffers.set(s.id, await getContext().decodeAudioData(await readBufferFromSamplesFile(s.src)))
+      if (!_sampleUrls.has(s.id)) {
+        const file = await readFileFromSamplesDirectory(s.src)
+        _sampleUrls.set(s.id, URL.createObjectURL(file))
+        _sampleDurations.set(s.id, s.duration)
       }
     }),
   )
@@ -68,7 +72,7 @@ export async function loadSoundSet(setId: number) {
     .anyOf(setHasPads.map((s) => s.padId))
     .toArray()
 
-  await loadSampleBuffers(pads.flatMap((p) => p.sampleIds))
+  await loadSampleSources(pads.flatMap((p) => p.sampleIds))
 
   pads.forEach(pad => {
     if (!elementPlayers.has(pad.id)) {
@@ -86,7 +90,7 @@ export async function updateElementPlayer(pad: SoundPad) {
     return
   }
 
-  await loadSampleBuffers(pad.sampleIds)
+  await loadSampleSources(pad.sampleIds)
 
   _state.playingPadIds.delete(pad.id)
   player.updatePad(pad)
@@ -103,7 +107,7 @@ export async function ensureElementPlayer(padId: number) {
     return
   }
 
-  await loadSampleBuffers(pad.sampleIds)
+  await loadSampleSources(pad.sampleIds)
   elementPlayers.set(pad.id, new ElementPlayer(pad))
 }
 

@@ -1,11 +1,10 @@
 <script lang="ts">
 import { RotateCcw } from '@lucide/svelte'
-import { getContext, Player } from 'tone'
 import Dialog from '$lib/components/Dialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import type { SoundSample } from '$lib/domain/library/_types'
-import { readBufferFromSamplesFile } from '$lib/fileSystem'
+import { getAudioDuration, readFileFromSamplesDirectory } from '$lib/fileSystem'
 
 interface Props {
   numSamples: number
@@ -29,12 +28,19 @@ async function rebuild() {
 
     currentlyIndexing = sample
 
-    const buffer = await getContext().decodeAudioData(await readBufferFromSamplesFile(sample.src))
-    const player = new Player(buffer)
+    const file = await readFileFromSamplesDirectory(sample.src)
+    const url = URL.createObjectURL(file)
+
+    let duration: number
+    try {
+      duration = await getAudioDuration(url)
+    } finally {
+      URL.revokeObjectURL(url)
+    }
 
     const newSample: SoundSample = {
       ...sample,
-      duration: player.buffer.duration,
+      duration,
     }
 
     await db.sample.update(sample.id, newSample)

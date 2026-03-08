@@ -42,8 +42,11 @@ export async function writeFileToSamplesDirectory(fileName: string, blob: Blob) 
   await writer.close()
 }
 
-export async function readBufferFromSamplesFile(fileName: string) {
-  const file = await readFileFromSamplesDirectory(fileName)
-
-  return await file.arrayBuffer()
+export function getAudioDuration(url: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio()
+    audio.addEventListener('loadedmetadata', () => resolve(audio.duration), { once: true })
+    audio.addEventListener('error', () => reject(new Error('Failed to load audio')), { once: true })
+    audio.src = url
+  })
 }
