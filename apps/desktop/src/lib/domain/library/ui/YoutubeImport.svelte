@@ -7,6 +7,7 @@ import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/library/_types'
 import { ytDlpState, fetchAudioInfo, downloadAudio } from '$lib/domain/library/ui/ytDlpState.svelte'
 import { writeFileToSamplesDirectory } from '$lib/fileSystem'
+import { extractYoutubeVideoId, fetchYoutubeInfo } from '$lib/youtube/api'
 
 interface Props {
   url: string
@@ -34,18 +35,29 @@ let ytInfo = $state<{ title: string; duration: number; tags: string[] } | null>(
 
 export async function probe() {
   if (isFetching || disabled) return
-  if (!ytDlpState.ready) return
 
   isFetching = true
   isYoutube = false
   ytInfo = null
 
   try {
-    const info = await fetchAudioInfo(url)
-    isYoutube = true
-    ytInfo = info
-    name = info.title
-    tags = info.tags
+    const videoId = extractYoutubeVideoId(url)
+
+    if (videoId) {
+      // Fast path: YouTube Data API (~200ms)
+      const info = await fetchYoutubeInfo(videoId)
+      isYoutube = true
+      ytInfo = info
+      name = info.title
+      tags = info.tags
+    } else if (ytDlpState.ready) {
+      // Fallback: yt-dlp for non-YouTube URLs
+      const info = await fetchAudioInfo(url)
+      isYoutube = true
+      ytInfo = info
+      name = info.title
+      tags = info.tags
+    }
   } catch (e) {
     toast.error(`Failed to fetch audio info: ${e}`)
     isYoutube = false

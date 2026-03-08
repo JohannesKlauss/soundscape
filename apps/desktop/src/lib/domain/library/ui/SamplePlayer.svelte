@@ -1,111 +1,91 @@
 <script lang="ts">
 import { Pause, Play, Volume2, VolumeX } from '@lucide/svelte'
 import { onDestroy, onMount } from 'svelte'
-import type { Player } from 'tone'
+
 import Tooltip from '$lib/components/Tooltip.svelte'
-import { formatTime, volumeToDb } from '$lib/engine/volume'
+import { formatTime } from '$lib/engine/volume'
 
 interface Props {
-  player: Player
+  audio: HTMLAudioElement
 }
 
-let { player }: Props = $props()
+let { audio }: Props = $props()
 
 let isPlaying = $state(false)
 let currentTime = $state(0)
 let duration = $state(0)
 let volume = $state(1)
 let isMuted = $state(false)
-let animationFrame: number
-let startOffset = 0
-let startedAt: number = 0
 
-$effect(() => {
-  if (player && player.loaded) {
-    duration = player.buffer.duration
-  } else {
-    duration = 0
-  }
-})
-
-$effect(() => {
-  player.volume.value = isMuted ? -Infinity : volumeToDb(volume)
-})
-
-function updateTime() {
-  if (player.state === 'started') {
-    const elapsed = player.now() - startedAt
-    currentTime = startOffset + elapsed
-    if (currentTime < 0) currentTime = 0
-
-    if (currentTime >= duration) {
-      currentTime = duration
-      isPlaying = false
-
-      cancelAnimationFrame(animationFrame)
-
-      return
-    }
-
-    animationFrame = requestAnimationFrame(updateTime)
-  }
+function onTimeUpdate() {
+  currentTime = audio.currentTime
 }
 
-function play(offset = 0) {
-  startOffset = offset
-  player.start(undefined, offset)
-  startedAt = player.now()
-  isPlaying = true
-
-  updateTime()
+function onLoadedMetadata() {
+  duration = audio.duration
 }
 
-function stop() {
-  player.stop()
-
+function onEnded() {
   isPlaying = false
+  currentTime = 0
+}
 
-  cancelAnimationFrame(animationFrame)
+function onPlay() {
+  isPlaying = true
+}
+
+function onPause() {
+  isPlaying = false
 }
 
 function togglePlay() {
   if (isPlaying) {
-    stop()
+    audio.pause()
   } else {
-    play(currentTime)
+    audio.play()
   }
 }
 
 function handleSeek(e: Event) {
   const target = e.target as HTMLInputElement
-  const newTime = parseFloat(target.value)
-  currentTime = newTime
-
-  if (isPlaying) {
-    stop()
-    play(newTime)
-  }
+  audio.currentTime = parseFloat(target.value)
 }
 
 function handleVolumeChange(e: Event) {
   const target = e.target as HTMLInputElement
   volume = parseFloat(target.value)
+  audio.volume = volume
   if (volume > 0) isMuted = false
 }
 
 function toggleMute() {
   isMuted = !isMuted
+  audio.muted = isMuted
 }
 
 onMount(() => {
-  if (player.loaded) {
-    duration = player.buffer.duration
-    play(0)
+  audio.addEventListener('timeupdate', onTimeUpdate)
+  audio.addEventListener('loadedmetadata', onLoadedMetadata)
+  audio.addEventListener('ended', onEnded)
+  audio.addEventListener('play', onPlay)
+  audio.addEventListener('pause', onPause)
+
+  // If metadata is already loaded (e.g. from a previous load)
+  if (audio.readyState >= 1) {
+    duration = audio.duration
   }
+
+  audio.volume = volume
+  audio.play()
 })
 
 onDestroy(() => {
-  player.stop()
+  audio.pause()
+  audio.removeEventListener('timeupdate', onTimeUpdate)
+  audio.removeEventListener('loadedmetadata', onLoadedMetadata)
+  audio.removeEventListener('ended', onEnded)
+  audio.removeEventListener('play', onPlay)
+  audio.removeEventListener('pause', onPause)
 })
 </script>
 

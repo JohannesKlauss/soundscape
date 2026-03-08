@@ -2,7 +2,6 @@
 import { untrack } from 'svelte'
 import { AudioWaveform, Loader2, Music, PlusIcon, Sparkle } from '@lucide/svelte'
 import { toast } from 'svelte-sonner'
-import { Player } from 'tone'
 
 import Dialog from '$lib/components/Dialog.svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
@@ -33,7 +32,7 @@ let isFetching = $state(false)
 
 let youtubeImport: ReturnType<typeof YoutubeImport> | undefined
 
-const player = new Player().toDestination()
+const audio = new Audio()
 
 const isReady = $derived((isAudio || isYoutube) && name.trim().length >= 3)
 const source = $derived<'url' | 'file' | null>(file ? 'file' : url.length > 0 ? 'url' : null)
@@ -50,6 +49,27 @@ $effect(() => {
   }
 })
 
+function tryLoadAudio(src: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    function onCanPlay() {
+      cleanup()
+      resolve()
+    }
+    function onError() {
+      cleanup()
+      reject(new Error('Not a playable audio URL'))
+    }
+    function cleanup() {
+      audio.removeEventListener('canplay', onCanPlay)
+      audio.removeEventListener('error', onError)
+    }
+
+    audio.addEventListener('canplay', onCanPlay, { once: true })
+    audio.addEventListener('error', onError, { once: true })
+    audio.src = src
+  })
+}
+
 async function loadAudioFromUrl() {
   if (isFetching) return
 
@@ -60,11 +80,12 @@ async function loadAudioFromUrl() {
 
   try {
     isFetching = true
-    await player.load(url)
+    await tryLoadAudio(url)
     isAudio = true
     isFetching = false
   } catch {
     isFetching = false
+    // Not a direct audio URL — let YoutubeImport try
     await youtubeImport?.probe()
   }
 }
@@ -72,7 +93,7 @@ async function loadAudioFromUrl() {
 async function loadAudioFromFile(f: File) {
   try {
     const objectUrl = URL.createObjectURL(f)
-    await player.load(objectUrl)
+    await tryLoadAudio(objectUrl)
     isAudio = true
     isYoutube = false
     youtubeImport?.reset()
@@ -130,7 +151,7 @@ async function addFromUrl() {
     name,
     contentType: res.headers.get('content-type')!,
     src: fileName,
-    duration: player.buffer.duration,
+    duration: audio.duration,
     type: 'web',
     tags: $state.snapshot(tags),
   })
@@ -152,7 +173,7 @@ async function addFromFile() {
     name,
     contentType,
     src: fileName,
-    duration: player.buffer.duration,
+    duration: audio.duration,
     type: 'local',
     tags: $state.snapshot(tags),
   })
@@ -168,6 +189,8 @@ function resetForm() {
   tags = []
   isAudio = false
   isYoutube = false
+  audio.pause()
+  audio.removeAttribute('src')
   youtubeImport?.reset()
   category = 'music'
 }
@@ -258,6 +281,6 @@ function resetForm() {
 
     {#if isAudio}
         <div class="divider"></div>
-        <SamplePlayer {player}/>
+        <SamplePlayer {audio}/>
     {/if}
 </Dialog>

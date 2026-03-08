@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ChevronLeft, Pen, Trash, Search } from '@lucide/svelte'
+import { ChevronLeft, Pen, Search, Trash, X } from '@lucide/svelte'
 import { liveQuery } from 'dexie'
 import type { Snippet } from 'svelte'
 import { SvelteSet } from 'svelte/reactivity'
@@ -140,6 +140,8 @@ async function deletePad(padId: number) {
                 </Tooltip>
             </div>
         </li>
+    {:else}
+        <div class="text-center text-muted mt-8 text-xs">Create Pads to add them to your Sound Sets</div>
     {/each}
 </ul>
 
@@ -153,5 +155,10 @@ async function deletePad(padId: number) {
                 placeholder="Search Pads"
                 bind:value={searchText}
         />
+        {#if searchText.length > 0}
+            <button type="button" class="btn btn-ghost btn-circle btn-xs" onclick={() => { searchText = '' }}>
+                <X class="size-3"/>
+            </button>
+        {/if}
     </label>
 {/snippet}

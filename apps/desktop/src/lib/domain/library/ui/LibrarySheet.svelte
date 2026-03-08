@@ -176,6 +176,11 @@ $effect(() => {
                 bind:value={searchText}
                 onkeydown={e => e.stopPropagation()}
         />
+        {#if searchText.length > 0}
+            <button type="button" class="btn btn-ghost btn-circle btn-xs" onclick={() => { searchText = '' }}>
+                <X class="size-3"/>
+            </button>
+        {/if}
     </label>
 {/snippet}
 

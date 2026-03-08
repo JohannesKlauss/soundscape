@@ -168,10 +168,15 @@ pub async fn fetch_audio_info(
     url: String,
     state: State<'_, DownloaderState>,
 ) -> Result<AudioInfo, String> {
-    let guard = state.downloader.lock().await;
-    let downloader = guard
-        .as_ref()
-        .ok_or("Dependencies not ready. Please wait for download to complete.")?;
+    // Clone the downloader and release the lock before the async call
+    // so download_audio and other commands are not blocked.
+    let downloader = {
+        let guard = state.downloader.lock().await;
+        guard
+            .as_ref()
+            .ok_or("Dependencies not ready. Please wait for download to complete.")?
+            .clone()
+    };
 
     let video = downloader
         .fetch_video_infos(&url)

@@ -1,4 +1,5 @@
-import {getTransport, Player} from 'tone'
+import { getTransport } from 'tone'
+
 import { readFileFromSamplesDirectory } from '$lib/fileSystem'
 
 type State = {
@@ -11,51 +12,41 @@ const _state = $state<State>({
 
 export const previewPlayerState: Readonly<State> = _state
 
-const previewPlayer = new Player().toDestination()
+const audio = new Audio()
 
-previewPlayer.fadeIn = 0.05
-previewPlayer.fadeOut = 0.05
-previewPlayer.onstop = () => {
-	_state.currentPlayingSource = undefined
-}
+audio.addEventListener('ended', () => {
+  _state.currentPlayingSource = undefined
+})
+
+audio.addEventListener('error', () => {
+  _state.currentPlayingSource = undefined
+})
 
 getTransport().on('globalStop', () => {
-  previewPlayer.stop()
+  stopPreviewSource()
 })
 
 export async function previewSource(src: string, contentType: string) {
-  if (previewPlayer.state === 'started') {
-    previewPlayer.stop()
-  }
+  audio.pause()
 
   const file = await readFileFromSamplesDirectory(src)
+  const blob = new Blob([file], { type: contentType })
+  audio.src = URL.createObjectURL(blob)
 
-  const blob = new Blob([await file.arrayBuffer()], { type: contentType })
-  const url = window.URL.createObjectURL(blob)
-
-  await previewPlayer.load(url)
-
-  previewPlayer.start()
+  await audio.play()
   _state.currentPlayingSource = src
-
-  return () => {
-    previewPlayer.stop()
-    _state.currentPlayingSource = undefined
-  }
 }
 
 export async function previewFromUrl(url: string) {
-	if (previewPlayer.state === 'started') {
-		previewPlayer.stop()
-	}
+  audio.pause()
 
-	await previewPlayer.load(url)
-
-	previewPlayer.start()
-	_state.currentPlayingSource = url
+  audio.src = url
+  await audio.play()
+  _state.currentPlayingSource = url
 }
 
-export async function stopPreviewSource() {
-	previewPlayer.stop()
-	_state.currentPlayingSource = undefined
+export function stopPreviewSource() {
+  audio.pause()
+  audio.currentTime = 0
+  _state.currentPlayingSource = undefined
 }
