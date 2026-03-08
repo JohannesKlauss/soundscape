@@ -74,9 +74,9 @@ async function saveMood() {
             {/snippet}
 
             {#if editMode}
-                Lock Set
+                Lock Soundscape
             {:else}
-                Edit Set
+                Edit Soundscape
             {/if}
         </Tooltip>
     </div>

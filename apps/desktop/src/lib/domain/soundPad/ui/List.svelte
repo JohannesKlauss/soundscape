@@ -117,7 +117,7 @@ async function deletePad(padId: number) {
                             <ChevronLeft class="size-5"/>
                         {/snippet}
 
-                        Add to Set
+                        Add to Soundscape
                     </Tooltip>
                 {/if}
 
@@ -142,7 +142,7 @@ async function deletePad(padId: number) {
             </div>
         </li>
     {:else}
-        <div class="text-center text-muted mt-8 text-xs">Create Pads to add them to your Sound Sets</div>
+        <div class="text-center text-muted mt-8 text-xs">Create Pads to add them to your Soundscapes</div>
     {/each}
 </ul>
 

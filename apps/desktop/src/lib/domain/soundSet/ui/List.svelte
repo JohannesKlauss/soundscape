@@ -37,7 +37,7 @@ const soundSets = liveQuery(async () => {
 })
 
 async function deleteSet(set: SoundSet) {
-  const confirmed = await confirmModal('Delete Set', 'Are you sure you want to delete this Set? You cannot undo this!')
+  const confirmed = await confirmModal('Delete Soundscape', 'Are you sure you want to delete this Soundscape? You cannot undo this!')
 
   if (confirmed) {
     await db.setHasPads.where('setId').equals(set.id).delete()
@@ -84,7 +84,7 @@ const { containerRef } = useSortable<Mood>({
 </script>
 
 <div class="p-4 text-muted flex-center justify-between">
-    <div>Sound Sets</div>
+    <div>Soundscapes</div>
 
     <FormSet/>
 </div>
@@ -116,7 +116,7 @@ const { containerRef } = useSortable<Mood>({
                         <Trash class="size-4"/>
                     {/snippet}
 
-                    Delete Set
+                    Delete Soundscape
                 </Tooltip>
             </div>
         </li>

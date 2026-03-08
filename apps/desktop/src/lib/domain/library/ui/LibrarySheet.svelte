@@ -38,7 +38,7 @@ let searchText = $state('')
 let scrollContainer: HTMLDivElement | undefined = $state()
 let activeCategoryFilters = new SvelteSet<SoundSampleCategory>()
 let activeTagFilters = new SvelteSet<string>()
-let sortValue = $state<SortOption | null>(null)
+let sortValue = $state<SortOption>('name-asc')
 
 function toggleCategoryFilter(cat: SoundSampleCategory) {
   if (activeCategoryFilters.has(cat)) activeCategoryFilters.delete(cat)
@@ -68,33 +68,39 @@ function applySorting<T extends { name: string; duration: number; id: number }>(
   })
 }
 
-// Samples after category filter only (used to derive available tags)
 const categoryFilteredSamples = $derived.by(() => {
   return activeCategoryFilters.size > 0
     ? $samples?.filter(s => activeCategoryFilters.has(s.category))
     : $samples
 })
 
-// All unique tags from category-filtered samples, sorted alphabetically
 const availableTags = $derived.by(() => {
-  if (!categoryFilteredSamples) return []
+  if (!categoryFilteredSamples) {
+    return []
+  }
+
   const tagSet = new Set<string>()
+
   for (const s of categoryFilteredSamples) {
     for (const t of s.tags ?? []) tagSet.add(t)
   }
+
   return [...tagSet].sort()
 })
 
 const filteredSamples = $derived.by(() => {
   let result = categoryFilteredSamples
 
-  // Tag filter (AND logic: sample must have ALL selected tags)
   if (result && activeTagFilters.size > 0) {
     result = result.filter(s => {
       const sampleTags = s.tags ?? []
+
       for (const tag of activeTagFilters) {
-        if (!sampleTags.includes(tag)) return false
+        if (!sampleTags.includes(tag)) {
+          return false
+        }
       }
+
       return true
     })
   }
@@ -185,7 +191,7 @@ $effect(() => {
 {/snippet}
 
 {#snippet sortSelect()}
-    <Select.Root type="single" value={sortValue ?? undefined} onValueChange={(v) => { sortValue = v ?? null }}>
+    <Select.Root type="single" value={sortValue ?? 'name-asc'} onValueChange={(v) => { sortValue = v ?? 'name-asc' }}>
         <Select.Trigger class={["btn btn-circle btn-sm", sortValue ? 'btn-primary' : 'btn-ghost']}>
             <ArrowUpDown class="size-4"/>
         </Select.Trigger>

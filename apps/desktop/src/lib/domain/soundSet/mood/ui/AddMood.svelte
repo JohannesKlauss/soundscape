@@ -36,7 +36,7 @@ const { form, constraints, submit, reset, validateForm, enhance } = superForm(de
           moodIds: [...(set.moodIds ?? []), id],
         })
       } else {
-        toast.error('Cannot find corresponding Sound Set')
+        toast.error('Cannot find corresponding Soundscape')
       }
 
       open = false

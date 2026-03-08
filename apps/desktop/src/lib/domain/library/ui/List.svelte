@@ -10,7 +10,6 @@ import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
 import TagInput from '$lib/domain/library/ui/TagInput.svelte'
 import { formatTime } from '$lib/engine/volume'
 import Tooltip from "$lib/components/Tooltip.svelte";
-import {previewPlayerState} from "$lib/domain/previewPlayer/previewPlayer.svelte";
 
 interface Props {
   samples: SoundSample[]
@@ -20,7 +19,6 @@ let { samples }: Props = $props()
 
 const MAX_VISIBLE_TAGS = 3
 
-// Tag editing
 let editingTags = $state<{ sampleId: number; tags: string[] } | null>(null)
 
 function onPopoverToggle(sample: SoundSample, isOpen: boolean) {
@@ -33,7 +31,6 @@ function onPopoverToggle(sample: SoundSample, isOpen: boolean) {
   }
 }
 
-// Inline rename
 let renamingSampleId = $state<number | null>(null)
 let renameValue = $state('')
 

@@ -122,7 +122,7 @@ function handleRangeWheel(e: WheelEvent) {
                     <XIcon class="size-3"/>
                 {/snippet}
 
-                Remove Sound Pad from Set
+                Remove Sound Pad from Soundscape
             </Tooltip>
         {/if}
     </div>

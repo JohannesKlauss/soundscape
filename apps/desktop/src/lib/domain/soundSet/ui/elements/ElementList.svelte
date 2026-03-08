@@ -38,7 +38,7 @@ const mood = $derived(
 )
 
 async function onDelete(padId: number) {
-  const confirm = await confirmModal('Remove Pad', `Do you really want to remove this pad from this Sound Set?`)
+  const confirm = await confirmModal('Remove Pad', `Do you really want to remove the pad from this Soundscape?`)
 
   if (confirm) {
     await db.setHasPads.where(['setId', 'padId']).equals([setId, padId]).delete()

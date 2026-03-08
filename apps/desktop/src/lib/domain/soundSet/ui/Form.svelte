@@ -46,7 +46,7 @@ const { form, constraints, submit, reset, errors, validateForm, enhance } = supe
       open = false
       reset()
     } catch (e) {
-      toast.error('Could not create Sound Set')
+      toast.error('Could not create Soundscape')
     }
   },
 })
@@ -61,17 +61,17 @@ const { form, constraints, submit, reset, errors, validateForm, enhance } = supe
                         <PlusIcon class="size-4"/>
                     {/snippet}
 
-                    Create new Sound Set
+                    Create new Soundscape
                 </Tooltip>
             {/if}
         {/snippet}
 
         {#snippet title()}
-          {set ? 'Edit' : 'New'} Sound Set
+          {set ? 'Edit' : 'New'} Soundscape
         {/snippet}
 
         {#snippet description()}
-          {set ? 'Edit the Sound Set' : 'Create a new Sound Set'}
+          {set ? 'Edit the Soundscape' : 'Create a new Soundscape'}
         {/snippet}
 
         <fieldset class="fieldset">
