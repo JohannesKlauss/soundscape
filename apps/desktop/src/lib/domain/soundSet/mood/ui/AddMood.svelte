@@ -43,7 +43,7 @@ const { form, constraints, submit, reset, validateForm, enhance } = superForm(de
 
       reset()
     } catch (e) {
-      console.log(e)
+      console.error(e)
       toast.error('Could not create Mood')
     }
   },

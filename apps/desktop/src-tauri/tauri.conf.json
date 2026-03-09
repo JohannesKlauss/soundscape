@@ -20,7 +20,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://freesound.org; connect-src 'self' https://freesound.org https://www.googleapis.com blob:; media-src 'self' blob:"
     }
   },
   "bundle": {

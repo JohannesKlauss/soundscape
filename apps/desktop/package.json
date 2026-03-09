@@ -1,7 +1,7 @@
 {
-  "name": "desktop",
-  "version": "0.1.0",
-  "description": "",
+  "name": "@soundscape/desktop",
+  "version": "1.0.0",
+  "description": "A pen & paper tabletop RPG audio scenery tool",
   "type": "module",
   "scripts": {
     "dev": "vite dev",

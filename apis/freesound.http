@@ -1,1 +1,0 @@
-GET https://freesound.org/apiv2/search/?query=cars&token={{FREESOUND_API_KEY}}

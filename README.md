@@ -1,135 +1,82 @@
-# Turborepo starter
+# Soundscape
 
-This Turborepo starter is maintained by the Turborepo core team.
+A desktop soundboard for pen & paper tabletop RPGs. Create atmospheric soundscapes by combining music, loops, ambient sounds, and one-shot effects into moods that you can trigger and crossfade between during your sessions.
 
-## Using this example
+Built with [Tauri](https://tauri.app), [SvelteKit](https://svelte.dev), [Tone.js](https://tonejs.github.io/), and [Dexie](https://dexie.org/) (IndexedDB).
 
-Run the following command:
+## Features
+
+- **Sound Pads** -- combine audio samples into pads with configurable crossfade, fade-in/out, and playback order (round-robin or random)
+- **Moods** -- group pads with per-pad volume into moods that crossfade smoothly when switching
+- **Library** -- import audio from local files, URLs, Freesound, or YouTube
+- **Streaming playback** -- audio streams directly from disk, no memory-heavy buffer decoding
+- **Fuzzy search** -- find samples by name or tags
+- **Drag & drop** -- drag samples from the library onto pads
+- **Inline editing** -- double-click to rename samples, pads, and sound sets
+
+## Download
+
+Grab the latest release for your platform from [GitHub Releases](https://github.com/johannesklauss/soundscape/releases):
+
+- **macOS** -- `.dmg` (Apple Silicon & Intel)
+- **Windows** -- `.msi`
+- **Linux** -- `.AppImage` / `.deb`
+
+## Building from source
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) >= 18
+- [Rust](https://rustup.rs/)
+- [Tauri CLI prerequisites](https://v2.tauri.app/start/prerequisites/) for your platform
+
+### Setup
 
 ```sh
-npx create-turbo@latest
+git clone https://github.com/johannesklauss/soundscape.git
+cd soundscape
+npm install
 ```
 
-## What's inside?
+Copy the environment template and fill in your API keys:
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```sh
+cp apps/desktop/.env.example apps/desktop/.env
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+You'll need:
+- A **Freesound API key** -- register at [freesound.org/apiv2/apply](https://freesound.org/apiv2/apply)
+- A **YouTube Data API v3 key** -- create one at [console.cloud.google.com](https://console.cloud.google.com)
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### Development
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```sh
+cd apps/desktop
+npm run tauri dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Production build
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```sh
+cd apps/desktop
+npm run tauri build
 ```
 
-### Remote Caching
+The built application will be in `apps/desktop/src-tauri/target/release/bundle/`.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Tech stack
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+| Layer | Technology |
+|-------|-----------|
+| Desktop shell | Tauri v2 |
+| Frontend framework | SvelteKit + Svelte 5 (runes) |
+| UI components | bits-ui + daisyUI |
+| Audio engine | Tone.js + Web Audio API |
+| Database | Dexie (IndexedDB) |
+| Search | Fuse.js |
+| Linting | Biome |
+| Monorepo | Turborepo |
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## License
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+[MIT](LICENSE)
