@@ -1,6 +1,6 @@
 <script lang="ts">
-import { untrack } from 'svelte'
 import { AudioWaveform, Loader2, Music, PlusIcon, Sparkle } from '@lucide/svelte'
+import { untrack } from 'svelte'
 import { toast } from 'svelte-sonner'
 
 import Dialog from '$lib/components/Dialog.svelte'

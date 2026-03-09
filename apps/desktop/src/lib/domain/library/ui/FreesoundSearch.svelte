@@ -1,6 +1,6 @@
 <script lang="ts">
-  import {freesoundState, loadNextFreesoundPage} from "$lib/freesound";
   import FreesoundList from "$lib/domain/library/ui/FreesoundList.svelte";
+  import {freesoundState, loadNextFreesoundPage} from "$lib/freesound";
 
   interface Props {
     scrollContainer?: HTMLElement

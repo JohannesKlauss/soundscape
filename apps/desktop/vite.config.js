@@ -6,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
+// @ts-expect-error
 export default defineConfig(async () => ({
   plugins: [tailwindcss(), sveltekit()],
 

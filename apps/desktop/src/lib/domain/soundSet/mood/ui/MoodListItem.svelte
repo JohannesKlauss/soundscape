@@ -1,5 +1,6 @@
 <script lang="ts">
 import { PauseIcon, Pen, PlayIcon, Trash } from '@lucide/svelte'
+import {toast} from "svelte-sonner";
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
 import { useInlineRename } from '$lib/attachments'
@@ -8,7 +9,6 @@ import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import type { Mood } from '$lib/domain/soundSet/mood/_types'
 import { engineState, playMood } from '$lib/engine/engine.svelte.js'
-import {toast} from "svelte-sonner";
 
 interface Props {
   setId: number

@@ -28,7 +28,10 @@ const { form, constraints, submit, reset, validateForm, enhance } = superForm(de
     }
 
     try {
-      const id = await db.mood.add($form)
+      const id = await db.mood.add({
+        ...$form,
+        elements: [],
+      })
       const set = await db.set.where('id').equals(setId).first()
 
       if (set) {
@@ -53,7 +56,7 @@ const { form, constraints, submit, reset, validateForm, enhance } = superForm(de
 <form use:enhance>
     <Dialog bind:open={open} onConfirm={() => submit()}>
         {#snippet trigger(props)}
-            <button class="w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start cursor-pointer text-sm" {...props}>
+            <button type="button" class="w-full flex-center py-2 px-4 pl-8 hover:bg-base-300 flex-center justify-start cursor-pointer text-sm" {...props}>
                 <div class="btn btn-xs btn-circle btn-ghost">
                     <PlusIcon class="size-4"/>
                 </div>

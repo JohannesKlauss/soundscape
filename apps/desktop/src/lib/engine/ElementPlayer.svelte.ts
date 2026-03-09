@@ -1,6 +1,6 @@
 import { CrossFade, connect, getContext, getTransport } from 'tone'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
-import { sampleUrls, sampleDurations } from '$lib/engine/engine.svelte'
+import { sampleDurations, sampleUrls } from '$lib/engine/engine.svelte'
 
 export class ElementPlayer {
   #pad: SoundPad
@@ -34,6 +34,7 @@ export class ElementPlayer {
     connect(this.#sourceA, this.#crossfader.a)
     connect(this.#sourceB, this.#crossfader.b)
 
+    // @ts-expect-error
     getTransport().on('globalStop', () => {
       this.stop()
     })
@@ -159,7 +160,6 @@ export class ElementPlayer {
         `+${Math.max(0, sampleDuration - this.#pad.crossfade)}`,
       )
     } else {
-
       const handler = () => {
         if (this.isStopping || this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
           return

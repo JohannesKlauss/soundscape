@@ -2,14 +2,14 @@
 import { AudioWaveform, GripVertical, Tags } from '@lucide/svelte'
 import { Popover } from 'bits-ui'
 import { useInlineRename } from '$lib/attachments'
-import { DragOverlay, useDraggable } from '$lib/dnd'
+import Tooltip from "$lib/components/Tooltip.svelte";
 import { db } from '$lib/db'
-import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
+import { DragOverlay, useDraggable } from '$lib/dnd'
 import type { SoundSample } from '$lib/domain/library/_types'
 import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
 import TagInput from '$lib/domain/library/ui/TagInput.svelte'
+import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import { formatTime } from '$lib/engine/volume'
-import Tooltip from "$lib/components/Tooltip.svelte";
 
 interface Props {
   samples: SoundSample[]

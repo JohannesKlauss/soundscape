@@ -1,8 +1,8 @@
 <script lang="ts">
-import { AlertCircle, Loader2, CheckCircle } from '@lucide/svelte'
-import Tooltip from '$lib/components/Tooltip.svelte'
-import { ytDlpState, ensureDependencies } from '$lib/domain/library/ui/ytDlpState.svelte'
+import { AlertCircle, CheckCircle, Loader2 } from '@lucide/svelte'
 import {onMount} from "svelte";
+import Tooltip from '$lib/components/Tooltip.svelte'
+import { ensureDependencies, ytDlpState } from '$lib/domain/library/ui/ytDlpState.svelte'
 
 onMount(() => {
   ensureDependencies()

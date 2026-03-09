@@ -4,7 +4,7 @@ import {
   Check,
   Crosshair,
   Dices,
-  Infinity,
+  InfinityIcon,
   ListOrdered,
   Music,
   PlusIcon,
@@ -18,9 +18,9 @@ import { replaceState } from '$app/navigation'
 import { page } from '$app/state'
 import { db } from '$lib/db'
 import { useDroppable, useSortable } from '$lib/dnd'
+import type { SoundSample } from '$lib/domain/library/_types'
 import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
-import type { SoundSample } from '$lib/domain/library/_types'
 import { updateElementPlayer } from '$lib/engine/engine.svelte'
 import { formatTime } from '$lib/engine/volume'
 
@@ -57,6 +57,7 @@ const { form, constraints, enhance, reset, validateForm } = superForm(defaults(p
       sampleIds: $form.samples.map((val) => val.id),
     }
 
+    // @ts-expect-error
     delete data.samples
 
     if (page.state.editPad) {
@@ -79,7 +80,7 @@ const { form, constraints, enhance, reset, validateForm } = superForm(defaults(p
 })
 
 $effect(() => {
-  $constraints['crossfade'].max = Math.min(...$form.samples.map((s) => s.duration / 2))
+  $constraints['crossfade']!.max = Math.min(...$form.samples.map((s) => s.duration / 2))
 })
 
 const { isDropTarget, ref } = useDroppable<SoundSample>({
@@ -97,7 +98,8 @@ function handleRangeWheel(e: WheelEvent, key: 'fadeInSeconds' | 'fadeOutSeconds'
   const delta = e.deltaY < 0 ? -0.1 : 0.1
   const newValue = Math.round(($form[key]! + delta) * 10) / 10
 
-  $form[key] = Math.max(0.1, Math.min(Math.round($constraints[key]?.max * 10) / 10, newValue))
+  // @ts-expect-error
+  $form[key] = $constraints[key]?.max ? Math.max(0.1, Math.min(Math.round($constraints[key].max * 10) / 10, newValue)) : newValue
 }
 
 function removeSample(id: number) {
@@ -148,7 +150,7 @@ const { containerRef } = useSortable({
                 </label>
                 <label class="label">
                     <input type="radio" class="radio" name="type" value="loop" bind:group={$form.type}/>
-                    <Infinity class="size-5"/>
+                    <InfinityIcon class="size-5"/>
                     Loop
                 </label>
                 <label class="label">

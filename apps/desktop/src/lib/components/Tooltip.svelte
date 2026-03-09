@@ -6,6 +6,7 @@ type Props = Tooltip.RootProps & {
   trigger: Snippet
   triggerProps?: Tooltip.TriggerProps
   side?: Tooltip.ContentProps['side']
+  children?: Snippet
 }
 
 let { open = $bindable(false), children, side, trigger, triggerProps = {}, ...restProps }: Props = $props()

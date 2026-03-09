@@ -1,10 +1,10 @@
-import {SvelteMap, SvelteSet} from 'svelte/reactivity'
+import { SvelteMap, SvelteSet } from 'svelte/reactivity'
 import { toast } from 'svelte-sonner'
 import { getTransport } from 'tone'
 import { goto } from '$app/navigation'
 import { db } from '$lib/db'
-import type { Mood } from '$lib/domain/soundSet/mood/_types'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
+import type { Mood } from '$lib/domain/soundSet/mood/_types'
 import { ElementPlayer } from '$lib/engine/ElementPlayer.svelte'
 import { readFileFromSamplesDirectory } from '$lib/fileSystem'
 
@@ -33,6 +33,7 @@ export const sampleDurations: ReadonlyMap<number, number> = _sampleDurations
 
 const elementPlayers = new SvelteMap<number, ElementPlayer>()
 
+// @ts-expect-error
 getTransport().on('globalStop', () => {
   _state.activeMoodId = undefined
   _state.isFadingOut = false
@@ -85,7 +86,7 @@ export async function loadSoundSet(setId: number) {
 
   await loadSampleSources(pads.flatMap((p) => p.sampleIds))
 
-  pads.forEach(pad => {
+  pads.forEach((pad) => {
     if (!elementPlayers.has(pad.id)) {
       elementPlayers.set(pad.id, new ElementPlayer(pad))
     }

@@ -2,19 +2,19 @@
 import { ArrowUpDown, Library, Search, Upload, X } from '@lucide/svelte'
 import { Collapsible, Select } from 'bits-ui'
 import { liveQuery } from 'dexie'
+import Fuse from 'fuse.js'
 import { SvelteSet } from 'svelte/reactivity'
 import BottomSheet from '$lib/components/BottomSheet.svelte'
 import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/library/_types'
 import CreateNew from '$lib/domain/library/ui/CreateNew.svelte'
+import {dropNewSampleDnd, dropNewSampleState} from "$lib/domain/library/ui/dropNewSample.svelte";
+import FreesoundSearch from "$lib/domain/library/ui/FreesoundSearch.svelte";
 import List from '$lib/domain/library/ui/List.svelte'
 import ReindexLibrary from '$lib/domain/library/ui/ReindexLibrary.svelte'
 import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
-import { searchFreesound, clearFreesoundResults } from '$lib/freesound'
-import Fuse from 'fuse.js'
 import {stopPreviewSource} from "$lib/domain/previewPlayer/previewPlayer.svelte";
-import {dropNewSampleDnd, dropNewSampleState} from "$lib/domain/library/ui/dropNewSample.svelte";
-import FreesoundSearch from "$lib/domain/library/ui/FreesoundSearch.svelte";
+import { clearFreesoundResults, searchFreesound } from '$lib/freesound'
 
 const categoryLabels: Record<SoundSampleCategory, string> = {
   music: 'Music',
@@ -131,7 +131,7 @@ $effect(() => {
 
 <div class="bg-base-100 relative">
     <BottomSheet bind:open={open}>
-        {#snippet title()}
+        {#snippet header()}
             <div class="flex-center justify-start w-full">
                 <Collapsible.Trigger class="flex-center justify-start w-full">
                     <Library class="size-4"/>
@@ -191,7 +191,7 @@ $effect(() => {
 {/snippet}
 
 {#snippet sortSelect()}
-    <Select.Root type="single" value={sortValue ?? 'name-asc'} onValueChange={(v) => { sortValue = v ?? 'name-asc' }}>
+    <Select.Root type="single" value={sortValue ?? 'name-asc'} onValueChange={(v) => { sortValue = (v ?? 'name-asc') as SortOption }}>
         <Select.Trigger class={["btn btn-circle btn-sm", sortValue ? 'btn-primary' : 'btn-ghost']}>
             <ArrowUpDown class="size-4"/>
         </Select.Trigger>
@@ -204,7 +204,7 @@ $effect(() => {
                 {/each}
                 {#if sortValue}
                     <div class="border-t border-base-content/10 mt-1 pt-1">
-                        <button type="button" class="cursor-pointer rounded px-3 py-1.5 text-sm text-error hover:bg-base-300 w-full text-left outline-none" onclick={() => sortValue = null}>
+                        <button type="button" class="cursor-pointer rounded px-3 py-1.5 text-sm text-error hover:bg-base-300 w-full text-left outline-none" onclick={() => sortValue = 'name-asc'}>
                             Remove sort
                         </button>
                     </div>

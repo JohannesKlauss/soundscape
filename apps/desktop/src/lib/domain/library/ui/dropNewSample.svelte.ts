@@ -1,10 +1,10 @@
-import {mimeToExt} from "$lib/fileSystem";
-import {toast} from "svelte-sonner";
+import { toast } from 'svelte-sonner'
+import { mimeToExt } from '$lib/fileSystem'
 
 type State = {
-  createNewOpen: boolean,
-  createNewName: string,
-  createNewFile: File | null,
+  createNewOpen: boolean
+  createNewName: string
+  createNewFile: File | null
   isDraggingFile: boolean
 }
 
@@ -12,7 +12,7 @@ const _state = $state<State>({
   createNewOpen: false,
   createNewName: '',
   createNewFile: null,
-  isDraggingFile: false
+  isDraggingFile: false,
 })
 
 export const dropNewSampleState = _state as Readonly<State>

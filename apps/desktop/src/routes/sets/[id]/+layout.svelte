@@ -1,6 +1,6 @@
 <script lang="ts">
-import { liveQuery } from 'dexie'
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import { liveQuery } from 'dexie'
 import { db } from '$lib/db'
 import { engineState } from '$lib/engine/engine.svelte'
 import type { LayoutProps } from './$types'

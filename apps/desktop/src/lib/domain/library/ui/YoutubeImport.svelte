@@ -1,11 +1,11 @@
 <script lang="ts">
 import { Loader2 } from '@lucide/svelte'
-import { toast } from 'svelte-sonner'
 import { readFile, remove } from '@tauri-apps/plugin-fs'
+import { toast } from 'svelte-sonner'
 
 import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/library/_types'
-import { ytDlpState, fetchAudioInfo, downloadAudio } from '$lib/domain/library/ui/ytDlpState.svelte'
+import { downloadAudio, fetchAudioInfo, ytDlpState } from '$lib/domain/library/ui/ytDlpState.svelte'
 import { writeFileToSamplesDirectory } from '$lib/fileSystem'
 import { extractYoutubeVideoId, fetchYoutubeInfo } from '$lib/youtube/api'
 

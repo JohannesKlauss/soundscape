@@ -22,6 +22,7 @@ audio.addEventListener('error', () => {
   _state.currentPlayingSource = undefined
 })
 
+// @ts-expect-error
 getTransport().on('globalStop', () => {
   stopPreviewSource()
 })

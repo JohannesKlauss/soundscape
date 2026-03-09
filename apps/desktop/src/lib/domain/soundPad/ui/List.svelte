@@ -1,8 +1,10 @@
 <script lang="ts">
 import { ChevronLeft, Pen, Search, Trash, X } from '@lucide/svelte'
 import { liveQuery } from 'dexie'
+import Fuse from "fuse.js";
 import type { Snippet } from 'svelte'
 import { SvelteSet } from 'svelte/reactivity'
+import {fade} from "svelte/transition";
 import { replaceState } from '$app/navigation'
 import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
@@ -11,8 +13,6 @@ import { db } from '$lib/db'
 import { padToForm, padTypeToLabel, type SoundPad, type SoundPadType } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
 import {ensureElementPlayer} from "$lib/engine/engine.svelte";
-import {fade} from "svelte/transition";
-import Fuse from "fuse.js";
 
 interface Props {
   children?: Snippet

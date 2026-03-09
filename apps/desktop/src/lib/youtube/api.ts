@@ -1,4 +1,4 @@
-import { YOUTUBE_API_KEY, YOUTUBE_API_BASE_URL } from '$lib/youtube/config'
+import { YOUTUBE_API_BASE_URL, YOUTUBE_API_KEY } from '$lib/youtube/config'
 
 type YoutubeVideoInfo = {
   title: string

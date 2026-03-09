@@ -5,16 +5,16 @@ import type { Snippet } from 'svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 
 type Props = WithoutChild<Collapsible.RootProps> & {
-  title: Snippet
+  header: Snippet
   trigger?: Snippet
 }
 
-let { open = $bindable(false), title, trigger: collapsibleTrigger, children, ...restProps }: Props = $props()
+let { open = $bindable(false), header, trigger: collapsibleTrigger, children, ...restProps }: Props = $props()
 </script>
 
 <Collapsible.Root bind:open>
     <div class="flex items-center justify-between px-4 py-2 border-t border-base-content/10 bg-base-300 border-b shadow-xl" {...restProps}>
-        {@render title()}
+        {@render header()}
 
         <Tooltip>
             {#snippet trigger()}

@@ -91,7 +91,7 @@ onDestroy(() => {
 
 <div class="flex flex-col gap-3 p-4 bg-base-200 rounded-xl">
   <div class="flex items-center justify-between">
-    <button onclick={togglePlay} class="btn btn-circle btn-primary btn-sm">
+    <button type="button" onclick={togglePlay} class="btn btn-circle btn-primary btn-sm">
       {#if isPlaying}
           <Pause class="w-4 h-4" />
       {:else}

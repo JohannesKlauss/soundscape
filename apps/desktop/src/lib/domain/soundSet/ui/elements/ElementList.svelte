@@ -3,9 +3,9 @@ import { liveQuery } from 'dexie'
 import { page } from '$app/state'
 import { confirmModal } from '$lib/components/AlertDialog.svelte'
 import { db } from '$lib/db'
-import { removeElementPlayer } from '$lib/engine/engine.svelte'
 import type { SoundPadType } from '$lib/domain/soundPad/_types'
 import SetElement from '$lib/domain/soundSet/ui/elements/SetElement.svelte'
+import { removeElementPlayer } from '$lib/engine/engine.svelte'
 
 interface Props {
   setId: number
