@@ -6,7 +6,7 @@ import { page } from '$app/state'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
 import { padIcons } from '$lib/domain/soundPad/ui/padIcons'
-import { getElementPlayer } from '$lib/engine/engine.svelte'
+import {getElementPlayer, CROSSFADE_SECONDS_BETWEEN_MOODS} from '$lib/engine/engine.svelte'
 
 interface Props {
   pad: SoundPad
@@ -16,25 +16,21 @@ interface Props {
   editable?: boolean
 }
 
-let { pad, volume: initVolume = 1, editable = false, onDelete, onChangeSettingsForMood }: Props = $props()
+let { pad, volume: volumeFromMood = .75, editable = false, onDelete, onChangeSettingsForMood }: Props = $props()
 
 let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
 let progress = $state(0)
-let volume = $state(new Tween(initVolume, { duration: 0 }))
+let volume = $state(new Tween(volumeFromMood, { duration: 0 }))
 
 const player = $derived(getElementPlayer(pad.id))
 
 let animationFrame: number
 
-$effect(() => {
-  player.volume = volume.current
-})
-
 watch(
-  () => initVolume,
+  () => volumeFromMood,
   () => {
-    volume.set(initVolume, {
-      duration: player.isPlaying ? 5000 : 0,
+    volume.set(volumeFromMood, {
+      duration: player.isPlaying ? CROSSFADE_SECONDS_BETWEEN_MOODS * 1000 : 0,
     })
   },
 )
@@ -64,8 +60,8 @@ function updateProgress() {
     return
   }
 
-  if (player.isPlaying && player.currentPlayer) {
-    const currentTime = player.currentPlayer.now() - player.startedAt
+  if (player.isPlaying && player.currentAudio) {
+    const currentTime = player.currentAudio.currentTime
 
     progress = Math.max(0, Math.min(1, currentTime / player.duration))
 
@@ -77,8 +73,10 @@ function handleRangeWheel(e: WheelEvent) {
   e.preventDefault()
 
   const delta = e.deltaY < 0 ? -0.01 : 0.01
+  const newVal = Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
 
-  volume.target = Math.round(Math.max(0, Math.min(1, volume.current + delta)) * 100) / 100
+  volume.target = newVal
+  player.volume = newVal
 }
 </script>
 
@@ -105,8 +103,12 @@ function handleRangeWheel(e: WheelEvent) {
         <Tooltip triggerProps={{class: "h-16 w-4 -mt-12"}} disableCloseOnTriggerClick side="right">
             {#snippet trigger()}
                 <input type="range" class="range range-xs range-vertical w-16" min="0" max="1" step="0.01"
-                       bind:value={volume.current}
-                       oninput={e => volume.target = parseFloat(e.target.value)}
+                       value={volume.current}
+                       oninput={e => {
+                         const val = parseFloat((e.target as HTMLInputElement).value)
+                         volume.set(val, {duration: 50})
+                         player.volume = val
+                       }}
                        onwheel={handleRangeWheel}/>
             {/snippet}
 
@@ -114,10 +116,13 @@ function handleRangeWheel(e: WheelEvent) {
         </Tooltip>
 
         {#if editable}
-            <button onclick={() => onDelete?.(pad.id)} type="button"
-                    class="opacity-0 group-hover:opacity-100 transition-opacity btn btn-xs btn-ghost btn-error btn-circle absolute -left-4 -top-1">
-                <XIcon class="size-3"/>
-            </button>
+            <Tooltip triggerProps={{class: "transition-opacity btn btn-xs btn-ghost btn-error btn-circle absolute -left-4 -top-1", onclick: () => onDelete?.(pad.id)}}>
+                {#snippet trigger()}
+                    <XIcon class="size-3"/>
+                {/snippet}
+
+                Remove Sound Pad from Soundscape
+            </Tooltip>
         {/if}
     </div>
 
@@ -133,7 +138,7 @@ function handleRangeWheel(e: WheelEvent) {
             {#snippet trigger()}
                 <input type="checkbox" bind:checked={playAtMoodStart} class="checkbox checkbox-sm checkbox-primary" />
             {/snippet}
-            Plays when starting Mood?
+            Play element when Mood starts
         </Tooltip>
     {/if}
 </div>

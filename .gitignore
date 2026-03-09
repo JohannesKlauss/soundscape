@@ -11,6 +11,7 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+*.env.json
 
 # Testing
 coverage
@@ -18,15 +19,9 @@ coverage
 # Turbo
 .turbo
 
-# Vercel
-.vercel
-
 # Build Outputs
-.next/
-out/
 build
 dist
-
 
 # Debug
 npm-debug.log*

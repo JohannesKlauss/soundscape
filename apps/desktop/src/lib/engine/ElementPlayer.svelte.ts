@@ -1,12 +1,14 @@
-import { CrossFade, getContext, getTransport, Player } from 'tone'
+import { CrossFade, connect, getContext, getTransport } from 'tone'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
-import { sampleBuffers } from '$lib/engine/engine.svelte'
+import { sampleUrls, sampleDurations } from '$lib/engine/engine.svelte'
 
 export class ElementPlayer {
   #pad: SoundPad
 
-  #playerA = new Player()
-  #playerB = new Player()
+  #audioA = new Audio()
+  #audioB = new Audio()
+  #sourceA: MediaElementAudioSourceNode | null = null
+  #sourceB: MediaElementAudioSourceNode | null = null
   #crossfader = new CrossFade({ fade: 0 }).toDestination()
 
   #activeSlot: 'a' | 'b' = 'a'
@@ -15,202 +17,223 @@ export class ElementPlayer {
 
   #lastVolume = 1
 
+  targetVolume = $state(1)
   isPlaying = $state(false)
   isStopping = $state(false)
 
   lastPlayedSampleId: number | undefined = undefined
 
   duration = 0
-  startedAt = 0
 
   constructor(_pad: SoundPad) {
     this.#pad = _pad
-    this.#playerA.connect(this.#crossfader.a)
-    this.#playerB.connect(this.#crossfader.b)
 
-    getTransport().on('stop', (time) => {
-      this.#cleanup(time)
+    const ctx = getContext().rawContext as AudioContext
+    this.#sourceA = ctx.createMediaElementSource(this.#audioA)
+    this.#sourceB = ctx.createMediaElementSource(this.#audioB)
+    connect(this.#sourceA, this.#crossfader.a)
+    connect(this.#sourceB, this.#crossfader.b)
+
+    getTransport().on('globalStop', () => {
+      this.stop()
     })
-
-    getTransport().on('fadeOut', this.#fadeOut.bind(this))
   }
 
-  get currentPlayer() {
+  get currentAudio(): HTMLAudioElement | undefined {
     if (!this.isPlaying) {
       return undefined
     }
 
-    return this.#activeSlot === 'a' ? this.#playerA : this.#playerB
-  }
-
-  destroy() {
-    this.#cleanup(getContext().currentTime)
-    this.#playerA.dispose()
-    this.#playerB.dispose()
-    this.#crossfader.dispose()
+    return this.#activeSlot === 'a' ? this.#audioA : this.#audioB
   }
 
   set volume(volume: number) {
-    this.#crossfader.output.gain.value = volume
+    this.#crossfader.output.gain.rampTo(volume, 0.05)
     this.#lastVolume = volume
+    this.targetVolume = volume
   }
 
-  fadeTo(volume: number, seconds: number, stopAfterFadeOut = false) {
-    if (this.#scheduledStopId && volume > 0) {
-      getTransport().clear(this.#scheduledStopId)
-      this.isStopping = false
+  setTargetVolume(volume: number) {
+    this.#lastVolume = volume
+    this.targetVolume = volume
+  }
+
+  updatePad(pad: SoundPad) {
+    if (this.isPlaying) {
+      this.stop()
     }
+
+    this.#pad = pad
+  }
+
+  dispose() {
+    this.#clearScheduledStop()
 
     if (this.isPlaying) {
-      this.#crossfader.output.gain.cancelAndHoldAtTime('+0').rampTo(volume, seconds)
-
-      if (stopAfterFadeOut) {
-        this.isStopping = true
-
-        this.#scheduledEventId = getTransport().schedule(this.stop.bind(this), `+${seconds}`)
-      }
+      this.#cleanup()
     }
+
+    this.#sourceA?.disconnect()
+    this.#sourceB?.disconnect()
+    this.#crossfader.dispose()
+
+    this.#audioA.removeAttribute('src')
+    this.#audioA.load()
+    this.#audioB.removeAttribute('src')
+    this.#audioB.load()
   }
 
-  play(startingVolume?: number) {
-    if (this.#scheduledStopId) {
-      getTransport().clear(this.#scheduledStopId)
-    }
-
-    if (this.#pad.id === 10) {
-      console.log('play alien atmo')
-    }
-
-    const sampleId = this.#getNextSampleId()
-    const buffer = sampleBuffers.get(sampleId)
-
-    if (!buffer) {
-      console.error(`No buffer found for sample ${sampleId}`)
-      return
-    }
-
-    this.#activeSlot = 'a'
-    this.#crossfader.output.gain.cancelAndHoldAtTime('+0')
-    this.#crossfader.output.gain.value = typeof startingVolume !== 'undefined' ? startingVolume : this.#lastVolume
-    this.#crossfader.fade.value = 0
-
-    this.#playerA.buffer.set(buffer)
-    this.#playerA.fadeIn = this.#pad.fadeInSeconds
-    this.#playerA.fadeOut = this.#pad.fadeOutSeconds
-    this.#playerA.sync().start()
-
-    if (typeof startingVolume !== 'undefined' && startingVolume !== this.#lastVolume) {
-      this.#crossfader.output.gain.rampTo(this.#lastVolume, 5)
-    }
-
-    this.startedAt = this.#playerA.now()
-    this.isPlaying = true
-    this.isStopping = false
-    this.lastPlayedSampleId = sampleId
-    this.duration = this.#playerA.buffer.duration
-
-    if (this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
-      this.#scheduledEventId = getTransport().schedule(
-        this.#crossfadeToNextSample.bind(this),
-        `+${Math.max(0, this.#playerA.buffer.duration - this.#pad.crossfade)}`,
-      )
-    } else {
-      this.#playerA.onstop = () => {
-        this.isPlaying = false
-        this.lastPlayedSampleId = undefined
-        this.#playerA.onstop = () => {}
-      }
-    }
+  fadeTo(targetVolume: number, durationSeconds: number) {
+    this.#crossfader.output.gain.rampTo(targetVolume, durationSeconds)
+    this.#lastVolume = targetVolume
+    this.targetVolume = targetVolume
   }
 
-  stop() {
-    if (!this.isPlaying || !this.currentPlayer) {
-      return
-    }
-
-    if (this.#pad.id === 10) {
-      console.log('stop alien atmo')
-    }
-
-    const fadeOut = Math.max(0.01, this.#pad.fadeOutSeconds)
-
-    this.#playerA.fadeOut = fadeOut
-    this.#playerB.fadeOut = fadeOut
-    this.currentPlayer.stop(fadeOut)
-
-    this.isStopping = true
-
+  #cleanup() {
     if (this.#scheduledEventId !== null) {
       getTransport().clear(this.#scheduledEventId)
       this.#scheduledEventId = null
     }
 
-    getTransport().schedule(this.#cleanup.bind(this), `+${this.#pad.fadeOutSeconds + 0.1}`)
-  }
-
-  #cleanup(time: number) {
-    if (this.#scheduledEventId !== null) {
-      getTransport().clear(this.#scheduledEventId)
-      this.#scheduledEventId = null
-    }
-
-    getTransport().off('fadeOut', this.#fadeOut.bind(this))
-
-    this.#playerA.stop(time).unsync()
-    this.#playerB.stop(time).unsync()
+    this.#audioA.pause()
+    this.#audioA.currentTime = 0
+    this.#audioB.pause()
+    this.#audioB.currentTime = 0
 
     this.isPlaying = false
     this.isStopping = false
     this.lastPlayedSampleId = undefined
     this.#activeSlot = 'a'
+    this.#crossfader.output.gain.cancelScheduledValues(0)
+    this.#crossfader.fade.cancelScheduledValues(0)
     this.#crossfader.fade.value = 0
   }
 
-  #crossfadeToNextSample(time: number) {
+  play(startingVolume: number = 0, fadeInSeconds?: number) {
+    if (this.currentAudio && !this.currentAudio.paused && !this.isStopping) {
+      return
+    }
+
+    this.#clearScheduledStop()
+
+    const sampleId = this.#getNextSampleId()
+    const url = sampleUrls.get(sampleId)
+    const sampleDuration = sampleDurations.get(sampleId)
+
+    if (!url || sampleDuration === undefined) {
+      console.error(`No URL/duration found for sample ${sampleId}`)
+      return
+    }
+
+    const fadeInTime = fadeInSeconds ?? Math.min(sampleDuration, this.#pad.fadeInSeconds)
+
+    if (this.currentAudio && !this.currentAudio.paused && this.isStopping) {
+      this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)
+
+      this.isPlaying = true
+      this.isStopping = false
+
+      return
+    }
+
+    this.#activeSlot = 'a'
+    this.#crossfader.output.gain.value = startingVolume
+    this.#crossfader.fade.value = 0
+
+    this.#audioA.pause()
+    this.#audioB.pause()
+    this.#audioA.src = url
+    this.#audioA.currentTime = 0
+    this.#audioA.play()
+
+    this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)
+
+    this.isPlaying = true
+    this.isStopping = false
+    this.lastPlayedSampleId = sampleId
+    this.duration = sampleDuration
+
+    if (this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
+      this.#scheduledEventId = getTransport().scheduleOnce(
+        this.#crossfadeToNextSample.bind(this),
+        `+${Math.max(0, sampleDuration - this.#pad.crossfade)}`,
+      )
+    } else {
+
+      const handler = () => {
+        if (this.isStopping || this.#pad.sampleIds.length > 1 || this.#pad.type === 'loop') {
+          return
+        }
+
+        this.isPlaying = false
+        this.lastPlayedSampleId = undefined
+        this.#audioA.removeEventListener('ended', handler)
+      }
+
+      this.#audioA.addEventListener('ended', handler)
+    }
+  }
+
+  stop(fadeOutSeconds?: number) {
+    if (!this.isPlaying || !this.currentAudio || this.isStopping) {
+      return
+    }
+
+    this.#clearScheduledStop()
+
+    const fadeOutTime = fadeOutSeconds ?? Math.max(0.01, this.#pad.fadeOutSeconds)
+
+    this.#crossfader.output.gain.rampTo(0, fadeOutTime)
+
+    this.isStopping = true
+
+    this.#scheduledStopId = getTransport().scheduleOnce(() => {
+      this.#cleanup()
+    }, `+${fadeOutTime}`)
+  }
+
+  #crossfadeToNextSample() {
     if (!this.isPlaying) {
       return
     }
 
     const nextSampleId = this.#getNextSampleId()
-    const buffer = sampleBuffers.get(nextSampleId)
+    const url = sampleUrls.get(nextSampleId)
+    const nextDuration = sampleDurations.get(nextSampleId)
 
-    if (!buffer) {
-      console.error(`No buffer found for sample ${nextSampleId}`)
+    if (!url || nextDuration === undefined) {
+      console.error(`No URL/duration found for sample ${nextSampleId}`)
       return
     }
 
-    const nextPlayer = this.#activeSlot === 'a' ? this.#playerB : this.#playerA
-    const oldPlayer = this.#activeSlot === 'a' ? this.#playerA : this.#playerB
+    const nextAudio = this.#activeSlot === 'a' ? this.#audioB : this.#audioA
     const fadeTarget = this.#activeSlot === 'a' ? 1 : 0
 
-    nextPlayer.stop(time).unsync()
-    nextPlayer.buffer.set(buffer)
-    nextPlayer.fadeIn = 0
-    nextPlayer.fadeOut = 0
-    nextPlayer.sync().start()
+    const crossfadeDuration = Math.min(this.#pad.crossfade, nextDuration)
 
-    const crossfadeDuration = Math.min(this.#pad.crossfade, nextPlayer.buffer.duration)
+    nextAudio.pause()
+    nextAudio.src = url
+    nextAudio.currentTime = 0
+    nextAudio.play()
 
-    this.#crossfader.fade.rampTo(fadeTarget, crossfadeDuration, time)
+    this.#crossfader.fade.rampTo(fadeTarget, crossfadeDuration)
 
     this.#activeSlot = this.#activeSlot === 'a' ? 'b' : 'a'
+
     this.lastPlayedSampleId = nextSampleId
 
-    this.#scheduledEventId = getTransport().schedule(
+    this.#scheduledEventId = getTransport().scheduleOnce(
       this.#crossfadeToNextSample.bind(this),
-      `+${Math.max(0, nextPlayer.buffer.duration - this.#pad.crossfade)}`,
+      `+${Math.max(0, nextDuration - this.#pad.crossfade)}`,
     )
 
-    getTransport().schedule((t) => {
-      this.startedAt = t
-      this.duration = Math.max(0, nextPlayer.buffer.duration - crossfadeDuration)
-
-      oldPlayer.stop(t)
+    getTransport().scheduleOnce(() => {
+      this.duration = Math.max(0, nextDuration - crossfadeDuration)
     }, `+${crossfadeDuration}`)
   }
 
   #getNextSampleId(): number {
-    const index = this.#pad.sampleIds.findIndex((id) => id === this.lastPlayedSampleId)
+    const index = this.lastPlayedSampleId ? this.#pad.sampleIds.indexOf(this.lastPlayedSampleId) : -1
 
     if (this.#pad.playbackType === 'round_robin') {
       if (index === -1) {
@@ -223,10 +246,10 @@ export class ElementPlayer {
     }
   }
 
-  #fadeOut() {
-    if (this.isPlaying) {
-      this.isStopping = true
-      this.#crossfader.output.gain.cancelAndHoldAtTime('+0').rampTo(0, 5)
+  #clearScheduledStop() {
+    if (this.#scheduledStopId !== null) {
+      getTransport().clear(this.#scheduledStopId)
+      this.#scheduledStopId = null
     }
   }
 }

@@ -12,8 +12,8 @@ type Props = WithoutChild<Collapsible.RootProps> & {
 let { open = $bindable(false), title, trigger: collapsibleTrigger, children, ...restProps }: Props = $props()
 </script>
 
-<Collapsible.Root>
-    <div class="flex items-center justify-between px-4 py-2 border-t border-base-content/10" {...restProps}>
+<Collapsible.Root bind:open>
+    <div class="flex items-center justify-between px-4 py-2 border-t border-base-content/10 bg-base-300 border-b shadow-xl" {...restProps}>
         {@render title()}
 
         <Tooltip>
@@ -31,7 +31,7 @@ let { open = $bindable(false), title, trigger: collapsibleTrigger, children, ...
         </Tooltip>
     </div>
 
-    <Collapsible.Content class="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up space-y-2 overflow-hidden font-mono text-[15px] tracking-[0.01em]">
+    <Collapsible.Content class="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up space-y-2 overflow-hidden text-[15px] tracking-[0.01em]">
         {@render children?.()}
     </Collapsible.Content>
 </Collapsible.Root>

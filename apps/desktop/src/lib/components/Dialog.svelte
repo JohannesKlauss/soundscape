@@ -8,6 +8,7 @@ type Props = Dialog.RootProps & {
   description: Snippet
   confirmText?: string
   onConfirm: () => void
+  onCancel?: () => void
   confirmDisabled?: boolean
   asForm?: boolean
   contentProps?: WithoutChild<Dialog.ContentProps>
@@ -22,6 +23,7 @@ let {
   description,
   confirmText = 'Save',
   onConfirm,
+  onCancel,
   confirmDisabled = false,
   asForm,
   ...restProps
@@ -50,7 +52,7 @@ let {
                 {@render children?.()}
             </div>
             <div class="card-actions flex w-full gap-2 justify-end">
-                <Dialog.Close class="btn btn-ghost">
+                <Dialog.Close class="btn btn-ghost" onclick={onCancel}>
                     Cancel
                 </Dialog.Close>
 

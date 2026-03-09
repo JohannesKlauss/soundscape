@@ -27,7 +27,7 @@ function handleRangeWheel(e: WheelEvent) {
 }
 
 function stopAll() {
-  getTransport().emit('fadeOut').stop('+5')
+  getTransport().emit('globalStop')
 }
 </script>
 

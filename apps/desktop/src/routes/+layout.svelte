@@ -1,11 +1,14 @@
 <script lang="ts">
 import { Tooltip } from 'bits-ui'
 import { Toaster } from 'svelte-sonner'
+import { onMount } from 'svelte'
+import { saveWindowState, StateFlags } from '@tauri-apps/plugin-window-state'
 import '../app.css'
 import AlertDialog from '$lib/components/AlertDialog.svelte'
 import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
-import SoundSampleSheet from '$lib/domain/soundSample/ui/SoundSampleSheet.svelte'
+import LibrarySheet from '$lib/domain/library/ui/LibrarySheet.svelte'
 import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
+import DependencyIndicator from '$lib/domain/library/ui/DependencyIndicator.svelte'
 import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
 
@@ -14,16 +17,31 @@ interface Props {
 }
 
 let { children }: Props = $props()
+
+onMount(() => {
+  function onBeforeUnload() {
+    saveWindowState(StateFlags.ALL)
+  }
+
+  window.addEventListener('beforeunload', onBeforeUnload)
+
+  return () => {
+    window.removeEventListener('beforeunload', onBeforeUnload)
+  }
+})
 </script>
 
 <Tooltip.Provider delayDuration={0}>
-    <div class="flex flex-col h-screen">
+    <div class="flex flex-col h-screen app-backdrop">
         <div class="flex-center justify-between header px-8">
             <div class="h-32 flex items-center p-8 pl-0 border-b border-base-content/10">
-                <h1 class="text-5xl bg-base-100/40 p-1">SØUND/SCAPE<sup class="text-xl">______vØ.1 a1pha</sup></h1>
+                <h1 class="text-5xl bg-base-100/40 p-1">SØUND/SCAPE<sup class="text-xl">___ ___v1.Ø</sup></h1>
             </div>
 
-            <GlobalControl/>
+            <div class="flex items-center gap-4">
+                <DependencyIndicator/>
+                <GlobalControl/>
+            </div>
         </div>
 
         <AudioContext/>
@@ -32,16 +50,16 @@ let { children }: Props = $props()
             <div class="flex relative flex-col basis-1/5 shrink-0 z-10 bg-base-100 border-r border-base-content/10">
                 <SoundSetTile/>
             </div>
-            <div class="grow overflow-x-hidden overflow-y-auto w-full border-r border-base-content/10 bg-base-300 flex flex-col">
+            <div class="grow overflow-x-hidden overflow-y-auto w-full border-r border-base-content/10 bg-base-300/80 flex flex-col">
                 <div class="p-8">
                     {@render children()}
                 </div>
 
                 <div class="mt-auto">
-                    <SoundSampleSheet/>
+                    <LibrarySheet/>
                 </div>
             </div>
-            <div class="w-160 min-h-0">
+            <div class="w-160 min-h-0 bg-base-100">
                 <SoundPadPanel/>
             </div>
         </div>
@@ -54,5 +72,14 @@ let { children }: Props = $props()
 <style>
     .header {
         background: url('/assets/header.png') no-repeat center;
+    }
+
+    .app-backdrop::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: url('/assets/header.png') no-repeat center / cover;
+        filter: blur(24px);
+        z-index: -1;
     }
 </style>

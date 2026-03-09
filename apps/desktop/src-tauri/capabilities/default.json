@@ -7,6 +7,12 @@
   ],
   "permissions": [
     "core:default",
-    "opener:default"
+    "opener:default",
+    "fs:default",
+    "fs:allow-read-file",
+    "fs:allow-remove",
+    "fs:scope-appdata-recursive",
+    "window-state:default",
+    "core:window:allow-set-title"
   ]
 }
