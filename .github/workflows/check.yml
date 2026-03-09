@@ -1,0 +1,31 @@
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Biome lint
+        run: npx biome check .
+        working-directory: apps/desktop
+
+      - name: Svelte check
+        run: npx svelte-kit sync && npx svelte-check --threshold warning
+        working-directory: apps/desktop
+        env:
+          PUBLIC_FREESOUND_API_KEY: dummy
+          PUBLIC_YOUTUBE_API_KEY: dummy
