@@ -52,17 +52,17 @@ onMount(() => {
     <div class="flex flex-col h-screen app-backdrop">
         <div class="flex-center justify-between pl-2 pr-8 bg-base-300/80 border-b border-base-content/10 ">
             <div class="flex items-center p-2 pl-0">
-                <h1 class="text-5xl p-1">SØUND/SCAPE<sup class="text-xl">______vØ.9.6</sup></h1>
+                <h1 class="text-5xl p-1">SØUND/SCAPE<sup class="text-xl">______vØ.9.7</sup></h1>
             </div>
 
             <div class="flex items-center gap-4">
                 {#if isDownloadingNewVersion}
                     <div class="flex items-center gap-2 text-xs text-base-content/60">
                         <Loader2 class="size-4 animate-spin" />
-                        <span>Downloading new version...</span>
+                        <span>Download new version...</span>
                     </div>
                 {:else if isNewVersionReady}
-                    <button type="button" class="btn btn-primary" onclick={relaunch}>
+                    <button type="button" class="btn btn-secondary btn-sm btn-ghost" onclick={relaunch}>
                         Update
                     </button>
                 {/if}

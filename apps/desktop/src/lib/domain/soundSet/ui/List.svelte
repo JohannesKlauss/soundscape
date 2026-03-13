@@ -1,5 +1,5 @@
 <script lang="ts">
-import { SwordsIcon, Trash } from '@lucide/svelte'
+import { GripVertical, SwordsIcon, Trash } from '@lucide/svelte'
 import { liveQuery } from 'dexie'
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
@@ -18,10 +18,11 @@ type SoundSet = {
   id: number
   name: string
   moodIds: number[]
+  order: number
 }
 
 const soundSets = liveQuery(async () => {
-  const sets = await db.set.toArray()
+  const sets = await db.set.orderBy('order').toArray()
 
   return Promise.all(
     sets.map(async (set) => {
@@ -68,6 +69,18 @@ function cancelSetRename() {
 
 const { ref: setRenameRef } = useInlineRename({ onSave: saveSetName, onCancel: cancelSetRename })
 
+const { containerRef: setContainerRef } = useSortable<SoundSet>({
+  id: 'soundSet',
+  get items() {
+    return $soundSets ?? []
+  },
+  async onSort(items) {
+    await Promise.all(
+      items.map((set, i) => db.set.update(set.id, { order: i }))
+    )
+  },
+})
+
 const { containerRef } = useSortable<Mood>({
   id: 'mood',
   get items() {
@@ -89,7 +102,7 @@ const { containerRef } = useSortable<Mood>({
     <FormSet/>
 </div>
 
-<ul class="text-lg">
+<ul class="text-lg" {@attach setContainerRef}>
     {#each $soundSets as set}
         {@const pathname = `/sets/${set.id}`}
         {@const isActive = page.url.pathname === pathname}
@@ -97,6 +110,10 @@ const { containerRef } = useSortable<Mood>({
             <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
             <div class={["group py-2 px-4 hover:bg-base-300 flex-center justify-start cursor-pointer", isActive && "bg-primary hover:bg-primary"]}
                  onclick={() => goto(pathname, { noScroll: true })}>
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
+                    <GripVertical class="size-4" />
+                </div>
+
                 {#if renamingSetId === set.id}
                     <input
                         type="text"
@@ -117,20 +134,18 @@ const { containerRef } = useSortable<Mood>({
                     Delete Soundscape
                 </Tooltip>
             </div>
-        </li>
 
-        {#if page.url.pathname.startsWith(pathname)}
-            <li>
+            {#if page.url.pathname.startsWith(pathname)}
                 <AddMood setId={set.id}/>
-            </li>
 
-            <ul {@attach containerRef}>
-                {#each set.moods as mood}
-                    <li>
-                        <MoodListItem setId={set.id} {mood} />
-                    </li>
-                {/each}
-            </ul>
-        {/if}
+                <ul {@attach containerRef}>
+                    {#each set.moods as mood}
+                        <li>
+                            <MoodListItem setId={set.id} {mood} />
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
+        </li>
     {/each}
 </ul>

@@ -7,6 +7,7 @@ export const SoundSetCreationSchema = z.object({
 export type SoundSet = z.infer<typeof SoundSetCreationSchema> & {
   id: number
   moodIds: number[]
+  order: number
 }
 
 export type SoundSetHasPad = {
