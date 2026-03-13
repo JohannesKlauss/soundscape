@@ -52,7 +52,7 @@ onMount(() => {
     <div class="flex flex-col h-screen app-backdrop">
         <div class="flex-center justify-between px-8 bg-base-300/80 border-b border-base-content/10 ">
             <div class="flex items-center p-2 pl-0">
-                <h1 class="text-5xl p-1">SØUND/SCAPE<sup class="text-xl">______vØ.9.3</sup></h1>
+                <h1 class="text-5xl p-1">SØUND/SCAPE<sup class="text-xl">______vØ.9.4</sup></h1>
             </div>
 
             <div class="flex items-center gap-4">
