@@ -65,7 +65,7 @@ async function onDelete(padId: number) {
 </script>
 
 <div class="outline-0 outline-primary rounded">
-    <div class="grid grid-cols-6 gap-6 w-full justify-evenly items-center place-content-center place-items-center">
+    <div class="grid grid-cols-3 gap-3 md:grid-cold-4 md:gap-4 lg:grid-cols-6 lg:gap-6 w-full justify-evenly items-center place-content-center place-items-center">
         {#each $pads as pad (pad.id)}
             <SetElement {pad} volume={$mood?.elements?.[pad.id]?.volume} {editable} {onDelete} {onChangeSettingsForMood}/>
         {:else}

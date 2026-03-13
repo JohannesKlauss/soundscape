@@ -62,7 +62,7 @@ function onAddSampleToLibrary(name: string, url: string, tags: string[]) {
             </span>
 
             {#if sound.tags.length > 0}
-                <div class="flex-center gap-1 ml-2">
+                <div class="flex-center gap-1 ml-2 max-sm:hidden">
                     {#each sound.tags.slice(0, 3) as tag (tag)}
                         <span class="badge badge-xs bg-base-content/10 text-base-content/60">{tag}</span>
                     {/each}
@@ -78,7 +78,7 @@ function onAddSampleToLibrary(name: string, url: string, tags: string[]) {
                 </div>
             {/if}
 
-            <div class="grid grid-cols-3 gap-2 ml-2 text-right w-40">
+            <div class="grid grid-cols-3 gap-2 ml-2 text-right w-40 max-md:hidden">
                 <Tooltip>
                     {#snippet trigger()}
                         <span class="flex-center gap-0.5 text-xs text-muted text-nowrap whitespace-nowrap">
