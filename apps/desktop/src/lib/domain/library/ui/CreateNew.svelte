@@ -228,7 +228,7 @@ function resetForm() {
     {/snippet}
 
     {#snippet description()}
-        Add a sample from a URL, YouTube link, or drop a file from your computer
+        Add a sample from a URL, YouTube link, or drop a file from your computer to add it to your library.
     {/snippet}
 
     <DropZone {file} onFileSelected={handleFileSelected} onClear={clearFile} />

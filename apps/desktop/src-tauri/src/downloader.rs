@@ -204,7 +204,7 @@ pub async fn download_audio(
     app: AppHandle,
     state: State<'_, DownloaderState>,
 ) -> Result<DownloadResult, String> {
-    emit_progress(&app, "Fetching video info...", Some(0.0));
+    emit_progress(&app, "Fetching video info... (this might take a while)", Some(0.0));
 
     // Clone the downloader so we release the lock before the long download
     let downloader = {
