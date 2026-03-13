@@ -37,7 +37,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENFMjk1MkE4RTcyNzQwM0QKUldROVFDZm5xRklwemwvbUtNeTN3c2VyTEFYWjd3cDJnTFV6UUlRVVVSanQ1TW1QcDk3YTJvWGMK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI3MTdFMDE5OTBFRDNENzIKUldSeVBlMlFHZUFYdDVUcjVreldPRitkdHJhcnFaRGdVUWI0STg5R2w1bDZhakJoenpZWVR2Y3AK",
       "endpoints": [
         "https://github.com/JohannesKlauss/soundscape/releases/latest/download/latest.json"
       ]
