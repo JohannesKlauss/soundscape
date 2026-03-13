@@ -1,18 +1,13 @@
 # Soundscape
 
-A desktop soundboard for pen & paper tabletop RPGs. Create atmospheric soundscapes by combining music, loops, ambient sounds, and one-shot effects into moods that you can trigger and crossfade between during your sessions.
-
-Built with [Tauri](https://tauri.app), [SvelteKit](https://svelte.dev), [Tone.js](https://tonejs.github.io/), and [Dexie](https://dexie.org/) (IndexedDB).
+A desktop soundboard for your TTRPG sessions. Create atmospheric soundscapes by combining music, loops, ambient sounds, and one-shot effects into moods that you can trigger and crossfade between during your sessions.
 
 ## Features
 
-- **Sound Pads** -- combine audio samples into pads with configurable crossfade, fade-in/out, and playback order (round-robin or random)
-- **Moods** -- group pads with per-pad volume into moods that crossfade smoothly when switching
-- **Library** -- import audio from local files, URLs, Freesound, or YouTube
-- **Streaming playback** -- audio streams directly from disk, no memory-heavy buffer decoding
-- **Fuzzy search** -- find samples by name or tags
-- **Drag & drop** -- drag samples from the library onto pads
-- **Inline editing** -- double-click to rename samples, pads, and sound sets
+- **Sound Pads:** Combine audio samples into pads with configurable crossfade, fade-in/out, and playback order
+- **Moods:** Group pads with per-pad volume into moods that crossfade smoothly when switching
+- **Library:** Import audio from local files, URLs, Freesound, or YouTube
+- **Local Only:** All sounds, soundscapes, pads, and moods are saved locally. No account, no ads, no subscription, no bullshit.
 
 ## Download
 
@@ -45,8 +40,8 @@ cp apps/desktop/.env.example apps/desktop/.env
 ```
 
 You'll need:
-- A **Freesound API key** -- register at [freesound.org/apiv2/apply](https://freesound.org/apiv2/apply)
-- A **YouTube Data API v3 key** -- create one at [console.cloud.google.com](https://console.cloud.google.com)
+- A **Freesound API key** (register at [freesound.org/apiv2/apply](https://freesound.org/apiv2/apply))
+- A **YouTube Data API v3 key** (create one at [console.cloud.google.com](https://console.cloud.google.com))
 
 ### Development
 
@@ -63,19 +58,6 @@ npm run tauri build
 ```
 
 The built application will be in `apps/desktop/src-tauri/target/release/bundle/`.
-
-## Tech stack
-
-| Layer | Technology |
-|-------|-----------|
-| Desktop shell | Tauri v2 |
-| Frontend framework | SvelteKit + Svelte 5 (runes) |
-| UI components | bits-ui + daisyUI |
-| Audio engine | Tone.js + Web Audio API |
-| Database | Dexie (IndexedDB) |
-| Search | Fuse.js |
-| Linting | Biome |
-| Monorepo | Turborepo |
 
 ## License
 

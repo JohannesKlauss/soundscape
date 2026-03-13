@@ -39,10 +39,10 @@ function onAddSampleToLibrary(name: string, url: string, tags: string[]) {
 
 <ul class="list">
     {#each sounds as sound (sound.id)}
-        <li class="list-row px-4 py-2 text-sm hover:bg-base-100 flex-center">
+        <li class="list-row px-4 py-2 text-sm hover:bg-base-100/80 flex-center">
             <Tooltip side="left">
                 {#snippet trigger()}
-                    <Search class="size-4 text-info"/>
+                    <Search class="size-4 text-muted"/>
                 {/snippet}
 
                 Freesound result

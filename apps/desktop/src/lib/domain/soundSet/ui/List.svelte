@@ -97,8 +97,6 @@ const { containerRef } = useSortable<Mood>({
             <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
             <div class={["group py-2 px-4 hover:bg-base-300 flex-center justify-start cursor-pointer", isActive && "bg-primary hover:bg-primary"]}
                  onclick={() => goto(pathname, { noScroll: true })}>
-                <SwordsIcon class="size-5"/>
-
                 {#if renamingSetId === set.id}
                     <input
                         type="text"

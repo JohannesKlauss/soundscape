@@ -122,9 +122,17 @@ async function onAddAudio() {
   if (isYoutube) {
     await youtubeImport?.add()
   } else if (source === 'file' && file) {
-    await addFromFile()
+    try {
+      await addFromFile()
+    } catch(_) {
+      toast.error('Could not load file from disk.')
+    }
   } else if (source === 'url') {
-    await addFromUrl()
+    try {
+      await addFromUrl()
+    } catch (e) {
+      toast.error('Could not load sound from URL.')
+    }
   }
 }
 

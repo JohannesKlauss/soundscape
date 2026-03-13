@@ -9,11 +9,9 @@ let audioCtxState = $state<AudioContextState | undefined>()
 let h: number
 
 onMount(() => {
-  onMount(() => {
-    document.addEventListener('click', () => {
-      start()
-      getTransport().start()
-    })
+  document.addEventListener('click', () => {
+    start()
+    getTransport().start()
   })
 
   setTimeout(() => {

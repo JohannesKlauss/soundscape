@@ -33,9 +33,9 @@ onMount(() => {
 
 <Tooltip.Provider delayDuration={0}>
     <div class="flex flex-col h-screen app-backdrop">
-        <div class="flex-center justify-between header px-8">
-            <div class="h-32 flex items-center p-8 pl-0 border-b border-base-content/10">
-                <h1 class="text-5xl bg-base-100/40 p-1">SØUND/SCAPE<sup class="text-xl">___ ___v1.Ø</sup></h1>
+        <div class="flex-center justify-between px-8 bg-base-300/80 border-b border-base-content/10 ">
+            <div class="flex items-center p-2 pl-0">
+                <h1 class="text-5xl p-1">SØUND/SCAPE<sup class="text-xl">______vØ.9</sup></h1>
             </div>
 
             <div class="flex items-center gap-4">
@@ -47,7 +47,7 @@ onMount(() => {
         <AudioContext/>
 
         <div class="flex relative flex-1 min-h-0">
-            <div class="flex relative flex-col basis-1/5 shrink-0 z-10 bg-base-100 border-r border-base-content/10">
+            <div class="flex relative flex-col basis-1/5 shrink-0 z-10 bg-base-100/90 border-r border-base-content/10">
                 <SoundSetTile/>
             </div>
             <div class="grow overflow-x-hidden overflow-y-auto w-full border-r border-base-content/10 bg-base-300/80 flex flex-col">
@@ -59,7 +59,7 @@ onMount(() => {
                     <LibrarySheet/>
                 </div>
             </div>
-            <div class="w-160 min-h-0 bg-base-100">
+            <div class="w-160 min-h-0 bg-base-100/90">
                 <SoundPadPanel/>
             </div>
         </div>
@@ -70,15 +70,11 @@ onMount(() => {
 <AlertDialog/>
 
 <style>
-    .header {
-        background: url('/assets/header.png') no-repeat center;
-    }
-
     .app-backdrop::before {
         content: '';
         position: fixed;
         inset: 0;
-        background: url('/assets/header.png') no-repeat center / cover;
+        background: url('/assets/img.png') no-repeat center / cover;
         filter: blur(24px);
         z-index: -1;
     }

@@ -129,7 +129,7 @@ $effect(() => {
 })
 </script>
 
-<div class="bg-base-100 relative">
+<div class="bg-base-100/80 relative">
     <BottomSheet bind:open={open}>
         {#snippet header()}
             <div class="flex-center justify-start w-full">
@@ -151,7 +151,7 @@ $effect(() => {
             </div>
         {/snippet}
 
-        <div class="bg-base-300">
+        <div class="bg-base-300/80">
             {@render filter()}
 
             {#if availableTags.length > 0}

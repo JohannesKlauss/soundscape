@@ -66,7 +66,7 @@ async function onDelete(padId: number) {
 
 <div class="outline-0 outline-primary rounded">
     <div class="grid grid-cols-6 gap-6 w-full justify-evenly items-center place-content-center place-items-center">
-        {#each $pads as pad}
+        {#each $pads as pad (pad.id)}
             <SetElement {pad} volume={$mood?.elements?.[pad.id]?.volume} {editable} {onDelete} {onChangeSettingsForMood}/>
         {:else}
             <div class="text-lg text-muted text-center mt-12 col-span-6">Add Sound Pads to this set to create sound scape</div>

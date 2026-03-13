@@ -1,6 +1,15 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: dark --default;
+}
 @plugin "tailwindcss-animate";
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: true;
+  --color-base-content: oklch(96% 0.013 26.071);
+  --color-primary: oklch(0.4533 0.1388 26.49);
+  --color-secondary: oklch(0.7492 0.162 155.03);
+}
 
 @font-face {
   font-family: "Unbounded";
