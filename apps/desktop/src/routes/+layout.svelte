@@ -4,6 +4,7 @@ import { Tooltip } from 'bits-ui'
 import { onMount } from 'svelte'
 import { Toaster } from 'svelte-sonner'
 import '../app.css'
+import {Loader2} from "@lucide/svelte";
 import { relaunch } from '@tauri-apps/plugin-process'
 import { check } from '@tauri-apps/plugin-updater'
 import AlertDialog from '$lib/components/AlertDialog.svelte'
@@ -13,7 +14,6 @@ import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
 import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
 import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
-import {Loader2} from "@lucide/svelte";
 
 interface Props {
   children: import('svelte').Snippet
@@ -62,7 +62,7 @@ onMount(() => {
                         <span>Downloading new version...</span>
                     </div>
                 {:else if isNewVersionReady}
-                    <button class="btn btn-primary" onclick={relaunch}>
+                    <button type="button" class="btn btn-primary" onclick={relaunch}>
                         Update
                     </button>
                 {/if}
