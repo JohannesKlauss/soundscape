@@ -6,7 +6,7 @@ import { getContext, getTransport, start } from 'tone'
 
 let audioCtxState = $state<AudioContextState | undefined>()
 
-let h: number
+let h: NodeJS.Timeout
 
 onMount(() => {
   document.addEventListener('click', () => {

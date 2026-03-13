@@ -8,6 +8,11 @@
     "tauri-mcp": {
       "type": "local",
       "command": ["npx", "-y", "@hypothesi/tauri-mcp-server"]
-    }
+    },
+    "Sentry": {
+      "type": "remote",
+      "url": "https://mcp.sentry.dev/mcp/oss-projects/soundscape",
+      "oauth": {}
+    },
   }
 }

@@ -12,6 +12,16 @@ const config = {
     adapter: adapter({
       fallback: "index.html",
     }),
+
+    experimental: {
+      tracing: {
+        server: false,
+      },
+
+      instrumentation: {
+        server: true,
+      },
+    },
   },
 };
 
