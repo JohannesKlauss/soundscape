@@ -37,9 +37,11 @@ const { form, constraints, submit, reset, errors, validateForm, enhance } = supe
           name: $form.name,
         })
       } else {
+        const count = await db.set.count()
         db.set.add({
           name: $form.name,
           moodIds: [],
+          order: count,
         })
       }
 
