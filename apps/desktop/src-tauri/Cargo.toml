@@ -28,3 +28,7 @@ futures-util = "0.3"
 yt-dlp = "2.4.0"
 tauri-plugin-fs = "2"
 tauri-plugin-window-state = "2"
+tauri-plugin-process = "2"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"

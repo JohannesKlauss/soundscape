@@ -209,10 +209,7 @@ pub async fn download_audio(
     // Clone the downloader so we release the lock before the long download
     let downloader = {
         let guard = state.downloader.lock().await;
-        guard
-            .as_ref()
-            .ok_or("Dependencies not ready.")?
-            .clone()
+        guard.as_ref().ok_or("Dependencies not ready.")?.clone()
     };
 
     let video = downloader
@@ -250,11 +247,7 @@ pub async fn download_audio(
         .await
         .map_err(|e| format!("Failed to download audio: {e}"))?;
 
-    emit_progress(
-        &app,
-        "Download complete",
-        Some(100.0),
-    );
+    emit_progress(&app, "Download complete", Some(100.0));
 
     Ok(DownloadResult {
         file_path: audio_path.to_string_lossy().to_string(),

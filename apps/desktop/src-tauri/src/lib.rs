@@ -1,8 +1,8 @@
 mod downloader;
 
-use std::sync::Arc;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 use tauri::Emitter;
 use tokio::net::TcpListener;
 use tokio::sync::Mutex;
@@ -25,8 +25,7 @@ struct AppState {
 #[tauri::command]
 async fn start_websocket_server(app: tauri::AppHandle) -> Result<String, String> {
     let addr = "0.0.0.0:8080";
-    let listener = TcpListener::bind(addr).await
-        .map_err(|e| e.to_string())?;
+    let listener = TcpListener::bind(addr).await.map_err(|e| e.to_string())?;
 
     println!("WebSocket server listening on: {}", addr);
 
@@ -36,7 +35,8 @@ async fn start_websocket_server(app: tauri::AppHandle) -> Result<String, String>
             let app_handle = app.clone();
 
             tokio::spawn(async move {
-                let ws_stream = accept_async(stream).await
+                let ws_stream = accept_async(stream)
+                    .await
                     .expect("Error during WebSocket handshake");
 
                 println!("New WebSocket connection");
@@ -75,6 +75,8 @@ async fn start_websocket_server(app: tauri::AppHandle) -> Result<String, String>
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_window_state::Builder::default().build())

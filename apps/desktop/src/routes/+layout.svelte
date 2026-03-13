@@ -11,6 +11,8 @@ import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
 import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
 import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
+import { check } from '@tauri-apps/plugin-updater'
+import { relaunch } from '@tauri-apps/plugin-process'
 
 interface Props {
   children: import('svelte').Snippet
@@ -19,6 +21,13 @@ interface Props {
 let { children }: Props = $props()
 
 onMount(() => {
+  check().then(async update => {
+    if (update) {
+      await update.downloadAndInstall()
+      await relaunch()
+    }
+  })
+
   function onBeforeUnload() {
     saveWindowState(StateFlags.ALL)
   }

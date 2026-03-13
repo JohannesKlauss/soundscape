@@ -50,6 +50,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLIC_FREESOUND_API_KEY: ${{ secrets.PUBLIC_FREESOUND_API_KEY }}
           PUBLIC_YOUTUBE_API_KEY: ${{ secrets.PUBLIC_YOUTUBE_API_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: v__VERSION__
           releaseName: 'Soundscape v__VERSION__'
