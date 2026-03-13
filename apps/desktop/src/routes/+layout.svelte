@@ -13,6 +13,7 @@ import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
 import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
 import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
+import {Loader2} from "@lucide/svelte";
 
 interface Props {
   children: import('svelte').Snippet
@@ -20,11 +21,18 @@ interface Props {
 
 let { children }: Props = $props()
 
+let isDownloadingNewVersion = $state(false)
+let isNewVersionReady = $state(false)
+
 onMount(() => {
   check().then(async update => {
     if (update) {
+      isDownloadingNewVersion = true
+
       await update.downloadAndInstall()
-      await relaunch()
+
+      isDownloadingNewVersion = false
+      isNewVersionReady = true
     }
   })
 
@@ -48,6 +56,16 @@ onMount(() => {
             </div>
 
             <div class="flex items-center gap-4">
+                {#if isDownloadingNewVersion}
+                    <div class="flex items-center gap-2 text-xs text-base-content/60">
+                        <Loader2 class="size-4 animate-spin" />
+                        <span>Downloading new version...</span>
+                    </div>
+                {:else if isNewVersionReady}
+                    <button class="btn btn-primary" onclick={relaunch}>
+                        Update
+                    </button>
+                {/if}
                 <DependencyIndicator/>
                 <GlobalControl/>
             </div>
