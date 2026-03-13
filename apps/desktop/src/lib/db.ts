@@ -28,18 +28,23 @@ db.version(2).stores({
   mood: '++id',
 })
 
-db.version(3).stores({
-  set: '++id, order',
-  sample: '++id, *tags',
-  pad: '++id',
-  setHasPads: '[setId+padId],setId,padId',
-  mood: '++id',
-}).upgrade(tx => {
-  return tx.table('set').toCollection().modify((set, ref) => {
-    if (set.order == null) {
-      ref.value.order = set.id
-    }
+db.version(3)
+  .stores({
+    set: '++id, order',
+    sample: '++id, *tags',
+    pad: '++id',
+    setHasPads: '[setId+padId],setId,padId',
+    mood: '++id',
   })
-})
+  .upgrade((tx) => {
+    return tx
+      .table('set')
+      .toCollection()
+      .modify((set, ref) => {
+        if (set.order == null) {
+          ref.value.order = set.id
+        }
+      })
+  })
 
 export { db }
