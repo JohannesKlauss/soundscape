@@ -4,6 +4,8 @@ import { Tooltip } from 'bits-ui'
 import { onMount } from 'svelte'
 import { Toaster } from 'svelte-sonner'
 import '../app.css'
+import { relaunch } from '@tauri-apps/plugin-process'
+import { check } from '@tauri-apps/plugin-updater'
 import AlertDialog from '$lib/components/AlertDialog.svelte'
 import DependencyIndicator from '$lib/domain/library/ui/DependencyIndicator.svelte'
 import LibrarySheet from '$lib/domain/library/ui/LibrarySheet.svelte'
@@ -11,8 +13,6 @@ import SoundPadPanel from '$lib/domain/soundPad/ui/SoundPadPanel.svelte'
 import SoundSetTile from '$lib/domain/soundSet/ui/SoundSetTile.svelte'
 import AudioContext from '$lib/engine/ui/AudioContext.svelte'
 import GlobalControl from '$lib/engine/ui/GlobalControl.svelte'
-import { check } from '@tauri-apps/plugin-updater'
-import { relaunch } from '@tauri-apps/plugin-process'
 
 interface Props {
   children: import('svelte').Snippet
