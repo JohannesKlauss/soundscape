@@ -8,7 +8,7 @@ import { DragOverlay, useDraggable } from '$lib/dnd'
 import type { SoundSample } from '$lib/domain/library/_types'
 import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
 import TagInput from '$lib/domain/library/ui/TagInput.svelte'
-import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
+import QuickPreviewPlayer from '$lib/engine/ui/previewPlayer/QuickPreviewPlayer.svelte'
 import { formatTime } from '$lib/engine/volume'
 
 interface Props {

@@ -15,7 +15,7 @@ import {dropNewSampleDnd, dropNewSampleState} from "$lib/domain/library/ui/dropN
 import List from '$lib/domain/library/ui/List.svelte'
 import ReindexLibrary from '$lib/domain/library/ui/ReindexLibrary.svelte'
 import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
-import {stopPreviewSource} from "$lib/domain/previewPlayer/previewPlayer.svelte";
+import {stopPreviewSource} from "$lib/engine/ui/previewPlayer/previewPlayer.svelte";
 import { clearFreesoundResults, searchFreesound } from '$lib/freesound'
 
 const categoryLabels: Record<SoundSampleCategory, string> = {

@@ -2,7 +2,7 @@
 import { Download, PlusIcon, Search, Star } from '@lucide/svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import CreateNew from "$lib/domain/library/ui/CreateNew.svelte";
-import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
+import QuickPreviewPlayer from '$lib/engine/ui/previewPlayer/QuickPreviewPlayer.svelte'
 import { formatTime } from '$lib/engine/volume'
 import type { FreesoundSound } from '$lib/freesound'
 

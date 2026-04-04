@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Pause, Play } from '@lucide/svelte'
 import type { ClassValue } from 'svelte/elements'
-import { previewFromUrl, previewPlayerState, previewSource, stopPreviewSource } from '$lib/domain/previewPlayer/previewPlayer.svelte'
+import { previewFromUrl, previewPlayerState, previewSource, stopPreviewSource } from '$lib/engine/ui/previewPlayer/previewPlayer.svelte.js'
 
 interface Props {
   src: string
