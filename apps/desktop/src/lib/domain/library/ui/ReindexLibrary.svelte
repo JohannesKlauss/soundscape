@@ -50,7 +50,7 @@ async function rebuild() {
   closeInSeconds = 5
 
   const h = setInterval(() => {
-    if (closeInSeconds! <= 1) {
+    if (closeInSeconds && closeInSeconds <= 1) {
       open = false
       isReindexing = false
       currentlyIndexing = undefined

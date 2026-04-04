@@ -11,11 +11,12 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev"
   },
   "license": "MIT",
   "dependencies": {
-    "@lucide/svelte": "0.575.0",
+    "@lucide/svelte": "1.7.0",
     "@sentry/sveltekit": "^10.43.0",
     "@tailwindcss/vite": "4.2.0",
     "@tauri-apps/api": "2.10.1",
