@@ -9,11 +9,10 @@ import { removeElementPlayer } from '$lib/engine/engine.svelte'
 
 interface Props {
   setId: number
-  editable?: boolean
   onChangeSettingsForMood: (padId: number, volume: number, playAtMoodStart: boolean) => void
 }
 
-let { setId, editable = false, onChangeSettingsForMood }: Props = $props()
+let { setId, onChangeSettingsForMood }: Props = $props()
 
 const padTypeOrder: SoundPadType[] = ['music', 'loop', 'fx', 'one_shot']
 
@@ -67,7 +66,7 @@ async function onDelete(padId: number) {
 <div class="outline-0 outline-primary rounded">
     <div class="grid grid-cols-3 gap-3 md:grid-cold-4 md:gap-4 lg:grid-cols-6 lg:gap-6 w-full justify-evenly items-center place-content-center place-items-center">
         {#each $pads as pad (pad.id)}
-            <SetElement {pad} volume={$mood?.elements?.[pad.id]?.volume} {editable} {onDelete} {onChangeSettingsForMood}/>
+            <SetElement {pad} volume={$mood?.elements?.[pad.id]?.volume} {onDelete} {onChangeSettingsForMood}/>
         {:else}
             <div class="text-lg text-muted text-center mt-12 col-span-6">Add Sound Pads to this set to create sound scape</div>
         {/each}
