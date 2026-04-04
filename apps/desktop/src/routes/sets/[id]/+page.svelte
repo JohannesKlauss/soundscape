@@ -10,8 +10,6 @@ import type { PageProps } from './$types'
 
 let { data }: PageProps = $props()
 
-let editMode = $state(false)
-
 let editingMood = $state(structuredClone(page.state.editMood))
 
 watch(
@@ -64,24 +62,9 @@ async function saveMood() {
                 Save Mood
             </button>
         {/if}
-        <Tooltip triggerProps={{class:"btn btn-ghost btn-neutral btn-circle ml-auto", onclick: () => editMode = !editMode}}>
-            {#snippet trigger()}
-                {#if editMode}
-                    <LockOpenIcon class="size-4 text-warning"/>
-                {:else}
-                    <LockIcon class="size-4 text-muted"/>
-                {/if}
-            {/snippet}
-
-            {#if editMode}
-                Lock Soundscape
-            {:else}
-                Edit Soundscape
-            {/if}
-        </Tooltip>
     </div>
 
     {#if data.set}
-        <ElementList editable={editMode} setId={data.set.id} {onChangeSettingsForMood}/>
+        <ElementList setId={data.set.id} {onChangeSettingsForMood}/>
     {/if}
 </div>
