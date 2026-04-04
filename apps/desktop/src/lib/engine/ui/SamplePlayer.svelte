@@ -17,8 +17,12 @@ let duration = $state(0)
 let volume = $state(1)
 let isMuted = $state(false)
 
+let animationFrame: number
+
 function onTimeUpdate() {
   currentTime = audio.currentTime
+
+  animationFrame = requestAnimationFrame(onTimeUpdate)
 }
 
 function onLoadedMetadata() {
@@ -32,10 +36,14 @@ function onEnded() {
 
 function onPlay() {
   isPlaying = true
+
+  animationFrame = requestAnimationFrame(onTimeUpdate)
 }
 
 function onPause() {
   isPlaying = false
+
+  cancelAnimationFrame(animationFrame)
 }
 
 function togglePlay() {
@@ -64,7 +72,6 @@ function toggleMute() {
 }
 
 onMount(() => {
-  audio.addEventListener('timeupdate', onTimeUpdate)
   audio.addEventListener('loadedmetadata', onLoadedMetadata)
   audio.addEventListener('ended', onEnded)
   audio.addEventListener('play', onPlay)
@@ -81,11 +88,12 @@ onMount(() => {
 
 onDestroy(() => {
   audio.pause()
-  audio.removeEventListener('timeupdate', onTimeUpdate)
   audio.removeEventListener('loadedmetadata', onLoadedMetadata)
   audio.removeEventListener('ended', onEnded)
   audio.removeEventListener('play', onPlay)
   audio.removeEventListener('pause', onPause)
+
+  cancelAnimationFrame(animationFrame)
 })
 </script>
 
@@ -110,7 +118,7 @@ onDestroy(() => {
               step="0.1"
               bind:value={currentTime}
               oninput={handleSeek}
-              class="range range-primary range-xs flex-1 [--range-fill:0]"
+              class="range range-primary range-xs flex-1"
       />
 
       <span class="text-sm font-medium tabular-nums w-12 text-base-content/70 text-right">
