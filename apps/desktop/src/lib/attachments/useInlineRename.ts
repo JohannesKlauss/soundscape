@@ -1,10 +1,3 @@
-/**
- * Reusable Svelte 5 attachment for inline rename inputs.
- *
- * Encapsulates: autofocus + select, blur-to-save (cancel-safe),
- * Enter-to-save, Escape-to-cancel, and keydown stopPropagation
- * (prevents Collapsible.Trigger from intercepting Space).
- */
 export function useInlineRename(opts: { onSave: () => void; onCancel: () => void }) {
   let cancelled = false
 

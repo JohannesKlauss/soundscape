@@ -47,4 +47,23 @@ db.version(3)
       })
   })
 
+db.version(4)
+  .stores({
+    set: '++id, order',
+    sample: '++id, *tags',
+    pad: '++id',
+    setHasPads: '[setId+padId],setId,padId',
+    mood: '++id',
+  })
+  .upgrade((tx) => {
+    return tx
+      .table('pad')
+      .toCollection()
+      .modify((set, ref) => {
+        if (set.pan == null) {
+          ref.value.pan = [-1, 1]
+        }
+      })
+  })
+
 export { db }

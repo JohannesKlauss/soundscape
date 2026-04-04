@@ -1,6 +1,7 @@
-import { CrossFade, connect, getContext, getTransport } from 'tone'
+import { CrossFade, connect, getContext, getTransport, Panner } from 'tone'
 import type { SoundPad } from '$lib/domain/soundPad/_types'
 import { sampleDurations, sampleUrls } from '$lib/engine/engine.svelte'
+import { randomInteger } from '$lib/numbers'
 
 export class ElementPlayer {
   #pad: SoundPad
@@ -9,7 +10,8 @@ export class ElementPlayer {
   #audioB = new Audio()
   #sourceA: MediaElementAudioSourceNode | null = null
   #sourceB: MediaElementAudioSourceNode | null = null
-  #crossfader = new CrossFade({ fade: 0 }).toDestination()
+  #crossfader = new CrossFade({ fade: 0 }).toDestination() // 0..1
+  #panner = new Panner({ pan: 0 }).toDestination() // -1..1
 
   #activeSlot: 'a' | 'b' = 'a'
   #scheduledEventId: number | null = null
@@ -33,6 +35,7 @@ export class ElementPlayer {
     this.#sourceB = ctx.createMediaElementSource(this.#audioB)
     connect(this.#sourceA, this.#crossfader.a)
     connect(this.#sourceB, this.#crossfader.b)
+    connect(this.#crossfader, this.#panner)
 
     // @ts-expect-error
     getTransport().on('globalStop', () => {
@@ -116,6 +119,7 @@ export class ElementPlayer {
     }
 
     this.#clearScheduledStop()
+    this.#movePanToRandomValue()
 
     const sampleId = this.#getNextSampleId()
     const url = sampleUrls.get(sampleId)
@@ -146,6 +150,9 @@ export class ElementPlayer {
     this.#audioA.src = url
     this.#audioA.currentTime = 0
     this.#audioA.play()
+
+    this.#audioB.src = url
+    this.#audioB.currentTime = 0
 
     this.#crossfader.output.gain.rampTo(this.#lastVolume, fadeInTime)
 
@@ -227,6 +234,8 @@ export class ElementPlayer {
       `+${Math.max(0, nextDuration - this.#pad.crossfade)}`,
     )
 
+    this.#movePanToRandomValue()
+
     getTransport().scheduleOnce(() => {
       this.duration = Math.max(0, nextDuration - crossfadeDuration)
     }, `+${crossfadeDuration}`)
@@ -251,5 +260,11 @@ export class ElementPlayer {
       getTransport().clear(this.#scheduledStopId)
       this.#scheduledStopId = null
     }
+  }
+
+  #movePanToRandomValue() {
+    const panValue = randomInteger(this.#pad.randomizePan[0] * 100, this.#pad.randomizePan[1] * 100)
+
+    this.#panner.pan.rampTo(panValue / 100, this.#pad.crossfade / 2)
   }
 }

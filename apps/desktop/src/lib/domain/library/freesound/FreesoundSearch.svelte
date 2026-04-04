@@ -1,5 +1,5 @@
 <script lang="ts">
-  import FreesoundList from "$lib/domain/library/ui/FreesoundList.svelte";
+  import FreesoundList from "$lib/domain/library/freesound/FreesoundList.svelte";
   import {freesoundState, loadNextFreesoundPage} from "$lib/freesound";
 
   interface Props {

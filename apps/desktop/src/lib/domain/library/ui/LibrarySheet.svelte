@@ -9,9 +9,9 @@ import BottomSheet from '$lib/components/BottomSheet.svelte'
 import Tooltip from "$lib/components/Tooltip.svelte";
 import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/library/_types'
+import FreesoundSearch from "$lib/domain/library/freesound/FreesoundSearch.svelte";
 import CreateNew from '$lib/domain/library/ui/CreateNew.svelte'
 import {dropNewSampleDnd, dropNewSampleState} from "$lib/domain/library/ui/dropNewSample.svelte";
-import FreesoundSearch from "$lib/domain/library/ui/FreesoundSearch.svelte";
 import List from '$lib/domain/library/ui/List.svelte'
 import ReindexLibrary from '$lib/domain/library/ui/ReindexLibrary.svelte'
 import { sampleIcons } from '$lib/domain/library/ui/sampleIcons'
