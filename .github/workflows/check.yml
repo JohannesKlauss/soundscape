@@ -19,9 +19,8 @@ jobs:
 
       - run: npm ci --ignore-scripts
 
-      - name: Biome lint
-        run: npx biome check .
-        working-directory: apps/desktop
+      - name: Check
+        run: npm run lint && npm run test
 
       - name: Svelte check
         run: npx svelte-kit sync && npx svelte-check --threshold warning
