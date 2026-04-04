@@ -1,8 +1,10 @@
 <script lang="ts">
-import { ArrowUpDown, Library, Search, Upload, X } from '@lucide/svelte'
+import Tooltip from "$lib/components/Tooltip.svelte";
+import { ArrowUpDown, Library, Search, Upload, X, Globe } from '@lucide/svelte'
 import { Collapsible, Select } from 'bits-ui'
 import { liveQuery } from 'dexie'
 import Fuse from 'fuse.js'
+import {PersistedState} from "runed";
 import { SvelteSet } from 'svelte/reactivity'
 import BottomSheet from '$lib/components/BottomSheet.svelte'
 import { db } from '$lib/db'
@@ -35,10 +37,14 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 let open = $state(false)
 let searchText = $state('')
+
 let scrollContainer: HTMLDivElement | undefined = $state()
+
 let activeCategoryFilters = new SvelteSet<SoundSampleCategory>()
 let activeTagFilters = new SvelteSet<string>()
 let sortValue = $state<SortOption>('name-asc')
+
+const isFreesoundSearchActive = new PersistedState("isFreesoundSearchActive", true)
 
 function toggleCategoryFilter(cat: SoundSampleCategory) {
   if (activeCategoryFilters.has(cat)) activeCategoryFilters.delete(cat)
@@ -121,7 +127,11 @@ const filteredSamples = $derived.by(() => {
 $effect(() => {
   if (searchText.length >= 2) {
     open = true
-    searchFreesound(searchText)
+
+    if (isFreesoundSearchActive.current) {
+      searchFreesound(searchText)
+    }
+
     stopPreviewSource()
   } else {
     clearFreesoundResults()
@@ -142,7 +152,19 @@ $effect(() => {
                     {/if}
                 </Collapsible.Trigger>
 
-                {@render searchInput()}
+                <div class="flex-center">
+                    <Tooltip>
+                        {#snippet trigger()}
+                            <button type="button" class={["btn btn-xs btn-circle", isFreesoundSearchActive.current && 'btn-primary']} onclick={() => isFreesoundSearchActive.current = !isFreesoundSearchActive.current}>
+                                <Globe class="size-3"/>
+                            </button>
+                        {/snippet}
+
+                        {isFreesoundSearchActive ? 'Deactivate' : 'Activate'} Freesound Search
+                    </Tooltip>
+
+                    {@render searchInput()}
+                </div>
             </div>
 
             <ReindexLibrary numSamples={$samples.length}/>
@@ -161,7 +183,9 @@ $effect(() => {
             <div class="min-h-[50vh] max-h-[50vh] overflow-y-scroll" bind:this={scrollContainer}>
                 <List samples={filteredSamples}/>
 
-                <FreesoundSearch {scrollContainer} isSearchActive={searchText.length >= 2}/>
+                {#if isFreesoundSearchActive.current}
+                    <FreesoundSearch {scrollContainer} isSearchActive={searchText.length >= 2}/>
+                {/if}
             </div>
         </div>
     </BottomSheet>
@@ -178,7 +202,7 @@ $effect(() => {
         <input
                 type="text"
                 required
-                placeholder="Search Library & freesound.org"
+                placeholder={`Search Library ${isFreesoundSearchActive.current ? '& freesound.org' : ''}`}
                 bind:value={searchText}
                 onkeydown={e => e.stopPropagation()}
         />
@@ -192,8 +216,8 @@ $effect(() => {
 
 {#snippet sortSelect()}
     <Select.Root type="single" value={sortValue ?? 'name-asc'} onValueChange={(v) => { sortValue = (v ?? 'name-asc') as SortOption }}>
-        <Select.Trigger class={["btn btn-circle btn-sm", sortValue ? 'btn-primary' : 'btn-ghost']}>
-            <ArrowUpDown class="size-4"/>
+        <Select.Trigger class={["btn btn-circle btn-xs", sortValue ? 'btn-primary' : 'btn-ghost']}>
+            <ArrowUpDown class="size-3"/>
         </Select.Trigger>
         <Select.Portal>
             <Select.Content class="z-50 rounded-box bg-base-200 shadow-xl p-2 min-w-40 animate-in fade-in-0 zoom-in-95" sideOffset={4} side="top">
@@ -235,7 +259,7 @@ $effect(() => {
             {/each}
         </div>
 
-        <div class="ml-auto">
+        <div class="ml-auto flex-center">
             {@render sortSelect()}
         </div>
     </div>
