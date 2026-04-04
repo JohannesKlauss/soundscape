@@ -13,10 +13,9 @@ interface Props {
   volume?: number
   onDelete?: (padId: number) => void
   onChangeSettingsForMood: (padId: number, volume: number, playAtMoodStart: boolean) => void
-  editable?: boolean
 }
 
-let { pad, volume: volumeFromMood = .75, editable = false, onDelete, onChangeSettingsForMood }: Props = $props()
+let { pad, volume: volumeFromMood = .75, onDelete, onChangeSettingsForMood }: Props = $props()
 
 let playAtMoodStart = $derived(!!page.state.editMood?.elements?.[pad.id])
 let progress = $state(0)
@@ -79,7 +78,7 @@ function handleRangeWheel(e: WheelEvent) {
 </script>
 
 <div class="flex flex-col gap-2 items-center group max-w-full">
-    <div class="flex-center relative">
+    <div class="flex-center relative group">
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
         <div class={["radial-progress text-zinc-400 cursor-pointer transition-colors duration-250", !player.isPlaying && "text-transparent!"]} onclick={togglePlay}
              style="--size:4.4rem; --thickness: 2px;" style:--value={100 - progress * 100}>
@@ -113,15 +112,13 @@ function handleRangeWheel(e: WheelEvent) {
             {Math.round(volume.current * 100)}%
         </Tooltip>
 
-        {#if editable}
-            <Tooltip triggerProps={{class: "transition-opacity btn btn-xs btn-ghost btn-error btn-circle absolute -left-4 -top-1", onclick: () => onDelete?.(pad.id)}}>
-                {#snippet trigger()}
-                    <XIcon class="size-3"/>
-                {/snippet}
+        <Tooltip triggerProps={{class: "transition-opacity btn btn-xs btn-ghost btn-error btn-circle absolute -left-4 -top-1", onclick: () => onDelete?.(pad.id)}}>
+            {#snippet trigger()}
+                <XIcon class="size-3 opacity-0 group-hover:opacity-100 transition-opacity"/>
+            {/snippet}
 
-                Remove Sound Pad from Soundscape
-            </Tooltip>
-        {/if}
+            Remove Sound Pad from Soundscape
+        </Tooltip>
     </div>
 
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
