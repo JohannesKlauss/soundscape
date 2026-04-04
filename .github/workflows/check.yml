@@ -20,7 +20,7 @@ jobs:
       - run: npm ci --ignore-scripts
 
       - name: Check
-        run: npm check
+        run: npm run check
 
       - name: Svelte check
         run: npx svelte-kit sync && npx svelte-check --threshold warning
