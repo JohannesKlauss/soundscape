@@ -21,9 +21,9 @@ import { page } from '$app/state'
 import { db } from '$lib/db'
 import { useDroppable, useSortable } from '$lib/dnd'
 import type { SoundSample } from '$lib/domain/library/_types'
-import QuickPreviewPlayer from '$lib/engine/ui/previewPlayer/QuickPreviewPlayer.svelte'
 import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
 import { updateElementPlayer } from '$lib/engine/engine.svelte'
+import QuickPreviewPlayer from '$lib/engine/ui/previewPlayer/QuickPreviewPlayer.svelte'
 import { formatTime } from '$lib/engine/volume'
   import {panRangeToLabel, panToLabel, round} from "$lib/numbers";
 

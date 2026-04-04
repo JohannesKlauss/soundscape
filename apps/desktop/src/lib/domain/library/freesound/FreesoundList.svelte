@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Download, PlusIcon, Globe, Star } from '@lucide/svelte'
+import { Download, Globe, PlusIcon, Star } from '@lucide/svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import CreateNew from "$lib/domain/library/ui/CreateNew.svelte";
 import QuickPreviewPlayer from '$lib/engine/ui/previewPlayer/QuickPreviewPlayer.svelte'

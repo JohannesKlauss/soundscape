@@ -8,10 +8,10 @@ import Tooltip from '$lib/components/Tooltip.svelte'
 import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/library/_types'
 import DropZone from '$lib/domain/library/ui/DropZone.svelte'
-import SamplePlayer from '$lib/engine/ui/SamplePlayer.svelte'
 import TagInput from '$lib/domain/library/ui/TagInput.svelte'
 import YoutubeImport from '$lib/domain/library/youtube/YoutubeImport.svelte'
 import { ytDlpState } from '$lib/domain/library/youtube/ytDlpState.svelte.js'
+import SamplePlayer from '$lib/engine/ui/SamplePlayer.svelte'
 import { getExtensionFromContentType, writeFileToSamplesDirectory } from '$lib/fileSystem'
 
 interface Props {
