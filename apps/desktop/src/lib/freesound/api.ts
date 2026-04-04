@@ -16,9 +16,6 @@ export class FreesoundApiError extends Error {
   }
 }
 
-/**
- * Low-level fetch wrapper that injects API key token authentication.
- */
 async function fetchApi(url: string): Promise<Response> {
   const res = await fetch(url, {
     headers: { Authorization: `Token ${FREESOUND_API_KEY}` },
@@ -32,10 +29,6 @@ async function fetchApi(url: string): Promise<Response> {
   return res
 }
 
-/**
- * Search the Freesound database by text query.
- * Returns sounds matching the query with all fields needed for display and playback.
- */
 export async function searchSounds(
   query: string,
   options: FreesoundSearchOptions = {},
@@ -60,9 +53,6 @@ export async function searchSounds(
   return res.json() as Promise<FreesoundSearchResponse>
 }
 
-/**
- * Download the HQ MP3 preview of a sound. No authentication required beyond API key.
- */
 export async function downloadPreview(previewUrl: string): Promise<{ blob: Blob; contentType: string }> {
   const res = await fetch(previewUrl)
 

@@ -5,7 +5,7 @@ import { toast } from 'svelte-sonner'
 
 import { db } from '$lib/db'
 import type { SoundSampleCategory } from '$lib/domain/library/_types'
-import { downloadAudio, fetchAudioInfo, ytDlpState } from '$lib/domain/library/ui/ytDlpState.svelte'
+import { downloadAudio, fetchAudioInfo, ytDlpState } from '$lib/domain/library/youtube/ytDlpState.svelte.js'
 import { writeFileToSamplesDirectory } from '$lib/fileSystem'
 import { extractYoutubeVideoId, fetchYoutubeInfo } from '$lib/youtube/api'
 

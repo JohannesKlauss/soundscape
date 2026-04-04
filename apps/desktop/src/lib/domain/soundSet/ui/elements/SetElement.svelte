@@ -60,13 +60,11 @@ function updateProgress() {
     return
   }
 
-  if (player.isPlaying && player.currentAudio) {
-    const currentTime = player.currentAudio.currentTime
+  const currentTime = player.currentAudio?.currentTime || 0
 
-    progress = Math.max(0, Math.min(1, currentTime / player.duration))
+  progress = Math.max(0, Math.min(1, currentTime / (player.currentAudio?.duration || 1)))
 
-    animationFrame = requestAnimationFrame(updateProgress)
-  }
+  animationFrame = requestAnimationFrame(updateProgress)
 }
 
 function handleRangeWheel(e: WheelEvent) {

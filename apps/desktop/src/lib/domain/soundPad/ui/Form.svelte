@@ -1,5 +1,5 @@
 <script lang="ts">
-import {
+  import {
   AudioWaveform,
   Check,
   Crosshair,
@@ -11,18 +11,21 @@ import {
   Trash,
   XIcon,
 } from '@lucide/svelte'
+import {watch} from "runed";
 import { toast } from 'svelte-sonner'
 import { defaults, superForm } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { replaceState } from '$app/navigation'
 import { page } from '$app/state'
+  import MultiSlider from "$lib/components/MultiSlider.svelte";
 import { db } from '$lib/db'
 import { useDroppable, useSortable } from '$lib/dnd'
 import type { SoundSample } from '$lib/domain/library/_types'
-import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
 import { SoundPadCreationSchema } from '$lib/domain/soundPad/_types'
 import { updateElementPlayer } from '$lib/engine/engine.svelte'
+import QuickPreviewPlayer from '$lib/engine/ui/previewPlayer/QuickPreviewPlayer.svelte'
 import { formatTime } from '$lib/engine/volume'
+  import {panRangeToLabel, panToLabel, round} from "$lib/numbers";
 
 interface Props {
   onCancel?: () => void
@@ -80,7 +83,13 @@ const { form, constraints, enhance, reset, validateForm } = superForm(defaults(p
 })
 
 $effect(() => {
-  $constraints['crossfade']!.max = Math.min(...$form.samples.map((s) => s.duration / 2))
+  $constraints['crossfade']!.max = round(Math.min(...$form.samples.map((s) => s.duration / 2)), 1)
+})
+
+$effect(() => {
+  if ($form.crossfade > ($constraints.crossfade!.max as number)) {
+    $form.crossfade = $constraints.crossfade!.max as number
+  }
 })
 
 const { isDropTarget, ref } = useDroppable<SoundSample>({
@@ -135,13 +144,11 @@ const { containerRef } = useSortable({
 
     <div class="flex-1 min-h-0 overflow-y-auto space-y-4">
         <div class="fieldset">
-            <label class="label" for="name">Name</label>
-            <input type="text" class="input" name="url" placeholder="Name of the pad" {...$constraints.name}
+            <input type="text" class="input w-full" name="url" placeholder="Name of the pad" {...$constraints.name}
                    bind:value={$form.name}/>
         </div>
 
         <div class="fieldset">
-            <span class="label">Type</span>
             <div class="grid grid-cols-2 gap-4">
                 <label class="label">
                     <input type="radio" class="radio" name="type" value="music" bind:group={$form.type}/>
@@ -174,7 +181,7 @@ const { containerRef } = useSortable({
                         type="range"
                         {...$constraints.fadeInSeconds}
                         bind:value={$form.fadeInSeconds}
-                        class="range range-xs"
+                        class="range range-xs w-full"
                         onwheel={(e) => handleRangeWheel(e, 'fadeInSeconds')}
                 />
             </div>
@@ -186,9 +193,51 @@ const { containerRef } = useSortable({
                         type="range"
                         {...$constraints.fadeOutSeconds}
                         bind:value={$form.fadeOutSeconds}
-                        class="range range-xs"
+                        class="range range-xs w-full"
                         onwheel={(e) => handleRangeWheel(e, 'fadeOutSeconds')}
                 />
+            </div>
+        </div>
+
+        <div class="fieldset">
+            <div>
+                <div class="label">
+                    Randomize Stereo Position:
+                    <span class="tabular-nums ml-auto">{panRangeToLabel($form.randomizePan)}</span>
+                </div>
+
+                <MultiSlider min={-1} max={1} step={0.1} bind:value={$form.randomizePan}/>
+            </div>
+        </div>
+
+        <div class="fieldset">
+            <div>
+            <span class="label">Crossfade <span class="tabular-nums ml-auto">{$form.crossfade}
+                seconds</span></span>
+                <input
+                        type="range"
+                        {...$constraints.crossfade}
+                        bind:value={$form.crossfade}
+                        class="range range-xs w-full"
+                        onwheel={(e) => handleRangeWheel(e, 'crossfade')}
+                />
+            </div>
+
+            <div class="mt-2">
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="label">
+                        <input type="radio" class="radio" name="playbackType" value="random"
+                               disabled={$form.samples.length < 2} bind:group={$form.playbackType}/>
+                        <Dices class="size-5"/>
+                        Random
+                    </label>
+                    <label class="label">
+                        <input type="radio" class="radio" name="playbackType" value="round_robin"
+                               disabled={$form.samples.length < 2} bind:group={$form.playbackType}/>
+                        <ListOrdered class="size-5"/>
+                        Round Robin
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -214,36 +263,6 @@ const { containerRef } = useSortable({
                 </div>
 
                 <span class="text-xs text-muted">Drop sample from Library</span>
-            </div>
-        </div>
-
-        <div class="fieldset">
-            <span class="label">Multisample Playback Type</span>
-            <div class="grid grid-cols-2 gap-4">
-                <label class="label">
-                    <input type="radio" class="radio" name="playbackType" value="random"
-                           disabled={$form.samples.length < 2} bind:group={$form.playbackType}/>
-                    <Dices class="size-5"/>
-                    Random
-                </label>
-                <label class="label">
-                    <input type="radio" class="radio" name="playbackType" value="round_robin"
-                           disabled={$form.samples.length < 2} bind:group={$form.playbackType}/>
-                    <ListOrdered class="size-5"/>
-                    Round Robin
-                </label>
-            </div>
-
-            <div>
-            <span class="label">Crossfade <span class="tabular-nums ml-auto">{$form.crossfade}
-                seconds</span></span>
-                <input
-                        type="range"
-                        {...$constraints.crossfade}
-                        bind:value={$form.crossfade}
-                        class="range range-xs"
-                        onwheel={(e) => handleRangeWheel(e, 'crossfade')}
-                />
             </div>
         </div>
     </div>

@@ -2,8 +2,6 @@ import type { FreesoundSearchOptions, FreesoundSound } from '$lib/freesound/_typ
 import { downloadPreview, searchSounds } from '$lib/freesound/api'
 import { FREESOUND_SEARCH_DEBOUNCE_MS } from '$lib/freesound/config'
 
-// ── Reactive state ────────────────────────────────────────────────────
-
 type FreesoundState = {
   results: FreesoundSound[]
   isSearching: boolean
@@ -28,24 +26,15 @@ const _state = $state<FreesoundState>({
 
 export const freesoundState: Readonly<FreesoundState> = _state
 
-// ── Debounced search ──────────────────────────────────────────────────
-
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 let abortController: AbortController | null = null
 
-/**
- * Trigger a debounced search against the Freesound API.
- * Subsequent calls within the debounce window cancel the previous pending search.
- * Empty queries clear the results immediately.
- */
 export function searchFreesound(query: string, options: FreesoundSearchOptions = {}): void {
-  // Cancel any pending debounce
   if (debounceTimer) {
     clearTimeout(debounceTimer)
     debounceTimer = null
   }
 
-  // Cancel any in-flight request
   if (abortController) {
     abortController.abort()
     abortController = null
@@ -53,7 +42,6 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
 
   const trimmed = query.trim()
 
-  // Clear results for empty query
   if (trimmed.length < 2) {
     _state.results = []
     _state.isSearching = false
@@ -75,7 +63,6 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
     try {
       const response = await searchSounds(trimmed, { ...options, page: 1 })
 
-      // Only apply results if this is still the current query
       if (_state.currentQuery === trimmed) {
         _state.results = response.results
         _state.totalCount = response.count
@@ -84,7 +71,6 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
         _state.hasMore = response.next !== null
       }
     } catch (err) {
-      // Ignore abort errors (from superseded searches)
       if (err instanceof DOMException && err.name === 'AbortError') {
         return
       }
@@ -104,10 +90,6 @@ export function searchFreesound(query: string, options: FreesoundSearchOptions =
   }, FREESOUND_SEARCH_DEBOUNCE_MS)
 }
 
-/**
- * Load the next page of Freesound results and append them.
- * No-op if there are no more results or a load is already in progress.
- */
 export async function loadNextFreesoundPage(): Promise<void> {
   if (!_state.hasMore || _state.isLoadingMore || _state.currentQuery.length < 2) {
     return
@@ -139,7 +121,6 @@ export async function loadNextFreesoundPage(): Promise<void> {
   }
 }
 
-/** Clear all search results and reset state. */
 export function clearFreesoundResults(): void {
   if (debounceTimer) {
     clearTimeout(debounceTimer)
@@ -161,11 +142,6 @@ export function clearFreesoundResults(): void {
   _state.isLoadingMore = false
 }
 
-// ── Download helpers ──────────────────────────────────────────────────
-
-/**
- * Download a Freesound sample's HQ MP3 preview.
- */
 export async function downloadFreesoundSample(
   sound: FreesoundSound,
 ): Promise<{ blob: Blob; contentType: string; fileName: string }> {

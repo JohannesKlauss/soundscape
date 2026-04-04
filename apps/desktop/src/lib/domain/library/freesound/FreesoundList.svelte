@@ -1,8 +1,8 @@
 <script lang="ts">
-import { Download, PlusIcon, Search, Star } from '@lucide/svelte'
+import { Download, Globe, PlusIcon, Star } from '@lucide/svelte'
 import Tooltip from '$lib/components/Tooltip.svelte'
 import CreateNew from "$lib/domain/library/ui/CreateNew.svelte";
-import QuickPreviewPlayer from '$lib/domain/previewPlayer/QuickPreviewPlayer.svelte'
+import QuickPreviewPlayer from '$lib/engine/ui/previewPlayer/QuickPreviewPlayer.svelte'
 import { formatTime } from '$lib/engine/volume'
 import type { FreesoundSound } from '$lib/freesound'
 
@@ -42,7 +42,7 @@ function onAddSampleToLibrary(name: string, url: string, tags: string[]) {
         <li class="list-row px-4 py-2 text-sm hover:bg-base-100/80 flex-center">
             <Tooltip side="left">
                 {#snippet trigger()}
-                    <Search class="size-4 text-muted"/>
+                    <Globe class="size-4 text-muted"/>
                 {/snippet}
 
                 Freesound result

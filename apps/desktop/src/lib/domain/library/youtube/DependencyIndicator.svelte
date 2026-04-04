@@ -2,7 +2,7 @@
 import { AlertCircle, CheckCircle, Loader2 } from '@lucide/svelte'
 import {onMount} from "svelte";
 import Tooltip from '$lib/components/Tooltip.svelte'
-import { ensureDependencies, ytDlpState } from '$lib/domain/library/ui/ytDlpState.svelte'
+import { ensureDependencies, ytDlpState } from '$lib/domain/library/youtube/ytDlpState.svelte.js'
 
 onMount(() => {
   ensureDependencies()

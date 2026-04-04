@@ -6,11 +6,6 @@ type YoutubeVideoInfo = {
   tags: string[]
 }
 
-/**
- * Extract the video ID from a YouTube URL.
- * Supports youtube.com/watch?v=, youtu.be/, youtube.com/shorts/,
- * youtube.com/embed/, and music.youtube.com/watch?v= variants.
- */
 export function extractYoutubeVideoId(url: string): string | null {
   try {
     const parsed = new URL(url)
@@ -50,10 +45,6 @@ function parseIsoDuration(iso: string): number {
   return hours * 3600 + minutes * 60 + seconds
 }
 
-/**
- * Fetch video metadata from the YouTube Data API v3.
- * Returns title, duration (seconds), and up to 5 lowercase tags.
- */
 export async function fetchYoutubeInfo(videoId: string): Promise<YoutubeVideoInfo> {
   const params = new URLSearchParams({
     part: 'snippet,contentDetails',
