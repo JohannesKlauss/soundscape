@@ -1,0 +1,132 @@
+{
+  "$schema": "https://github.com/longbridge/gpui-kit/raw/refs/heads/main/.theme-schema.json",
+  "name": "Soundscape",
+  "themes": [
+    {
+      "name": "Soundscape Dark",
+      "mode": "dark",
+      "radius": 8,
+      "radius.lg": 12,
+      "shadow": true,
+      "colors": {
+        "background": "#09090b",
+        "foreground": "#e4e4e7",
+
+        "border": "#27272a",
+        "input.border": "#3f3f46",
+        "caret": "#34d399",
+        "ring": "#34d399",
+        "selection.background": "#047857",
+
+        "accent.background": "#27272a",
+        "accent.foreground": "#34d399",
+
+        "primary.background": "#10b981",
+        "primary.foreground": "#09090b",
+        "primary.hover.background": "#34d399",
+        "primary.active.background": "#059669",
+
+        "secondary.background": "#27272a",
+        "secondary.foreground": "#f4f4f5",
+        "secondary.hover.background": "#3f3f46",
+        "secondary.active.background": "#18181b",
+
+        "muted.background": "#18181b",
+        "muted.foreground": "#a1a1aa",
+
+        "danger.background": "#ef4444",
+        "danger.foreground": "#ffffff",
+        "danger.hover.background": "#f87171",
+        "danger.active.background": "#dc2626",
+
+        "success.background": "#34d399",
+        "success.foreground": "#064e3b",
+        "success.hover.background": "#6ee7b7",
+        "success.active.background": "#10b981",
+
+        "warning.background": "#fcd34d",
+        "warning.foreground": "#78350f",
+        "warning.hover.background": "#fde68a",
+        "warning.active.background": "#fbbf24",
+
+        "info.background": "#38bdf8",
+        "info.foreground": "#082f49",
+        "info.hover.background": "#7dd3fc",
+        "info.active.background": "#0ea5e9",
+
+        "link": "#34d399",
+        "link.hover": "#6ee7b7",
+        "link.active": "#10b981",
+
+        "overlay": "#00000080",
+
+        "popover.background": "#18181b",
+        "popover.foreground": "#f4f4f5",
+
+        "scrollbar.background": "#00000000",
+        "scrollbar.thumb.background": "#3f3f46e6",
+        "scrollbar.thumb.hover.background": "#34d399e6",
+
+        "sidebar.background": "#09090b",
+        "sidebar.foreground": "#e4e4e7",
+        "sidebar.border": "#27272a",
+        "sidebar.accent.background": "#18181b",
+        "sidebar.accent.foreground": "#34d399",
+        "sidebar.primary.background": "#10b981",
+        "sidebar.primary.foreground": "#09090b",
+
+        "list.background": "#09090b",
+        "list.head.background": "#18181b66",
+        "list.even.background": "#18181b66",
+        "list.hover.background": "#ffffff0d",
+        "list.active.background": "#10b9811a",
+        "list.active.border": "#34d399",
+
+        "tab_bar.background": "#09090b",
+        "tab.background": "#00000000",
+        "tab.foreground": "#a1a1aa",
+        "tab.active.background": "#18181b",
+        "tab.active.foreground": "#f4f4f5",
+
+        "title_bar.background": "#09090b",
+        "title_bar.border": "#27272a",
+        "status_bar.background": "#09090b",
+        "status_bar.border": "#27272a",
+
+        "table.background": "#09090b",
+        "table.head.foreground": "#71717a",
+        "table.row.border": "#27272ab3",
+        "table.hover.background": "#ffffff0d",
+        "table.active.background": "#10b9811a",
+        "table.active.border": "#34d399",
+
+        "group_box.background": "#09090b",
+        "group_box.foreground": "#e4e4e7",
+        "group_box.title.foreground": "#a1a1aa",
+        "description_list.label.background": "#18181b",
+        "description_list.label.foreground": "#a1a1aa",
+
+        "drag.border": "#34d399",
+        "drop_target.background": "#34d39919",
+        "skeleton.background": "#18181b",
+        "switch.background": "#3f3f46",
+        "switch.thumb.background": "#f4f4f5",
+        "slider.background": "#34d399",
+        "slider.thumb.background": "#f4f4f5",
+        "progress.bar.background": "#34d399",
+        "window.border": "#27272a",
+
+        "chart.1": "#34d399",
+        "chart.2": "#6ee7b7",
+        "chart.3": "#10b981",
+        "chart.4": "#5865f2",
+        "chart.5": "#fcd34d",
+        "chart.bullish": "#34d399",
+        "chart.bearish": "#ef4444",
+        "chart.grid": "#27272a99",
+
+        "accordion.background": "#09090b"
+      }
+    }
+  ]
+}
