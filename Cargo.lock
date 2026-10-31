@@ -2791,6 +2791,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "gpui-navigator"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5dbe408290233edf52effbd0906974c375b01e1e8e679cded22b2f3a18e7102a"
+dependencies = [
+ "gpui-fast",
+]
+
+[[package]]
 name = "gpui-pre"
 version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7118,6 +7127,7 @@ version = "0.9.13"
 dependencies = [
  "anyhow",
  "gpui-kit",
+ "gpui-navigator",
  "native_db",
  "rodio",
  "serde",

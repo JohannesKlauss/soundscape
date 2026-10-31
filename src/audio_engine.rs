@@ -45,7 +45,7 @@ impl AudioEngine {
     }
 
     pub fn play(&mut self) -> Result<()> {
-        self.play_file("1", "sounds/loop_1.mp3", Some(-1.0), None)
+        self.play_file("1", "sounds/loop_1.mp3", Some(-1.0), Some(15_000))
     }
 
     pub fn play_other(&mut self) -> Result<()> {

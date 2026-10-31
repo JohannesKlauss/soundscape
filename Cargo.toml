@@ -6,6 +6,8 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0"
 gpui-kit = { version = "0.8.1", features = ["gpui-fast"] }
+gpui-navigator = { version = "0.2", default-features = false,
+    features = ["gpui-fast", "transition", "guard"] }
 rodio = "0.23"
 native_db = "0.8"
 yt-dlp = "2"

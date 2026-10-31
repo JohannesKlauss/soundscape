@@ -1,61 +1,13 @@
 pub mod audio_engine;
+pub mod ui;
 
 use std::path::PathBuf;
 
-use gpui_kit::component::button::{Button, ButtonVariants};
-use gpui_kit::component::{ActiveTheme, Theme, ThemeRegistry, WindowExt};
+use gpui_kit::component::{Theme, ThemeRegistry};
 use gpui_kit::*;
-use gpui_kit::component::notification::NotificationType;
+use gpui_navigator::{init_router, Route};
 use crate::audio_engine::AudioEngine;
-
-pub struct HelloWorld;
-
-impl Render for HelloWorld {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        div()
-            .flex()
-            .flex_col()
-            .gap_2()
-            .size_full()
-            .items_center()
-            .justify_center()
-            .bg(cx.theme().background)
-            .text_color(cx.theme().foreground)
-            .child("Hello, World")
-            .child(
-                Button::new("ok")
-                    .primary()
-                    .label("Play Sound 1")
-                    .on_click(|_, window, cx| {
-                        if let Err(e) = cx.global_mut::<AppSettings>().audio_engine.play() {
-                            println!("Error while playing: {:?}", e);
-
-                            window.push_notification((NotificationType::Error, "Could not play sound."), cx)
-                        }
-                    }),
-            )
-            .child(
-                Button::new("ok2")
-                    .primary()
-                    .label("Play Sound 2")
-                    .on_click(|_, window, cx| {
-                        if let Err(e) = cx.global_mut::<AppSettings>().audio_engine.play_other() {
-                            println!("Error while playing: {:?}", e);
-
-                            window.push_notification((NotificationType::Error, "Could not play sound."), cx)
-                        }
-                    }),
-            )
-            .child(
-                Button::new("ok3")
-                    .primary()
-                    .label("Stop all sounds")
-                    .on_click(|_, window, cx| {
-                        cx.global_mut::<AppSettings>().audio_engine.stop_all()
-                    }),
-            )
-    }
-}
+use crate::ui::home::HelloWorld;
 
 struct AppSettings {
     audio_engine: AudioEngine
@@ -68,10 +20,19 @@ fn main() {
         init_app_settings(cx);
         init(cx);
         set_theme(cx);
+        create_router(cx);
 
-        open_window(WindowOptions::default(), cx, |_, cx| cx.new(|_| HelloWorld))
+        open_window(WindowOptions::default(), cx, |_, cx| cx.new(|_| ui::layout::Layout))
             .expect("Failed to open window");
     });
+}
+
+fn create_router(cx: &mut App) {
+    init_router(cx, |router| {
+        router.add_route(
+            Route::new("/", |_, _, _| HelloWorld.into_any_element())
+        )
+    })
 }
 
 fn set_theme(cx: &mut App) {
