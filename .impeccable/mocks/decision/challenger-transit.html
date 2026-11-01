@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Soundscape — Midnight Transit Mural</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0b2b52;--panel:#0e3160;--porc:#f4f6f8;--scarlet:#d9312c;--cobalt:#4a7ddb;--amber:#e8a020;--green:#1f9d55;--dim:rgba(244,246,248,.38)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1440px;height:900px;overflow:hidden;background:var(--ink);color:var(--porc);font-family:"Source Sans 3",sans-serif;display:flex;flex-direction:column}
+  .caps{text-transform:uppercase;letter-spacing:.14em}
+  .num{font-variant-numeric:tabular-nums}
+  /* ── top band ─────────────────────────── */
+  header{height:52px;flex:none;display:flex;align-items:center;gap:28px;padding:0 24px;border-bottom:3px solid var(--scarlet)}
+  .wordmark{font-weight:900;font-size:17px;letter-spacing:.34em}
+  .wordmark span{color:var(--scarlet)}
+  .session{font-size:14px;font-weight:600;color:rgba(244,246,248,.85);letter-spacing:.06em}
+  .status{margin-left:auto;display:flex;align-items:center;gap:9px;border:1.5px solid rgba(244,246,248,.75);padding:6px 12px;font-size:11px;font-weight:700;letter-spacing:.16em}
+  .status i{width:8px;height:8px;background:var(--green);display:block}
+  /* ── main row ─────────────────────────── */
+  main{flex:1;display:flex;min-height:0}
+  /* left rail */
+  .rail{width:200px;flex:none;border-right:1.5px solid rgba(244,246,248,.18);padding:20px 0;display:flex;flex-direction:column;gap:4px}
+  .rail h2,.col h2{font-size:11px;font-weight:700;color:var(--dim);padding:0 20px 12px;letter-spacing:.22em}
+  .scene{display:flex;align-items:center;gap:12px;padding:11px 16px 11px 0;opacity:.5}
+  .scene b{width:6px;align-self:stretch;flex:none}
+  .scene .nm{flex:1;font-size:14px;font-weight:600;line-height:1.15}
+  .scene.on{opacity:1;background:var(--panel)}
+  .key{width:22px;height:20px;flex:none;display:grid;place-items:center;border:1.5px solid rgba(244,246,248,.6);font-size:11px;font-weight:700}
+  /* center */
+  .stage{flex:1;padding:22px 32px;display:flex;flex-direction:column}
+  .stage h1{font-size:13px;font-weight:700;letter-spacing:.2em;display:flex;align-items:center;gap:10px}
+  .stage h1 i{width:12px;height:12px;background:var(--scarlet);display:block}
+  .route{position:relative;flex:1;margin-top:8px}
+  .route svg{position:absolute;left:50%;top:26px;transform:translateX(-50%)}
+  .tiles{position:relative;display:flex;justify-content:center}
+  .tile{width:200px;height:208px;padding-top:22px;opacity:.34}
+  .tile.on,.tile.fade{opacity:1}
+  .tile .badge{width:24px;height:22px;display:grid;place-items:center;border:1.5px solid currentColor;font-size:12px;font-weight:700;margin-bottom:8px}
+  .tile h3{font-size:19px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;line-height:1.1}
+  .tile p{font-size:11.5px;font-weight:600;letter-spacing:.12em;color:rgba(244,246,248,.75);margin-top:5px}
+  .chip{display:inline-block;margin-top:9px;background:var(--amber);color:var(--ink);font-size:11px;font-weight:700;letter-spacing:.12em;padding:3px 9px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+  .stage footer{font-size:11px;font-weight:600;letter-spacing:.2em;color:var(--dim);padding-bottom:6px}
+  /* right column */
+  .col{width:320px;flex:none;border-left:1.5px solid rgba(244,246,248,.18);padding:20px 20px;display:flex;flex-direction:column;gap:10px}
+  .col h2{padding:0}
+  .pads{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pad{display:flex;align-items:center;justify-content:space-between;border:1.5px solid rgba(244,246,248,.65);border-radius:8px;padding:10px 12px}
+  .pad b{font-size:13px;font-weight:600;letter-spacing:.04em}
+  .pad .key{border-color:rgba(244,246,248,.5);color:rgba(244,246,248,.85)}
+  .col h2.g{margin-top:14px}
+  /* ── bottom band ──────────────────────── */
+  .now{height:108px;flex:none;border-top:3px solid var(--scarlet);display:flex;align-items:center;gap:36px;padding:0 24px}
+  .now .lbl{font-size:10.5px;font-weight:700;color:var(--dim);letter-spacing:.24em;margin-bottom:4px}
+  .now .big{font-size:32px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+  .xf{display:flex;flex-direction:column;gap:8px}
+  .track{width:320px;height:10px;border:1.5px solid rgba(244,246,248,.7)}
+  .fill{height:100%;width:60%;background:var(--scarlet);clip-path:polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%)}
+  .reads{display:flex;gap:22px;font-size:13px;font-weight:700;letter-spacing:.1em}
+  .reads span{color:var(--dim);font-weight:600;margin-right:6px}
+  .stop{margin-left:auto;background:var(--scarlet);color:var(--porc);font-size:15px;font-weight:900;letter-spacing:.18em;padding:15px 26px;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark caps">Sound<span>scape</span></div>
+  <div class="session caps">Session 27 — The Saltmarsh Job</div>
+  <div class="status caps"><i></i>Line Status: Sounding</div>
+</header>
+<main>
+  <nav class="rail">
+    <h2 class="caps">Scenes</h2>
+    <div class="scene on"><b style="background:var(--scarlet)"></b><span class="nm">The Laughing Gargoyle</span><span class="key num">⌃1</span></div>
+    <div class="scene"><b style="background:var(--cobalt)"></b><span class="nm">Saltmarsh Docks</span><span class="key num">⌃2</span></div>
+    <div class="scene"><b style="background:var(--green)"></b><span class="nm">The Hollow Marsh</span><span class="key num">⌃3</span></div>
+    <div class="scene"><b style="background:var(--amber)"></b><span class="nm">Smuggler's Cave</span><span class="key num">⌃4</span></div>
+  </nav>
+  <section class="stage">
+    <h1 class="caps"><i></i>Moods — The Laughing Gargoyle</h1>
+    <div class="route">
+      <svg width="800" height="208" viewBox="0 0 800 208" fill="none">
+        <path d="M8 116 H184 L216 148 H584 L616 116 H792" stroke="#d9312c" stroke-width="10"/>
+        <path d="M100 92 V103 M300 92 V135 M500 92 V135 M700 92 V103" stroke="rgba(244,246,248,.5)" stroke-width="3"/>
+        <circle cx="100" cy="116" r="9" fill="#0b2b52" stroke="rgba(232,160,32,.9)" stroke-width="4"/>
+        <circle cx="300" cy="148" r="15" stroke="rgba(244,246,248,.9)" stroke-width="2"/>
+        <circle cx="300" cy="148" r="10" fill="#d9312c" stroke="#f4f6f8" stroke-width="4"/>
+        <circle cx="500" cy="148" r="9" fill="#0b2b52" stroke="rgba(244,246,248,.4)" stroke-width="4"/>
+        <circle cx="700" cy="116" r="9" fill="#0b2b52" stroke="rgba(244,246,248,.4)" stroke-width="4"/>
+      </svg>
+      <div class="tiles">
+        <div class="tile fade"><div class="badge num">1</div><h3>Tavern Evening</h3><p class="caps num">Loop · 12:40</p><span class="chip caps num">Fading 4s</span></div>
+        <div class="tile on"><div class="badge num">2</div><h3>Rain Rolls In</h3><p class="caps num">Loop · 08:15 · −6 dB</p></div>
+        <div class="tile"><div class="badge num">3</div><h3>Brawl!</h3><p class="caps num">One-Shot Bed · 03:30</p></div>
+        <div class="tile"><div class="badge num">4</div><h3>Last Call</h3><p class="caps num">Loop · 09:55</p></div>
+      </div>
+    </div>
+    <footer class="caps">Line A · 4 Moods · Crossfade Armed · 44.1 kHz</footer>
+  </section>
+  <aside class="col">
+    <h2 class="caps">One-Shots</h2>
+    <div class="pads">
+      <div class="pad"><b>Sword Draw</b><span class="key">Q</span></div>
+      <div class="pad"><b>Coin Purse</b><span class="key">W</span></div>
+      <div class="pad"><b>Door Slam</b><span class="key">E</span></div>
+      <div class="pad"><b>Gunshot</b><span class="key">R</span></div>
+      <div class="pad"><b>Glass Break</b><span class="key">T</span></div>
+      <div class="pad"><b>Horse Pass</b><span class="key">U</span></div>
+      <div class="pad"><b>Chair Scrape</b><span class="key">I</span></div>
+      <div class="pad"><b>Bell Toll</b><span class="key">O</span></div>
+    </div>
+    <h2 class="caps g">Global</h2>
+    <div class="pads">
+      <div class="pad"><b>Thunder Crack</b><span class="key">G</span></div>
+      <div class="pad"><b>Dragon Roar</b><span class="key">H</span></div>
+    </div>
+  </aside>
+</main>
+<div class="now">
+  <div><div class="lbl caps">Now Sounding</div><div class="big">Rain Rolls In</div></div>
+  <div class="xf">
+    <div class="track"><div class="fill"></div></div>
+    <div class="reads caps num"><div><span>Xfade</span>4s</div><div><span>Vol</span>−6 dB</div></div>
+  </div>
+  <div class="stop caps">Stop All</div>
+</div>
+</body>
+</html>

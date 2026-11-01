@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Soundscape — Live Scene Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1440px; height:900px; overflow:hidden; position:relative; background:#000; color:#fff;
+         font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+  /* ————— artwork: "Rain Rolls In" — pure CSS atmosphere ————— */
+  .art { position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(104deg, transparent 0 5px, rgba(255,255,255,.05) 5px 6px, transparent 6px 22px),
+      repeating-linear-gradient(99deg,  transparent 0 9px, rgba(255,255,255,.03) 9px 10px, transparent 10px 46px),
+      radial-gradient(560px 380px at 23% 74%, rgba(255,158,54,.30), rgba(255,140,46,.10) 46%, transparent 72%),
+      radial-gradient(1000px 640px at 72% 6%, rgba(110,132,156,.30), transparent 70%),
+      linear-gradient(180deg, #0d1219 0%, #1a222c 36%, #242e39 60%, #12181f 100%); }
+  .art::after { content:""; position:absolute; inset:0;
+    background:radial-gradient(120% 92% at 50% 42%, transparent 55%, rgba(0,0,0,.55) 100%); }
+  .window { position:absolute; left:302px; bottom:196px; width:150px; height:104px; border-radius:6px; opacity:.85;
+    background:
+      linear-gradient(90deg, transparent 47.5%, rgba(38,19,7,.85) 47.5% 52.5%, transparent 52.5%),
+      linear-gradient(0deg,  transparent 47.5%, rgba(38,19,7,.85) 47.5% 52.5%, transparent 52.5%),
+      linear-gradient(160deg, #ffc26a 0%, #e78a2e 55%, #9c4f14 100%);
+    box-shadow:0 0 90px 34px rgba(255,150,60,.26), 0 0 220px 90px rgba(255,140,46,.11); }
+
+  /* ————— caption on scrim ————— */
+  .scrim { position:absolute; left:0; right:0; bottom:0; height:46%;
+    background:linear-gradient(180deg, transparent, rgba(0,0,0,.38) 46%, rgba(0,0,0,.86)); }
+  .caption { position:absolute; left:56px; bottom:132px; }
+  .kicker { font-size:12px; font-weight:600; letter-spacing:.32em; opacity:.85; margin-bottom:14px; }
+  h1 { font-family:'Oswald',sans-serif; font-size:118px; font-weight:600; line-height:.94;
+       letter-spacing:.01em; text-transform:uppercase; text-shadow:0 2px 30px rgba(0,0,0,.5); }
+  .meta { margin-top:18px; font-size:14px; letter-spacing:.04em; opacity:.78; font-variant-numeric:tabular-nums; }
+
+  /* ————— right rail ————— */
+  .rail { position:absolute; top:0; right:0; bottom:96px; width:64px;
+          display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; }
+  .act { display:flex; flex-direction:column; align-items:center; gap:8px; width:64px; }
+  .act span { font-size:7.5px; font-weight:600; letter-spacing:.16em; opacity:.55; }
+  .glyph { width:22px; height:22px; position:relative; }
+  .g-stop { border:2px solid #fff; border-radius:4px; width:18px; height:18px; margin:2px; }
+  .g-vol { display:flex; align-items:flex-end; justify-content:center; gap:3px; }
+  .g-vol i { width:3px; background:#fff; border-radius:1.5px; }
+  .g-vol i:nth-child(1){height:8px} .g-vol i:nth-child(2){height:14px} .g-vol i:nth-child(3){height:20px}
+  .g-plus::before, .g-plus::after { content:""; position:absolute; background:#fff; border-radius:1.5px;
+    left:50%; top:50%; transform:translate(-50%,-50%); }
+  .g-plus::before { width:20px; height:2.5px; } .g-plus::after { width:2.5px; height:20px; }
+  .g-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:2px; }
+  .g-grid i { border:1.5px solid #fff; border-radius:2px; }
+
+  /* ————— app chrome ————— */
+  .chrome { position:absolute; top:30px; left:56px; display:flex; flex-direction:column; gap:5px; }
+  .wordmark { font-size:13px; font-weight:600; letter-spacing:.42em; }
+  .chrome small { font-size:12px; letter-spacing:.05em; opacity:.72; }
+  .scene { display:inline-flex; align-items:center; gap:8px; margin-top:3px; }
+  .scene::before { content:""; width:6px; height:6px; border-radius:50%; background:#fff; opacity:.9; }
+
+  /* ————— next-mood sliver, bottom-right ————— */
+  .next { position:absolute; right:0; bottom:96px; height:32px; display:flex; align-items:center; gap:10px;
+    padding-right:20px; background:linear-gradient(90deg, transparent, rgba(64,34,13,.55) 32%, rgba(128,68,24,.5)); }
+  .next::before { content:""; width:3px; align-self:stretch; background:#ffb35c; }
+  .next em { font-style:normal; font-size:9px; font-weight:600; letter-spacing:.24em; opacity:.6; }
+  .next b { font-size:10.5px; font-weight:600; letter-spacing:.26em; }
+
+  /* ————— one-shots pull-up strip ————— */
+  .shots { position:absolute; left:0; right:0; bottom:0; height:96px; display:flex; align-items:center; gap:20px;
+    padding:0 56px; background:rgba(6,8,10,.74); border-top:1px solid rgba(255,255,255,.14); backdrop-filter:blur(14px); }
+  .shots::before { content:""; position:absolute; top:5px; left:50%; transform:translateX(-50%);
+    width:44px; height:3px; border-radius:1.5px; background:rgba(255,255,255,.3); }
+  .shots h2 { font-size:11px; font-weight:600; letter-spacing:.3em; opacity:.6; margin-right:6px; }
+  .shot { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .shot em { font-style:normal; font-size:9.5px; letter-spacing:.04em; opacity:.62; white-space:nowrap; }
+  .chip { width:52px; height:52px; border-radius:9px; position:relative; border:1px solid rgba(255,255,255,.2); flex:none; }
+  .chip i { position:absolute; left:4px; top:4px; font-style:normal; font-size:9px; font-weight:600;
+    background:rgba(0,0,0,.55); border-radius:4px; padding:1px 5px; }
+  .c-sword   { background:linear-gradient(135deg,#3a4450, #cfd9e4 45%, #5a6672); }
+  .c-coin    { background:radial-gradient(circle at 35% 30%, #f0c964, #b3801f 55%, #5e3f0e); }
+  .c-door    { background:linear-gradient(100deg,#4a2f1c, #7a5230 45%, #2e1c10); }
+  .c-gun     { background:radial-gradient(circle at 70% 35%, #ffcf7a, #c96a10 38%, #2a1408 78%); }
+  .c-thunder { background:linear-gradient(150deg,#f2efff, #8f7ff0 32%, #241a4d 85%); }
+  .c-dragon  { background:linear-gradient(140deg,#ff5a2a, #a81f10 48%, #2a0a06); }
+</style>
+</head>
+<body>
+  <div class="art"></div>
+  <div class="window"></div>
+  <div class="scrim"></div>
+
+  <header class="chrome">
+    <div class="wordmark">SOUNDSCAPE</div>
+    <small>Session 27 — The Saltmarsh Job</small>
+    <small class="scene">The Laughing Gargoyle &nbsp;⌃1</small>
+  </header>
+
+  <main class="caption">
+    <div class="kicker">NOW SOUNDING &nbsp;·&nbsp; KEY 2</div>
+    <h1>Rain Rolls In</h1>
+    <div class="meta">xfade from Tavern Evening &nbsp;·&nbsp; 04s &nbsp;·&nbsp; vol −6 dB</div>
+  </main>
+
+  <aside class="next"><em>NEXT · KEY 3</em><b>LAST CALL →</b></aside>
+
+  <nav class="rail">
+    <div class="act"><div class="glyph g-stop"></div><span>STOP ALL</span></div>
+    <div class="act"><div class="glyph g-vol"><i></i><i></i><i></i></div><span>MIX VOL</span></div>
+    <div class="act"><div class="glyph g-plus"></div><span>ADD MIX</span></div>
+    <div class="act"><div class="glyph g-grid"><i></i><i></i><i></i><i></i></div><span>MOODS</span></div>
+  </nav>
+
+  <footer class="shots">
+    <h2>ONE-SHOTS</h2>
+    <div class="shot"><div class="chip c-sword"><i>Q</i></div><em>Sword Draw</em></div>
+    <div class="shot"><div class="chip c-coin"><i>W</i></div><em>Coin Purse</em></div>
+    <div class="shot"><div class="chip c-door"><i>E</i></div><em>Door Slam</em></div>
+    <div class="shot"><div class="chip c-gun"><i>R</i></div><em>Gunshot</em></div>
+    <div class="shot"><div class="chip c-thunder"><i>G</i></div><em>Thunder Crack</em></div>
+    <div class="shot"><div class="chip c-dragon"><i>H</i></div><em>Dragon Roar</em></div>
+  </footer>
+</body>
+</html>

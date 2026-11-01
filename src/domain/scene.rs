@@ -1,15 +1,17 @@
-use native_db::Database;
-use crate::model::model;
 use anyhow::{Result};
-use uuid::Uuid;
+use diesel::{RunQueryDsl, SelectableHelper};
+use diesel::query_dsl::limit_dsl::LimitDsl;
+use diesel::query_dsl::methods::SelectDsl;
+use crate::db::connect_to_db;
+use crate::model::{DbNewScene, DbScene};
 
 #[derive(Debug)]
 pub struct NamedScene {
     pub name: String
 }
 
-impl From<model::Scene> for NamedScene {
-    fn from(value: model::Scene) -> Self {
+impl From<DbScene> for NamedScene {
+    fn from(value: DbScene) -> Self {
         Self {
             name: value.name,
         }
@@ -23,22 +25,28 @@ impl NamedScene {
         }
     }
 
-    pub fn list(db: &Database) -> Result<Vec<NamedScene>> {
-        let r = db.r_transaction()?;
+    pub fn list() -> Result<Vec<NamedScene>> {
+        use crate::schema::scenes::dsl::*;
 
-        let scenes: Vec<model::Scene> = r.scan().primary()?.all()?.collect::<Result<Vec<_>, _>>()?;
+        let conn = &mut connect_to_db();
+        let results = scenes.limit(5).select(DbScene::as_select()).load(conn)?;
 
-        Ok(scenes.into_iter().map(NamedScene::from).collect())
+        Ok(results.into_iter().map(NamedScene::from).collect())
     }
 
-    pub fn persist(&self, db: &Database) -> Result<()> {
-        let rw = db.rw_transaction()?;
-        rw.insert(model::Scene {
-            id: model::Id(Uuid::new_v4()),
-            name: "Alice".to_string()
-        })?;
+    pub fn persist(&self) -> Result<()> {
+        use crate::schema::scenes::dsl::*;
 
-        rw.commit()?;
+        let conn = &mut connect_to_db();
+
+        let new_scene = DbNewScene {
+            name: self.name.to_owned(),
+        };
+
+        diesel::insert_into(scenes)
+            .values(&new_scene)
+            .returning(DbScene::as_returning())
+            .get_result(conn)?;
 
         Ok(())
     }

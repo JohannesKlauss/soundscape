@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Soundscape — Canon Direction Sketch</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#17181c;--panel:#26282e;--panel2:#2e3138;--ink:#eceff2;--dim:#9aa0a8;--faint:#8a8f97;--accent:#3ea6ff;--line:#33363d;--red:#ff6b61}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--accent);color:#0b0d10}
+html,body{width:1440px;height:900px}
+body{overflow:hidden;background:var(--bg);color:var(--ink);font:500 14px/1.35 Inter,system-ui,sans-serif;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+/* transport bar */
+.top{height:64px;flex:none;display:flex;align-items:center;gap:28px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.mark{font:700 15px/1 Inter;letter-spacing:.14em}
+.mark i{font-style:normal;color:var(--accent)}
+.tport{display:flex;gap:8px}
+.tbtn{width:36px;height:36px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tbtn:hover{border-color:var(--faint)}
+.g-play{width:0;height:0;margin-left:2px;border-left:11px solid var(--ink);border-top:7px solid transparent;border-bottom:7px solid transparent}
+.g-pause{width:11px;height:13px;border-left:4px solid var(--ink);border-right:4px solid var(--ink)}
+.g-stop{width:11px;height:11px;border-radius:2px;background:var(--ink)}
+.mvol{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--dim)}
+.slider{position:relative;width:140px;height:4px;border-radius:2px;background:#141519}
+.slider .fill{position:absolute;inset:0 35% 0 0;border-radius:2px;background:var(--dim)}
+.slider .thumb{position:absolute;top:50%;left:65%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink)}
+.session{margin-left:auto;font-size:13px;color:var(--dim)}
+.session b{font-weight:600;color:var(--ink)}
+/* middle band */
+.mid{flex:1;display:flex;min-height:0}
+.side{width:200px;flex:none;padding:18px 12px;background:var(--panel);border-right:1px solid var(--line)}
+.lbl{margin:0 8px 10px;font:600 11px/1 Inter;letter-spacing:.16em;color:var(--faint)}
+.scene{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:6px 10px;border-radius:8px;font-size:13px;color:var(--dim);cursor:pointer}
+.scene+.scene{margin-top:2px}
+.scene:hover{background:var(--panel2)}
+.scene.sel{background:var(--panel2);color:var(--ink)}
+.key{font:600 11px/1 Inter;color:var(--faint)}
+.scene.sel .key{color:var(--accent)}
+/* pad grid */
+.main{flex:1;min-width:0;padding:20px 24px 24px;display:flex;flex-direction:column}
+.sec{margin:14px 2px 8px;font:600 11px/1 Inter;letter-spacing:.16em;color:var(--faint)}
+.sec:first-child{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grid.moods{flex:1}
+.grid.shots{flex:2}
+.pad{position:relative;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;background:var(--panel);font:600 14px/1.2 Inter;cursor:pointer}
+.pad:hover{background:var(--panel2)}
+.pad .k{position:absolute;top:9px;right:11px;font:600 11px/1 Inter;color:var(--faint)}
+.pad.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.eq{position:absolute;top:10px;left:11px;display:flex;align-items:flex-end;gap:2px;height:10px}
+.eq i{width:3px;border-radius:1px;background:var(--accent);transform-origin:bottom;animation:eq 1s ease-in-out infinite}
+.eq i:nth-child(1){height:55%}
+.eq i:nth-child(2){height:100%;animation-delay:.25s}
+.eq i:nth-child(3){height:35%;animation-delay:.5s}
+@keyframes eq{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+/* fader column */
+.faders{width:180px;flex:none;padding:18px 12px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column}
+.frow{flex:1;display:flex;min-height:0}
+.fader{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:0}
+.track{position:relative;flex:1;width:4px;border-radius:2px;background:#141519}
+.vfill{position:absolute;left:0;right:0;bottom:0;border-radius:2px;background:var(--dim)}
+.vthumb{position:absolute;left:50%;width:18px;height:10px;margin-left:-9px;border-radius:3px;background:var(--ink)}
+.fname{width:100%;font-size:11px;letter-spacing:0;color:var(--dim);text-align:center}
+.vsep{width:1px;background:var(--line)}
+.master .vfill,.master .vthumb{background:var(--accent)}
+/* status bar */
+.status{height:40px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--panel);border-top:1px solid var(--line);font-size:12px;color:var(--dim)}
+.status .dot{display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:var(--accent);vertical-align:1px}
+.stopbtn{padding:6px 12px;border:1px solid var(--line);border-radius:6px;font:600 12px Inter;letter-spacing:.08em;color:var(--red);cursor:pointer}
+.stopbtn:hover{border-color:var(--red)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="mark">SOUND<i>SCAPE</i></div>
+  <div class="tport">
+    <div class="tbtn"><div class="g-play"></div></div>
+    <div class="tbtn"><div class="g-pause"></div></div>
+    <div class="tbtn"><div class="g-stop"></div></div>
+  </div>
+  <div class="mvol">Master
+    <div class="slider"><div class="fill"></div><div class="thumb"></div></div>
+  </div>
+  <div class="session"><b>Session 27</b> — The Saltmarsh Job</div>
+</header>
+<div class="mid">
+  <aside class="side">
+    <div class="lbl">SCENES</div>
+    <div class="scene sel"><span>The Laughing Gargoyle</span><span class="key">⌃1</span></div>
+    <div class="scene"><span>Saltmarsh Docks</span><span class="key">⌃2</span></div>
+    <div class="scene"><span>The Hollow Marsh</span><span class="key">⌃3</span></div>
+    <div class="scene"><span>Smuggler's Cave</span><span class="key">⌃4</span></div>
+  </aside>
+  <main class="main">
+    <div class="sec">MOODS</div>
+    <div class="grid moods">
+      <div class="pad">Tavern Evening<span class="k">1</span></div>
+      <div class="pad on">Rain Rolls In<span class="k">2</span><span class="eq"><i></i><i></i><i></i></span></div>
+      <div class="pad">Brawl!<span class="k">3</span></div>
+      <div class="pad">Last Call<span class="k">4</span></div>
+    </div>
+    <div class="sec">ONE-SHOTS</div>
+    <div class="grid shots">
+      <div class="pad">Sword Draw<span class="k">Q</span></div>
+      <div class="pad">Coin Purse<span class="k">W</span></div>
+      <div class="pad">Door Slam<span class="k">E</span></div>
+      <div class="pad">Gunshot<span class="k">R</span></div>
+      <div class="pad">Glass Break<span class="k">T</span></div>
+      <div class="pad">Horse Pass<span class="k">U</span></div>
+      <div class="pad">Chair Scrape<span class="k">I</span></div>
+      <div class="pad">Bell Toll<span class="k">O</span></div>
+    </div>
+  </main>
+  <aside class="faders">
+    <div class="lbl">LEVELS</div>
+    <div class="frow">
+      <div class="fader"><div class="track"><div class="vfill" style="height:70%"></div><div class="vthumb" style="bottom:calc(70% - 5px)"></div></div><div class="fname">Tavern</div></div>
+      <div class="fader"><div class="track"><div class="vfill" style="height:85%;background:var(--accent)"></div><div class="vthumb" style="bottom:calc(85% - 5px)"></div></div><div class="fname">Rain</div></div>
+      <div class="fader"><div class="track"><div class="vfill" style="height:45%"></div><div class="vthumb" style="bottom:calc(45% - 5px)"></div></div><div class="fname">Brawl</div></div>
+      <div class="fader"><div class="track"><div class="vfill" style="height:60%"></div><div class="vthumb" style="bottom:calc(60% - 5px)"></div></div><div class="fname">Last Call</div></div>
+      <div class="vsep"></div>
+      <div class="fader master"><div class="track"><div class="vfill" style="height:75%"></div><div class="vthumb" style="bottom:calc(75% - 5px)"></div></div><div class="fname">Master</div></div>
+    </div>
+  </aside>
+</div>
+<footer class="status">
+  <div><span class="dot"></span>Rain Rolls In — crossfading 4s</div>
+  <div class="stopbtn">STOP ALL</div>
+</footer>
+</body>
+</html>

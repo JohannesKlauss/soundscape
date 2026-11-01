@@ -5,13 +5,13 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0"
+diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 gpui-kit = { version = "0.8.1", features = ["gpui-fast"] }
 gpui-navigator = { version = "0.2", default-features = false,
     features = ["gpui-fast", "transition", "guard"] }
 rodio = "0.23"
-native_db = "0.8"
-native_model = "0.4.20"
 yt-dlp = "2"
 serde = { version = "1.0.229", features = ["derive"] }
 uuid = { version = "1", features = ["v4", "serde"] }
-once_cell = "1.21.4"
+dotenvy = "0.15"
+diesel_migrations = "2.3.2"

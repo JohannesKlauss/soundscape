@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Soundscape — Gate Board · live scene control</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#16181d;--panel:#23262d;--ink:#eceff2;--amber:#ffb224;--hair:rgba(236,239,242,.09);--dim:rgba(236,239,242,.55);--faint:rgba(236,239,242,.30)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1440px;height:900px;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font:500 13px/1.4 Inter,system-ui,sans-serif;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.caps{font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+header{flex:0 0 54px;display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid var(--hair)}
+.brand{display:flex;align-items:center;gap:11px;font-size:12px;font-weight:600;letter-spacing:.34em}
+.brand i{width:10px;height:10px;background:var(--ink)}
+.vd{width:1px;height:16px;background:var(--hair)}
+.session{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.clock{margin-left:auto;font-size:15px}
+main{flex:1;display:flex;min-height:0}
+.rail{flex:0 0 200px;border-right:1px solid var(--hair);display:flex;flex-direction:column}
+.moods{flex:1;display:flex;flex-direction:column;min-width:0}
+.shots{flex:0 0 320px;border-left:1px solid var(--hair);display:flex;flex-direction:column}
+.shead{flex:0 0 52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--hair);color:var(--dim)}
+.cnt{font-size:11px;color:var(--faint)}
+.scene{flex:1;display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid var(--hair);color:var(--dim)}
+.scene:last-child{border-bottom:0}
+.seg{flex:0 0 8px;height:32px;border:1px solid var(--faint)}
+.scene.on{background:var(--panel);color:var(--ink)}
+.scene.on .seg{background:var(--ink);border-color:var(--ink)}
+.nm{flex:1;font-size:13px;font-weight:500;line-height:1.25}
+.kbd{font-size:11px;color:var(--dim);border:1px solid var(--hair);padding:2px 6px}
+.scene .kbd{border:0;padding:0;color:var(--faint)}
+.scene.on .kbd{color:var(--dim)}
+.mrow{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 72px 110px 110px 200px;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid var(--hair)}
+.mrow:last-child{border-bottom:0}
+.mrow.mh{flex:0 0 36px;color:var(--faint);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+.fg{text-align:right}
+.mn2{font-size:15px;font-weight:500}
+.st{color:var(--dim)}
+.st.off{color:var(--faint)}
+.mrow.hot{background:var(--panel);box-shadow:inset 6px 0 0 var(--amber)}
+.chip{display:inline-block;background:var(--amber);color:#16181d;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:5px 9px}
+.shots .shead{flex-basis:44px}
+.chips{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px;padding:12px}
+.chips.g{flex:0 0 96px}
+.shot{position:relative;background:var(--panel);border:1px solid var(--hair);display:flex;flex-direction:column;padding:12px}
+.sn{font-size:13px;font-weight:500}
+.shot .kbd{position:absolute;right:10px;bottom:10px}
+.hold{margin-top:auto;display:flex;align-items:center;gap:6px;color:var(--amber);font-size:9.5px;font-weight:600;letter-spacing:.18em}
+.hold i{width:6px;height:6px;background:var(--amber)}
+footer{flex:0 0 200px;border-top:1px solid var(--hair);display:flex}
+.now{flex:1;display:flex;flex-direction:column;min-width:0}
+.now .shead{flex-basis:44px}
+.brow{flex:1;display:grid;grid-template-columns:210px 1fr 230px;align-items:center;gap:20px;padding:0 20px;border-bottom:1px solid var(--hair);font-size:13px}
+.brow:last-child{border-bottom:0}
+.bt{font-weight:500}
+.bd{color:var(--dim);font-size:12px}
+.trk{position:relative;height:4px;background:rgba(236,239,242,.08)}
+.trk i{position:absolute;top:0;bottom:0;left:0;background:var(--ink)}
+.brow.dec .bt{color:var(--dim)}
+.brow.dec .bd{color:var(--faint)}
+.brow.dec .trk i{opacity:.45}
+.deck{flex:0 0 320px;border-left:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px}
+.vol{display:flex;flex-direction:column;gap:7px}
+.vol .caps{color:var(--faint)}
+.vv{font-size:16px}
+.meter{display:flex;gap:3px}
+.meter i{width:8px;height:10px;border:1px solid var(--faint)}
+.meter i.f{background:var(--ink);border-color:var(--ink)}
+.stop{background:none;border:1px solid var(--amber);color:var(--amber);font:600 11px Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;padding:15px 18px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><i></i>SOUNDSCAPE</div>
+  <div class="vd"></div>
+  <div class="session">Session 27 — The Saltmarsh Job</div>
+  <div class="clock mono">21:47</div>
+</header>
+<main>
+  <aside class="rail">
+    <div class="shead"><span class="caps">Scenes</span><span class="cnt mono">04</span></div>
+    <div class="scene on"><i class="seg"></i><span class="nm">The Laughing Gargoyle</span><span class="kbd mono">⌃1</span></div>
+    <div class="scene"><i class="seg"></i><span class="nm">Saltmarsh Docks</span><span class="kbd mono">⌃2</span></div>
+    <div class="scene"><i class="seg"></i><span class="nm">The Hollow Marsh</span><span class="kbd mono">⌃3</span></div>
+    <div class="scene"><i class="seg"></i><span class="nm">Smuggler's Cave</span><span class="kbd mono">⌃4</span></div>
+  </aside>
+  <section class="moods">
+    <div class="shead"><span class="caps">Moods — The Laughing Gargoyle</span><span class="cnt mono">04</span></div>
+    <div class="mrow mh"><span>Name</span><span>Key</span><span class="fg">Fade In</span><span class="fg">Fade Out</span><span>State</span></div>
+    <div class="mrow"><span class="mn2">Tavern Evening</span><span class="kbd mono">1</span><span class="mono fg">6s</span><span class="mono fg">4s</span><span class="st mono">REL</span></div>
+    <div class="mrow hot"><span class="mn2">Rain Rolls In</span><span class="kbd mono">2</span><span class="mono fg">4s</span><span class="mono fg">6s</span><span><b class="chip">Now Sounding</b></span></div>
+    <div class="mrow"><span class="mn2">Brawl!</span><span class="kbd mono">3</span><span class="mono fg">1s</span><span class="mono fg">2s</span><span class="st off mono">—</span></div>
+    <div class="mrow"><span class="mn2">Last Call</span><span class="kbd mono">4</span><span class="mono fg">8s</span><span class="mono fg">8s</span><span class="st off mono">—</span></div>
+  </section>
+  <aside class="shots">
+    <div class="shead"><span class="caps">One-Shots</span><span class="cnt mono">08</span></div>
+    <div class="chips">
+      <div class="shot"><span class="sn">Sword Draw</span><span class="kbd mono">Q</span></div>
+      <div class="shot"><span class="sn">Coin Purse</span><span class="kbd mono">W</span></div>
+      <div class="shot"><span class="sn">Door Slam</span><span class="kbd mono">E</span></div>
+      <div class="shot"><span class="sn">Gunshot</span><span class="kbd mono">R</span><span class="hold"><i></i>FIRED</span></div>
+      <div class="shot"><span class="sn">Glass Break</span><span class="kbd mono">T</span></div>
+      <div class="shot"><span class="sn">Horse Pass</span><span class="kbd mono">U</span></div>
+      <div class="shot"><span class="sn">Chair Scrape</span><span class="kbd mono">I</span></div>
+      <div class="shot"><span class="sn">Bell Toll</span><span class="kbd mono">O</span></div>
+    </div>
+    <div class="shead"><span class="caps">Global</span><span class="cnt mono">02</span></div>
+    <div class="chips g">
+      <div class="shot"><span class="sn">Thunder Crack</span><span class="kbd mono">G</span></div>
+      <div class="shot"><span class="sn">Dragon Roar</span><span class="kbd mono">H</span></div>
+    </div>
+  </aside>
+</main>
+<footer>
+  <div class="now">
+    <div class="shead"><span class="caps">Sounding Now</span><span class="cnt mono">02</span></div>
+    <div class="brow mono"><span class="bt">Rain Rolls In</span><span class="bd">· scene mood · xfade 4s · 60%</span><span class="trk"><i style="width:60%"></i></span></div>
+    <div class="brow dec mono"><span class="bt">Gunshot</span><span class="bd">· one-shot · decaying</span><span class="trk"><i style="width:32%"></i></span></div>
+  </div>
+  <div class="deck">
+    <div class="vol"><span class="caps">Master</span><span class="vv mono">VOL −6 dB</span><span class="meter"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></span></div>
+    <button class="stop" type="button">Stop All</button>
+  </div>
+</footer>
+</body>
+</html>

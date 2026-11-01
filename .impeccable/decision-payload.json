@@ -1,0 +1,111 @@
+{
+  "title": "Choose the visual world",
+  "question": "Bolder hand, as steered — every earlier card is off the table. Every direction now carries your pinned truth: art-led tiles (AI-generated at save, user-overridable) and glance-and-go legibility. Split-Flap Concourse leads by deal order.",
+  "options": [
+    {
+      "id": "leader-splitflap",
+      "kind": "challenger",
+      "catalogId": "signals-instruments-split-flap-concourse",
+      "label": "Split-Flap Concourse",
+      "kicker": "THE ROLL — BOLDER HAND",
+      "lineage": "rail concourse split-flap departure boards",
+      "thesis": "A Milan–Marseille board for the game table: moods as tall art bands with clacking flap name plates, and every change ripples through a character cascade you cannot miss.",
+      "palette": ["#101013", "#f5f2ea", "#3a3d42", "#ffb224", "#8a2b22"],
+      "materials": ["split-flap cells", "brushed steel frame", "amber row lamps"],
+      "viewport": "The board is the screen: scene rail as track indicators; 2–8 mood bands, each carrying its generated artwork full-bleed behind a frosted plate, name in condensed white flap caps; the sounding band's lamp burns amber, its crossfade counted down in flap digits; one-shots as art chips with flap keys; STOP ALL sits alone in deliberate empty space.",
+      "risk": "Railway nostalgia is romantic, not the table's own story; the flap texture must serve state, not steal it.",
+      "raised": [
+        { "from": "challenger-devconsole", "raise": "Destructive isolation — STOP ALL sits alone, outline until deliberately focused, nothing near enough to hit by accident." },
+        { "from": "challenger-laban", "raise": "Magnitude made spatial — crossfade and volume read as physical extent (lit cells, filled band), pan as left-right position, never just a number." },
+        { "from": "challenger-centrerail", "raise": "One keyed spine — the hotkey column is the fixed rail every row hangs from; keys are structural, always visible." }
+      ],
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-split-flap-concourse-hero.webp",
+      "html": ".impeccable/mocks/decision/leader-splitflap.html"
+    },
+    {
+      "id": "challenger-feed",
+      "kind": "challenger",
+      "catalogId": "pop-culture-shelf-vertical-video-feed-surface",
+      "label": "Full-Bleed Feed",
+      "verdict": "competitive",
+      "lineage": "vertical video feed surfaces",
+      "thesis": "The sounding mood owns the whole window as living art; name and fade anchored low in a scrim, every action a glyph on the right rail, the next mood one hard snap away.",
+      "palette": ["#000000", "#ffffff"],
+      "materials": ["edge-to-edge media", "bottom scrim caption", "right glyph rail"],
+      "viewport": "The active mood's artwork fills the viewport edge to edge; its name, key, and fade readout anchor low-left in a soft scrim; a right rail stacks stop-all, volume, and mix glyphs; hotkeys snap between moods like a feed flip; one-shots live on a pull-up strip of art tiles.",
+      "case": "Holds audience identification — the feed is the grammar this audience scrolls nightly — but loses product clarity: direct access to 8 named moods and 20 one-shots can't live in a one-item linear snap.",
+      "risk": "Linear feed logic undermines direct selection; beautiful state, slow choosing.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-vertical-video-feed-surface-hero.webp",
+      "html": ".impeccable/mocks/decision/challenger-feed.html"
+    },
+    {
+      "id": "challenger-crouwel",
+      "kind": "challenger",
+      "catalogId": "crouwel-grid-specimen",
+      "label": "Grid Specimen",
+      "verdict": "competitive",
+      "lineage": "Wim Crouwel gridded type specimens",
+      "thesis": "The screen as a living specimen: art tiles locked to a visible construction grid, the sounding mood's name built enormous from its cells.",
+      "palette": ["#0c0c0e", "#f2f2ee", "#2a2c33", "#e8442e"],
+      "materials": ["visible construction grid", "cell-built letterforms", "one accent plane"],
+      "viewport": "A faint construction grid tiles the dark screen; mood tiles carry their artwork in strict grid cells; the sounding mood's name sets itself monumental across cells in white while its tile takes the one accent plane; hotkeys are cell coordinates; one-shots as a strict cell grid of art chips.",
+      "case": "Holds product clarity — monumental cell-built type reads across the room — but loses audience identification: Crouwel is design-school canon, not the game table.",
+      "risk": "Designer-insider signifiers; can read as a typography demo wearing a soundboard.",
+      "hero": "https://impeccable.style/worlds/cards/crouwel-grid-specimen-hero.webp",
+      "html": ".impeccable/mocks/decision/challenger-crouwel.html"
+    },
+    {
+      "id": "challenger-devconsole",
+      "kind": "challenger",
+      "catalogId": "digital-design-canon-dark-first-developer-console",
+      "label": "Graphite Dev Console",
+      "verdict": "declined",
+      "lineage": "dark-first developer tooling",
+      "palette": ["#1b1d23", "#d7dae0", "#3d4250", "#5aa2ff"],
+      "materials": ["graphite panels", "hairline seams", "syntax accents"],
+      "case": "Loses both: it is the tool the developer operates, not the table the GM gathers at — and it is the default every Electron soundboard already ships.",
+      "kept": "Destructive isolation — the panic control sits alone, outline until deliberately focused.",
+      "hero": "https://impeccable.style/worlds/cards/digital-design-canon-dark-first-developer-console-hero.webp"
+    },
+    {
+      "id": "challenger-laban",
+      "kind": "challenger",
+      "catalogId": "notation-diagram-systems-labanotation",
+      "label": "Labanotation Score",
+      "verdict": "declined",
+      "lineage": "dance-movement notation",
+      "palette": ["#f6f4ee", "#14120e", "#8f8a80"],
+      "materials": ["center staff", "shaped duration blocks", "bilateral symmetry"],
+      "case": "Loses both: almost no GM reads dance notation, and an untrained glance must decode the state in a heartbeat.",
+      "kept": "Magnitude made spatial — duration and level as physical extent, pan as left-right position.",
+      "hero": "https://impeccable.style/worlds/cards/notation-diagram-systems-labanotation-hero.webp"
+    },
+    {
+      "id": "challenger-centrerail",
+      "kind": "challenger",
+      "catalogId": "rw-centre-rail-reference-setting",
+      "label": "Centre-Rail Reference",
+      "verdict": "declined",
+      "lineage": "wide-margin scholarly editions",
+      "palette": ["#efe9dc", "#191512", "#b3321f"],
+      "materials": ["twin text columns", "vermilion key rail", "ruled hairlines"],
+      "case": "Loses both: scholarly marginalia is the reader's desk, not the table — tiny type is the opposite of glance-and-go.",
+      "kept": "One keyed spine — the hotkey column as the fixed rail everything hangs from.",
+      "hero": "https://impeccable.style/worlds/cards/rw-centre-rail-reference-setting-hero.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "steer": true,
+  "buildPath": { "value": "code", "toggle": false },
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "The category standard",
+    "thesis": "The straight soundboard grid — dark trigger pads, fader column, transport bar — executed at full craft.",
+    "palette": ["#17181c", "#26282e", "#eceff2", "#3ea6ff"],
+    "materials": ["trigger pad grid", "fader strips"],
+    "viewport": "A dense grid of square trigger pads, right-hand fader column, transport bar across the top — the arrangement every soundboard ships.",
+    "risk": "Indistinguishable from every other soundboard by design.",
+    "html": ".impeccable/mocks/decision/canon.html"
+  }
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Soundscape — Grid Specimen</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--line:#2a2c33;--dim:rgba(242,242,238,.45);--mid:rgba(242,242,238,.72);--acc:#e8442e}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1440px;height:900px;overflow:hidden}
+body{display:grid;grid-template-rows:60px 1fr 60px;background-color:#0c0c0e;color:#f2f2ee;font:11px/1.45 "Archivo",sans-serif;font-variant-numeric:tabular-nums;background-image:linear-gradient(90deg,rgba(42,44,51,.6) 1px,transparent 1px),linear-gradient(0deg,rgba(42,44,51,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(42,44,51,.25) 1px,transparent 1px),linear-gradient(0deg,rgba(42,44,51,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(42,44,51,.12) 1px,transparent 1px),linear-gradient(0deg,rgba(42,44,51,.12) 1px,transparent 1px);background-size:120px 120px,120px 120px,60px 60px,60px 60px,20px 20px,20px 20px}
+header{display:grid;grid-template-columns:240px 1fr 120px 120px;border-bottom:1px solid var(--line)}
+footer{display:grid;grid-template-columns:120px 120px 1fr 180px 180px;border-top:1px solid var(--line)}
+header>div,footer>div{display:flex;align-items:center;gap:10px;padding:0 12px;border-right:1px solid var(--line)}
+header>div:last-child,footer>div:last-child{border-right:0}
+.wm b{font-size:13px;font-weight:800;letter-spacing:.24em}
+.slash{width:2px;height:13px;background:var(--acc);transform:rotate(32deg)}
+.sess{color:var(--mid);font-weight:600;letter-spacing:.14em}
+.dim{color:var(--dim);letter-spacing:.1em}
+.clock{justify-content:flex-end;font-size:14px;font-weight:700}
+.wrap{display:grid;grid-template-columns:180px 1fr 300px;min-height:0}
+aside{border-right:1px solid var(--line)}
+.right{border-left:1px solid var(--line)}
+.lab{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line);font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--mid)}
+.lab i{font-style:normal;font-size:9px;font-weight:500;letter-spacing:.12em;color:var(--dim)}
+.scene{height:60px;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:0 12px;border-bottom:1px solid var(--line)}
+.scene p{font-weight:600;letter-spacing:.04em}
+.scene span{font-size:9px;letter-spacing:.14em;color:var(--dim)}
+.scene.cur{outline:1px solid rgba(242,242,238,.9);outline-offset:-1px}
+.notes{height:120px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:10px;line-height:1.7;color:var(--dim)}
+main{position:relative}
+.tiles{display:grid;grid-template-columns:repeat(4,240px);height:360px;border-bottom:1px solid var(--line)}
+.tiles figure{display:grid;grid-template-rows:60px 1fr;border-right:1px solid var(--line)}
+.tiles figure:last-child{border-right:0}
+.tiles figcaption{display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line);font-size:10px;font-weight:700;letter-spacing:.1em}
+.tiles figcaption b{width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--line);font-weight:600}
+figure.on{outline:2px solid var(--acc);outline-offset:-2px}
+.t1 .art{background:radial-gradient(130px 100px at 50% 84%,rgba(255,170,60,.5),rgba(140,70,15,.16) 62%,transparent 78%),linear-gradient(180deg,#3a1d06 0%,#221004 45%,#0f0904 100%)}
+.t2 .art{background:linear-gradient(180deg,transparent 70%,rgba(160,185,205,.14) 70%,rgba(160,185,205,.14) 71%,transparent 71%),repeating-linear-gradient(90deg,transparent 0 9px,rgba(170,195,215,.1) 9px 10px),linear-gradient(180deg,#33404e 0%,#1a222c 55%,#0d1015 100%)}
+.t3 .art{background:linear-gradient(90deg,transparent 0 38%,rgba(240,120,80,.16) 38% 63%,transparent 63%),linear-gradient(180deg,#43110b 0 34%,#6d1a10 34% 58%,#220503 58% 100%)}
+.t4 .art{background:linear-gradient(180deg,transparent 0 54%,rgba(190,150,230,.18) 54%,rgba(190,150,230,.18) 55.5%,transparent 55.5%),linear-gradient(180deg,#2b1a40 0%,#3d2659 40%,#150c20 100%);position:relative}
+.t4 .art::after{content:"";position:absolute;top:34px;right:40px;width:14px;height:14px;background:rgba(242,242,238,.55)}
+h1{position:absolute;left:180px;bottom:360px;z-index:5;font-size:180px;font-weight:900;letter-spacing:-.02em;line-height:.75}
+.layer{display:grid;grid-template-columns:1fr 90px 140px 50px;align-items:center;gap:12px;height:60px;padding:0 12px;border-bottom:1px solid var(--line)}
+.layer p{font-weight:600;letter-spacing:.08em}
+.layer .tag{font-size:9px;letter-spacing:.12em;color:var(--dim)}
+.m{height:6px;background:rgba(42,44,51,.8)}
+.m i{display:block;height:100%;background:var(--mid)}
+.layer b{font-weight:600;letter-spacing:.1em;text-align:right}
+.layer.off p,.layer.off b{color:var(--dim)}
+.chips{display:grid;grid-template-columns:repeat(3,100px)}
+.chip{height:120px;display:flex;flex-direction:column;justify-content:space-between;padding:8px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.chip:nth-child(3n){border-right:0}
+.chip b{width:18px;height:18px;display:grid;place-items:center;background:#0c0c0e;border:1px solid var(--line);font-size:10px;font-weight:600}
+.chip span{font-size:8.5px;font-weight:700;letter-spacing:.06em;color:rgba(242,242,238,.85)}
+.c1{background:linear-gradient(90deg,transparent 0 46%,rgba(205,210,220,.8) 46% 54%,transparent 54%),linear-gradient(180deg,#39414d,#20252d)}
+.c2{background:linear-gradient(0deg,rgba(215,175,95,.35) 0 14%,transparent 14%),linear-gradient(180deg,#4a3517,#241a0b)}
+.c3{background:repeating-linear-gradient(90deg,#3a2311 0 23px,#291a0c 23px 25px)}
+.c4{background:linear-gradient(180deg,#1b1b1e 0 68%,#8a4416 68% 76%,#131316 76%)}
+.c5{background:repeating-linear-gradient(90deg,rgba(200,225,235,.13) 0 3px,transparent 3px 12px),linear-gradient(180deg,#2b3a42,#161e23)}
+.c6{background:linear-gradient(0deg,rgba(190,150,100,.16) 0 30%,transparent 30%),linear-gradient(180deg,#33291d,#1e170f)}
+.grow{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line);font-weight:600;letter-spacing:.08em}
+.grow b{width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--line);font-weight:600}
+.rrow{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line)}
+.rrow p{font-weight:600;letter-spacing:.08em;color:var(--mid)}
+.rrow span{font-size:10px;color:var(--dim);letter-spacing:.06em}
+.bus{color:var(--dim)}
+.stat{font-weight:700;letter-spacing:.1em}
+.stop{justify-content:flex-end;color:var(--acc);font-weight:800;letter-spacing:.22em}
+</style>
+</head>
+<body>
+<header>
+<div class="wm"><b>SOUNDSCAPE</b><i class="slash"></i></div>
+<div class="sess">SESSION 27 — THE SALTMARSH JOB</div>
+<div class="dim">SCENE 02/04</div>
+<div class="clock">21:47</div>
+</header>
+<div class="wrap">
+<aside>
+<div class="lab">SCENES<i>4 LOADED</i></div>
+<div class="scene cur"><p>The Laughing Gargoyle</p><span>⌃1 · SOUNDING</span></div>
+<div class="scene"><p>Saltmarsh Docks</p><span>⌃2</span></div>
+<div class="scene"><p>The Hollow Marsh</p><span>⌃3</span></div>
+<div class="scene"><p>Smuggler’s Cave</p><span>⌃4</span></div>
+<div class="lab">NOTES<i>GARGOYLE</i></div>
+<div class="notes">Regulars 6 tonight · ale kegs low · stranger asleep by the door · Mira owes the house 3 gp</div>
+</aside>
+<main>
+<div class="lab">MOODS — THE LAUGHING GARGOYLE<i>KEYS 1–4</i></div>
+<div class="tiles">
+<figure class="t1"><figcaption>HEARTH &amp; HIVE<b>1</b></figcaption><div class="art"></div></figure>
+<figure class="t2 on"><figcaption>RAIN ROLLS IN<b>2</b></figcaption><div class="art"></div></figure>
+<figure class="t3"><figcaption>BRAWL BREAKS OUT<b>3</b></figcaption><div class="art"></div></figure>
+<figure class="t4"><figcaption>LAST CALL<b>4</b></figcaption><div class="art"></div></figure>
+</div>
+<div class="lab">LAYERS — RAIN ROLLS IN<i>4 CH</i></div>
+<div class="layer"><p>RAIN ON CANVAS</p><span class="tag">LOOP ∞</span><div class="m"><i style="width:72%"></i></div><b>ON</b></div>
+<div class="layer"><p>DISTANT THUNDER</p><span class="tag">RND 12%</span><div class="m"><i style="width:38%"></i></div><b>ON</b></div>
+<div class="layer"><p>WET COBBLESTONE</p><span class="tag">LOOP ∞</span><div class="m"><i style="width:54%"></i></div><b>ON</b></div>
+<div class="layer off"><p>HEARTH, LOW EMBERS</p><span class="tag">LOOP ∞</span><div class="m"><i style="width:0"></i></div><b>OFF</b></div>
+<div class="lab bus">MASTER BUS A<i>OUT 1–2 · 44.1 KHZ</i></div>
+<h1>RAIN</h1>
+</main>
+<section class="right">
+<div class="lab">ONE-SHOTS<i>PAD BANK A</i></div>
+<div class="chips">
+<div class="chip c1"><b>Q</b><span>SWORD DRAW</span></div>
+<div class="chip c2"><b>W</b><span>COIN PURSE</span></div>
+<div class="chip c3"><b>E</b><span>DOOR SLAM</span></div>
+<div class="chip c4"><b>R</b><span>GUNSHOT</span></div>
+<div class="chip c5"><b>T</b><span>GLASS BREAK</span></div>
+<div class="chip c6"><b>U</b><span>HORSE PASS</span></div>
+</div>
+<div class="lab">GLOBAL<i>2 ARMED</i></div>
+<div class="grow"><p>THUNDER CRACK</p><b>G</b></div>
+<div class="grow"><p>DRAGON ROAR</p><b>H</b></div>
+<div class="lab">RECENT<i>THIS SESSION</i></div>
+<div class="rrow"><p>GLASS BREAK</p><span>T · 21:44</span></div>
+<div class="rrow"><p>COIN PURSE</p><span>W · 21:38</span></div>
+<div class="rrow"><p>THUNDER CRACK</p><span>G · 21:12</span></div>
+<div class="lab bus">BUF 256 SAMPLES<i>LAT 08 MS</i></div>
+</section>
+</div>
+<footer>
+<div class="stat">XFADE 04S</div>
+<div class="stat">VOL −6 DB</div>
+<div class="dim">RAIN ROLLS IN — LOOPING · NEXT RND: THUNDER CRACK 12%</div>
+<div class="dim">AUTO-FOLLOW OFF</div>
+<div class="stop">STOP ALL</div>
+</footer>
+</body>
+</html>

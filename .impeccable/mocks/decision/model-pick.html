@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Soundscape — Live Scene Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f2ead8;--ink:#201a14;--amber:#f5c945;--pencil:#8a8072;--red:#b3402a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:1440px;height:900px;overflow:hidden;}
+body{background:var(--paper);color:var(--ink);font-family:"Courier Prime",monospace;display:flex;flex-direction:column;}
+.sans{font-family:"Inter",sans-serif;}
+.top{height:48px;flex:none;display:flex;align-items:center;gap:20px;padding:0 20px;border-bottom:1.5px solid var(--ink);}
+.wordmark{font-weight:700;font-size:15px;letter-spacing:4px;}
+.wordmark span{color:var(--red);}
+.session{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--pencil);}
+.clock{margin-left:auto;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:12px;}
+.live{font-size:9px;letter-spacing:2px;color:var(--red);border:1.5px solid var(--red);padding:2px 6px;}
+main{flex:1;display:flex;min-height:0;}
+.rail{width:180px;flex:none;border-right:1.5px solid var(--ink);padding:18px 0;display:flex;flex-direction:column;gap:2px;}
+.rail h2{font-size:9px;letter-spacing:2.5px;color:var(--pencil);padding:0 16px 12px;text-transform:uppercase;font-weight:500;}
+.act{padding:10px 14px 10px 15px;border-left:5px solid transparent;}
+.act.current{border-left-color:var(--amber);background:rgba(245,201,69,.2);}
+.act .no{font-size:10.5px;font-weight:700;letter-spacing:2px;}
+.act .no em{float:right;font-style:normal;color:var(--pencil);font-weight:400;}
+.act .title{font-family:"Inter",sans-serif;font-size:11px;color:var(--pencil);margin-top:4px;line-height:1.4;}
+.act.current .title{color:var(--ink);}
+.rail .foot{margin-top:auto;padding:0 16px;font-size:9.5px;letter-spacing:1.5px;color:var(--pencil);line-height:1.8;text-transform:uppercase;}
+.cues{flex:1;padding:24px 28px;min-width:0;}
+.cues h1{font-size:13px;letter-spacing:4px;font-weight:700;display:flex;align-items:baseline;gap:16px;}
+.cues h1 small{font-family:"Inter",sans-serif;font-size:10px;letter-spacing:1px;color:var(--pencil);font-weight:400;}
+table{width:100%;border-collapse:collapse;margin-top:16px;table-layout:fixed;}
+col.c-cue{width:64px;}col.c-key{width:70px;}col.c-fade{width:96px;}col.c-state{width:170px;}
+th{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--pencil);text-align:left;font-weight:500;padding:0 10px 9px;border-bottom:1.5px solid var(--ink);}
+td{padding:0 10px;height:80px;border-bottom:1px solid rgba(32,26,20,.3);font-size:16px;vertical-align:middle;font-variant-numeric:tabular-nums;}
+.cue{font-weight:700;font-size:17px;}
+tr.sounding td{background:var(--amber);}
+tr.sounding td:first-child{box-shadow:inset 5px 0 0 var(--ink);}
+.key{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:1.5px solid var(--ink);font-size:13px;font-weight:700;}
+.state{font-size:12px;letter-spacing:1.5px;font-weight:700;}
+.state.out{color:var(--pencil);}
+.state.idle{color:var(--pencil);font-weight:400;}
+.unit{color:var(--pencil);font-size:13px;}
+.biz{width:300px;flex:none;border-left:1.5px solid var(--ink);padding:24px 20px;}
+.biz h2{font-size:10px;letter-spacing:2.5px;color:var(--pencil);text-transform:uppercase;font-weight:500;}
+.stamps{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 26px;}
+.stamp{border:1.5px solid var(--pencil);color:#6d6455;padding:9px 10px;font-size:11.5px;display:flex;justify-content:space-between;align-items:center;background:rgba(138,128,114,.06);}
+.stamp b{font-size:12px;border:1.5px solid currentColor;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;}
+.bottom{height:118px;flex:none;border-top:1.5px solid var(--ink);display:flex;align-items:center;padding:0 28px;gap:28px;}
+.standby{display:flex;flex-direction:column;gap:9px;width:400px;}
+.standby .lab{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:3px;color:var(--pencil);text-transform:uppercase;}
+.cue-mark{display:inline-block;background:var(--amber);font-weight:700;font-size:20px;letter-spacing:3px;padding:5px 14px 5px 16px;box-shadow:inset 5px 0 0 var(--ink);}
+.go{flex:1;display:flex;justify-content:center;}
+.go button{font-family:"Courier Prime",monospace;font-weight:700;font-size:30px;letter-spacing:10px;text-indent:10px;width:200px;height:66px;background:var(--red);color:var(--paper);border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:pointer;}
+.meters{width:330px;display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.level{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:14px;}
+.segs{display:inline-flex;gap:3px;}
+.segs i{width:9px;height:14px;background:var(--ink);}
+.segs i.off{background:rgba(32,26,20,.18);}
+.stop{font-family:"Courier Prime",monospace;font-size:12px;letter-spacing:2px;font-weight:700;color:var(--red);border:2px solid var(--red);padding:7px 14px;background:none;cursor:pointer;}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="wordmark">SOUND<span>SCAPE</span></div>
+<div class="session sans">Session 27 — The Saltmarsh Job</div>
+<div class="clock">21:47 <span class="live sans">LIVE</span></div>
+</header>
+<main>
+<nav class="rail">
+<h2 class="sans">Prompt Book</h2>
+<div class="act current"><div class="no">ACT I<em>⌃1</em></div><div class="title">The Laughing Gargoyle</div></div>
+<div class="act"><div class="no">ACT II<em>⌃2</em></div><div class="title">Saltmarsh Docks</div></div>
+<div class="act"><div class="no">ACT III<em>⌃3</em></div><div class="title">The Hollow Marsh</div></div>
+<div class="act"><div class="no">ACT IV<em>⌃4</em></div><div class="title">Smuggler's Cave</div></div>
+<div class="foot sans">4 cues this act<br>1 sounding · 1 fading</div>
+</nav>
+<section class="cues">
+<h1>CUES — ACT I <small>fade counts in seconds · keys 1–4</small></h1>
+<table>
+<colgroup><col class="c-cue"><col><col class="c-key"><col class="c-fade"><col class="c-fade"><col class="c-state"></colgroup>
+<tr><th>Cue</th><th>Name</th><th>Key</th><th>Fade in</th><th>Fade out</th><th>State</th></tr>
+<tr><td class="cue">Q1</td><td>Tavern Evening</td><td><span class="key">1</span></td><td>6<span class="unit">s</span></td><td>4<span class="unit">s</span></td><td class="state out">FADING OUT</td></tr>
+<tr class="sounding"><td class="cue">Q2</td><td>Rain Rolls In</td><td><span class="key">2</span></td><td>4<span class="unit">s</span></td><td>6<span class="unit">s</span></td><td class="state">SOUNDING</td></tr>
+<tr><td class="cue">Q3</td><td>Brawl!</td><td><span class="key">3</span></td><td>1<span class="unit">s</span></td><td>2<span class="unit">s</span></td><td class="state idle">—</td></tr>
+<tr><td class="cue">Q4</td><td>Last Call</td><td><span class="key">4</span></td><td>8<span class="unit">s</span></td><td>8<span class="unit">s</span></td><td class="state idle">—</td></tr>
+</table>
+</section>
+<aside class="biz">
+<h2 class="sans">Business (one-shots)</h2>
+<div class="stamps">
+<div class="stamp">Sword Draw <b>Q</b></div>
+<div class="stamp">Coin Purse <b>W</b></div>
+<div class="stamp">Door Slam <b>E</b></div>
+<div class="stamp">Gunshot <b>R</b></div>
+<div class="stamp">Glass Break <b>T</b></div>
+<div class="stamp">Horse Pass <b>U</b></div>
+<div class="stamp">Chair Scrape <b>I</b></div>
+<div class="stamp">Bell Toll <b>O</b></div>
+</div>
+<h2 class="sans">Any Scene</h2>
+<div class="stamps">
+<div class="stamp">Thunder Crack <b>G</b></div>
+<div class="stamp">Dragon Roar <b>H</b></div>
+</div>
+</aside>
+</main>
+<footer class="bottom">
+<div class="standby">
+<div class="lab">Standby — next cue</div>
+<div><span class="cue-mark">Q3 — BRAWL!</span></div>
+</div>
+<div class="go"><button>GO</button></div>
+<div class="meters">
+<div class="level">LEVEL −6 dB <span class="segs"><i></i><i></i><i></i><i></i><i></i><i></i><i class="off"></i><i class="off"></i></span></div>
+<button class="stop">STOP ALL</button>
+</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soundscape — Live Scene Control (UX prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0a0a0c;
+    --ink: #f5f4f0;
+    --ink-dim: rgba(245, 244, 240, 0.55);
+    --ink-ghost: rgba(245, 244, 240, 0.28);
+    --amber: #ffb224;
+    --danger: #e5484d;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --display: "Oswald", "Arial Narrow", sans-serif;
+    --body: "Inter", system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: var(--void); }
+  body { font-family: var(--body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  ::selection { background: rgba(255, 178, 36, 0.35); color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+
+  /* ---------- backdrop: two crossfading artwork layers ---------- */
+  .bg { position: fixed; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity var(--xfade-ms, 800ms) ease; }
+  .bg.on { opacity: 1; }
+  .grain { position: fixed; inset: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E"); }
+  .veil { position: fixed; inset: 0; pointer-events: none;
+    background: linear-gradient(90deg, rgba(10,10,12,0.82) 0%, rgba(10,10,12,0.35) 46%, rgba(10,10,12,0.05) 75%),
+                linear-gradient(0deg, rgba(10,10,12,0.85) 0%, rgba(10,10,12,0) 30%); }
+
+  /* ---------- top: scene strip ---------- */
+  #scenes { position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+    display: flex; align-items: center; gap: 10px; padding: 14px 96px 14px 20px;
+    overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(245,244,240,0.25) transparent; }
+  #scenes::-webkit-scrollbar, #shots::-webkit-scrollbar { height: 6px; }
+  #scenes::-webkit-scrollbar-thumb, #shots::-webkit-scrollbar-thumb { background: rgba(245,244,240,0.25); border-radius: 3px; }
+  .brand { font-family: var(--display); font-weight: 600; letter-spacing: 0.22em; font-size: 15px; color: var(--ink-dim); margin-right: 14px; white-space: nowrap; }
+  .scene { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 8px;
+    background: rgba(16,16,20,0.55); border: 1px solid rgba(245,244,240,0.10); cursor: pointer;
+    font: 500 14px/1 var(--body); color: var(--ink-dim); white-space: nowrap;
+    transition: color 240ms var(--ease-out), border-color 240ms var(--ease-out), background 240ms var(--ease-out); }
+  .scene:hover { color: var(--ink); border-color: rgba(245,244,240,0.3); }
+  .scene.current { color: var(--void); background: var(--ink); border-color: var(--ink); }
+  .scene .kb, .shot .kb, .mood .kb { font: 600 10px/1 var(--body); letter-spacing: 0.06em; padding: 4px 5px;
+    border: 1px solid currentColor; border-radius: 4px; opacity: 0.75; }
+  .scene.sounding-elsewhere::after { content: "●"; font-size: 8px; color: var(--amber); }
+
+  /* ---------- left: vertical mood list ---------- */
+  #moods { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+  .mood { position: absolute; left: 20px; width: min(62vw, 860px); pointer-events: auto; cursor: pointer;
+    transform: translateY(0); transition: transform var(--list-ms, 650ms) var(--ease-out), opacity 300ms var(--ease-out); will-change: transform; }
+  .mood.off { opacity: 0; pointer-events: none; }
+  .mood .frame { position: relative; overflow: hidden; border-radius: 10px; height: var(--h, 54px);
+    transition: height var(--grow-ms, 380ms) var(--ease-out), box-shadow 300ms var(--ease-out); }
+  .mood .art { position: absolute; inset: 0; background-size: cover; background-position: center;
+    opacity: 0.55; transition: opacity 300ms var(--ease-out); }
+  .mood .scrim { position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(10,10,12,0.75), rgba(10,10,12,0.15) 70%, rgba(10,10,12,0)); }
+  .mood .row { position: relative; display: flex; align-items: center; gap: 14px; height: 100%; padding: 0 18px; }
+  .mood h2 { font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em;
+    font-size: 24px; line-height: 1; white-space: nowrap; text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+    transition: font-size var(--grow-ms, 380ms) var(--ease-out), color 240ms var(--ease-out); }
+  .mood .meta { position: absolute; left: 18px; bottom: 12px; display: none; gap: 10px;
+    font: 500 12px/1 var(--body); letter-spacing: 0.08em; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+  .mood .meta .dot { opacity: 0.5; }
+  /* sounding or hovered: the big slot */
+  .mood.big .frame { --h: 150px; box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+  .mood.big .art { opacity: 0.9; }
+  .mood.big h2 { font-size: clamp(56px, 7.5vw, 104px); }
+  .mood.big .meta { display: flex; }
+  .mood.sounding .frame { outline: 1px solid rgba(245,244,240,0.35); outline-offset: -1px; }
+  .mood:not(.big) .art { filter: saturate(0.85); }
+  /* standby ghost pinned at anchor when idle */
+  #standby { position: absolute; left: 20px; width: min(62vw, 860px); pointer-events: none; opacity: 0;
+    transition: opacity 500ms ease, transform var(--list-ms, 650ms) var(--ease-out); }
+  #standby.on { opacity: 1; }
+  #standby .frame { height: 150px; border: 1px dashed rgba(245,244,240,0.25); border-radius: 10px;
+    display: flex; align-items: center; padding: 0 18px; gap: 14px; }
+  #standby h2 { font-family: var(--display); font-weight: 600; text-transform: uppercase; font-size: clamp(40px, 5.5vw, 72px); color: var(--ink-ghost); letter-spacing: 0.02em; }
+  #standby .hint { font: 500 12px/1.4 var(--body); color: var(--ink-ghost); letter-spacing: 0.08em; }
+
+  /* ---------- bottom: one-shot strip ---------- */
+  #shots { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    display: flex; align-items: flex-end; gap: 10px; padding: 12px 96px 14px 20px;
+    overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(245,244,240,0.25) transparent; }
+  .strip-label { font: 600 10px/1 var(--body); letter-spacing: 0.2em; color: var(--ink-ghost); writing-mode: vertical-rl; transform: rotate(180deg); padding-bottom: 6px; }
+  .shot { position: relative; flex: 0 0 auto; width: 116px; height: 116px; border-radius: 10px; overflow: hidden; cursor: pointer;
+    border: 1px solid rgba(245,244,240,0.12); transition: transform 160ms var(--ease-out), border-color 240ms var(--ease-out); }
+  .shot:hover { transform: translateY(-4px); border-color: rgba(245,244,240,0.35); }
+  .shot .art { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  .shot .scrim { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(10,10,12,0.85), rgba(10,10,12,0.05) 55%); }
+  .shot .name { position: absolute; left: 8px; bottom: 8px; right: 8px; font: 600 11px/1.25 var(--body); letter-spacing: 0.02em; }
+  .shot .kb { position: absolute; top: 8px; left: 8px; background: rgba(10,10,12,0.55); }
+  .shot .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  .shot.fired .flash { animation: flash 420ms var(--ease-out); }
+  .shot.fired { animation: kick 420ms var(--ease-out); }
+  @keyframes flash { 0% { opacity: 0.85; } 100% { opacity: 0; } }
+  @keyframes kick { 0% { transform: scale(0.94); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
+  .shot.in-mix { border-color: var(--amber); }
+  .shot.in-mix::after { content: "IN MIX"; position: absolute; top: 8px; right: 8px; font: 600 9px/1 var(--body);
+    letter-spacing: 0.08em; color: var(--amber); background: rgba(10,10,12,0.6); padding: 4px 5px; border-radius: 4px; }
+  .divider { flex: 0 0 auto; width: 1px; height: 92px; margin: 0 6px; background: rgba(245,244,240,0.15); }
+
+  /* ---------- right rail ---------- */
+  #rail { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); z-index: 40;
+    display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .rail-btn { width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(245,244,240,0.25);
+    background: rgba(16,16,20,0.55); color: var(--ink); cursor: pointer; display: grid; place-items: center;
+    transition: border-color 240ms var(--ease-out), background 240ms var(--ease-out), transform 160ms var(--ease-out); }
+  .rail-btn:hover { border-color: rgba(245,244,240,0.6); transform: scale(1.06); }
+  .rail-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  #stopAll { margin-bottom: 34px; width: 64px; height: 64px; border-color: rgba(229,72,77,0.65); color: var(--danger); background: rgba(16,16,20,0.7); }
+  #stopAll:hover { background: rgba(229,72,77,0.16); border-color: var(--danger); }
+  #stopAll svg { width: 24px; height: 24px; }
+  .rail-label { font: 600 9px/1 var(--body); letter-spacing: 0.16em; color: var(--ink-ghost); text-align: center; }
+  #vol { -webkit-appearance: none; appearance: none; width: 110px; height: 3px; background: rgba(245,244,240,0.25);
+    border-radius: 2px; transform: rotate(-90deg); margin: 46px 0; cursor: pointer; }
+  #vol::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--ink); }
+  #volVal { font: 500 11px/1 var(--body); color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+
+  /* ---------- toast + hints ---------- */
+  #toast { position: fixed; left: 50%; bottom: 152px; transform: translateX(-50%) translateY(8px); z-index: 50;
+    font: 600 11px/1 var(--body); letter-spacing: 0.14em; color: var(--ink); background: rgba(16,16,20,0.8);
+    border: 1px solid rgba(245,244,240,0.2); padding: 10px 16px; border-radius: 999px; opacity: 0; pointer-events: none;
+    transition: opacity 300ms var(--ease-out), transform 300ms var(--ease-out); }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #hints { position: fixed; right: 16px; bottom: 14px; z-index: 30; font: 500 10px/1.6 var(--body);
+    letter-spacing: 0.06em; color: rgba(245, 244, 240, 0.38); text-align: right; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="bg" id="bgA"></div>
+  <div class="bg" id="bgB"></div>
+  <div class="veil"></div>
+  <div class="grain"></div>
+
+  <nav id="scenes" aria-label="Scenes"></nav>
+  <main id="moods" aria-label="Moods"></main>
+  <div id="standby"><div class="frame"><h2>Standby</h2><span class="hint">nothing sounding —<br>pick a mood</span></div></div>
+  <section id="shots" aria-label="One-shots"></section>
+
+  <aside id="rail">
+    <button id="stopAll" class="rail-btn" title="Stop all (S)">
+      <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+    </button>
+    <div class="rail-label">STOP<br>ALL</div>
+    <input id="vol" type="range" min="-40" max="0" value="-6" aria-label="Master volume">
+    <div id="volVal">−6 dB</div>
+  </aside>
+
+  <div id="toast" role="status"></div>
+  <div id="hints">1–8 play mood · Q–U fire one-shot · G/H global<br>right-click adds to mix · ⌥1–4 scenes · S stop all</div>
+
+<script>
+/* ================= TUNING KNOBS — hone these ================= */
+const TUNE = {
+  anchorY: 0.52,        // anchor position, fraction of viewport height
+  growMs: 380,          // hover-grow / shrink duration
+  hoverDelayMs: 90,     // delay before hover-grow engages (0 = instant)
+  listMs: 650,          // click-to-anchor scroll duration
+  xfadeMs: 800,         // backdrop crossfade duration
+  slotSmall: 54,        // list slot height, resting items
+  slotBig: 150,         // list slot height, sounding / hovered item
+  gap: 10,              // vertical gap between slots
+  bottomReserve: 150,   // space kept for the one-shot strip
+  topReserve: 64,       // space kept for the scene strip
+};
+document.documentElement.style.setProperty("--xfade-ms", TUNE.xfadeMs + "ms");
+document.documentElement.style.setProperty("--grow-ms", TUNE.growMs + "ms");
+document.documentElement.style.setProperty("--list-ms", TUNE.listMs + "ms");
+
+/* ================= prototype content (art = stand-in for generated artwork) ================= */
+const art = {
+  tavern:  "radial-gradient(120% 90% at 20% 85%, rgba(255,170,60,0.75), rgba(120,60,20,0.55) 45%, transparent 70%), linear-gradient(160deg, #3a2412, #160f08 70%)",
+  rain:    "repeating-linear-gradient(115deg, rgba(180,200,220,0.06) 0 2px, transparent 2px 9px), radial-gradient(90% 70% at 70% 20%, rgba(120,150,180,0.5), transparent 60%), linear-gradient(165deg, #26313d, #0d1116 75%)",
+  brawl:   "radial-gradient(80% 90% at 80% 80%, rgba(229,72,77,0.55), transparent 60%), radial-gradient(60% 60% at 20% 20%, rgba(255,170,60,0.4), transparent 65%), linear-gradient(150deg, #33120f, #120607 70%)",
+  lastcall:"radial-gradient(100% 80% at 50% 100%, rgba(150,90,200,0.45), transparent 65%), linear-gradient(170deg, #241a2e, #0b0810 75%)",
+  fog:     "radial-gradient(120% 80% at 50% 30%, rgba(140,160,150,0.4), transparent 60%), linear-gradient(175deg, #2a3230, #0e1211 70%)",
+  storm:   "radial-gradient(80% 60% at 60% 15%, rgba(90,130,200,0.5), transparent 55%), repeating-linear-gradient(100deg, rgba(150,180,220,0.05) 0 2px, transparent 2px 11px), linear-gradient(165deg, #14202e, #070b10 75%)",
+  deal:    "radial-gradient(70% 70% at 75% 75%, rgba(120,180,90,0.4), transparent 60%), linear-gradient(155deg, #1e2618, #0a0d07 70%)",
+  bog:     "radial-gradient(110% 70% at 30% 80%, rgba(110,140,90,0.45), transparent 60%), linear-gradient(170deg, #232b1e, #0c0f0a 75%)",
+  wisp:    "radial-gradient(40% 40% at 55% 45%, rgba(120,230,210,0.65), transparent 55%), linear-gradient(170deg, #122024, #060d0f 75%)",
+  swamp:   "radial-gradient(90% 70% at 70% 90%, rgba(70,90,140,0.4), transparent 60%), linear-gradient(160deg, #161a26, #08090f 75%)",
+  torch:   "radial-gradient(60% 80% at 25% 70%, rgba(255,140,50,0.6), transparent 55%), linear-gradient(150deg, #241209, #0b0603 70%)",
+  tide:    "linear-gradient(180deg, rgba(60,110,160,0.35), transparent 60%), linear-gradient(165deg, #12202c, #070c11 75%)",
+  ambush:  "radial-gradient(70% 70% at 85% 20%, rgba(200,40,50,0.5), transparent 55%), linear-gradient(150deg, #220d10, #0b0506 75%)",
+  steel:   "linear-gradient(115deg, rgba(200,215,230,0.5) 0%, transparent 45%), linear-gradient(160deg, #2b3036, #101215 70%)",
+  coin:    "radial-gradient(60% 60% at 60% 35%, rgba(230,190,80,0.6), transparent 60%), linear-gradient(160deg, #2c2210, #100c05 75%)",
+  door:    "linear-gradient(90deg, rgba(120,80,40,0.4), transparent 55%), linear-gradient(160deg, #2a1c10, #100a06 75%)",
+  gun:     "radial-gradient(45% 45% at 70% 40%, rgba(255,200,90,0.75), transparent 55%), linear-gradient(155deg, #26201a, #0d0b08 75%)",
+  glass:   "radial-gradient(50% 60% at 40% 30%, rgba(190,220,240,0.55), transparent 55%), linear-gradient(160deg, #1c242a, #0a0e11 75%)",
+  horse:   "radial-gradient(80% 60% at 50% 90%, rgba(150,110,70,0.5), transparent 60%), linear-gradient(165deg, #241a12, #0d0906 75%)",
+  thunder: "radial-gradient(60% 80% at 60% 10%, rgba(200,180,255,0.7), transparent 55%), linear-gradient(165deg, #1a1626, #090810 75%)",
+  dragon:  "radial-gradient(70% 90% at 50% 90%, rgba(255,90,30,0.65), transparent 60%), linear-gradient(160deg, #2a0f08, #0e0503 75%)",
+};
+
+const SCENES = [
+  { name: "The Laughing Gargoyle", key: "⌥1", moods: [
+    { name: "Tavern Evening", art: art.tavern, xin: 6, xout: 4 },
+    { name: "Rain Rolls In",  art: art.rain,   xin: 4, xout: 6 },
+    { name: "Brawl!",         art: art.brawl,  xin: 1, xout: 2 },
+    { name: "Dice on the Table", art: art.coin, xin: 2, xout: 3 },
+    { name: "Hearthside Hush",art: art.torch,  xin: 5, xout: 5 },
+    { name: "Rumour Mill",    art: art.door,   xin: 3, xout: 3 },
+    { name: "Storm at the Windows", art: art.thunder, xin: 4, xout: 6 },
+    { name: "Last Call",      art: art.lastcall, xin: 8, xout: 8 },
+  ]},
+  { name: "Saltmarsh Docks", key: "⌥2", moods: [
+    { name: "Dockside Fog",   art: art.fog,    xin: 6, xout: 6 },
+    { name: "Storm Tide",     art: art.storm,  xin: 4, xout: 4 },
+    { name: "Smuggler's Deal",art: art.deal,   xin: 3, xout: 5 },
+    { name: "Hearthside Hush",art: art.lastcall, xin: 5, xout: 5 },
+    { name: "Rolling Thunder",art: art.thunder, xin: 4, xout: 6 },
+    { name: "Dockside Brawl", art: art.brawl,  xin: 1, xout: 2 },
+    { name: "Harbor Dawn",    art: art.tide,   xin: 8, xout: 8 },
+    { name: "Ships at Anchor",art: art.torch,  xin: 6, xout: 6 },
+  ]},
+  { name: "The Hollow Marsh", key: "⌥3", moods: [
+    { name: "Bog Mist",       art: art.bog,    xin: 8, xout: 6 },
+    { name: "Will-o'-Wisp",   art: art.wisp,   xin: 3, xout: 3 },
+    { name: "Swamp Night",    art: art.swamp,  xin: 6, xout: 8 },
+  ]},
+  { name: "Smuggler's Cave", key: "⌥4", moods: [
+    { name: "Torchlit Dark",  art: art.torch,  xin: 5, xout: 5 },
+    { name: "Tide Echoes",    art: art.tide,   xin: 6, xout: 6 },
+    { name: "Cave Ambush",    art: art.ambush, xin: 1, xout: 2 },
+  ]},
+];
+
+const SHOTS = [
+  { name: "Sword Draw", key: "Q", art: art.steel },
+  { name: "Coin Purse", key: "W", art: art.coin },
+  { name: "Door Slam",  key: "E", art: art.door },
+  { name: "Gunshot",    key: "R", art: art.gun },
+  { name: "Glass Break",key: "T", art: art.glass },
+  { name: "Horse Pass", key: "U", art: art.horse },
+];
+const GLOBALS = [
+  { name: "Thunder Crack", key: "G", art: art.thunder },
+  { name: "Dragon Roar",   key: "H", art: art.dragon },
+];
+
+/* ================= state ================= */
+let sceneIx = 0;
+let sounding = null;          // { scene, mood } — indexes; survives scene switches
+let hoverIx = -1;
+let hoverTimer = null;
+const mix = new Set();        // one-shot names added to the live mix
+const $ = (s) => document.querySelector(s);
+
+/* ================= scenes strip ================= */
+function renderScenes() {
+  const nav = $("#scenes");
+  nav.innerHTML = `<span class="brand">SOUNDSCAPE</span>` + SCENES.map((s, i) =>
+    `<div class="scene ${i === sceneIx ? "current" : ""} ${sounding && sounding.scene === i && i !== sceneIx ? "sounding-elsewhere" : ""}" data-i="${i}" tabindex="0">
+       <span class="kb">${s.key}</span>${s.name}</div>`).join("");
+  nav.querySelectorAll(".scene").forEach(el => {
+    const go = () => switchScene(+el.dataset.i);
+    el.addEventListener("click", go);
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+}
+
+function switchScene(i) {
+  sceneIx = i; hoverIx = -1;
+  renderScenes(); renderMoods(); layout();
+  if (sounding && sounding.scene !== i) toast(`sounding elsewhere: ${SCENES[sounding.scene].moods[sounding.mood].name}`);
+}
+
+/* ================= mood list ================= */
+function slotH(i) { return (i === hoverIx || (sounding && sounding.scene === sceneIx && sounding.mood === i)) ? TUNE.slotBig : TUNE.slotSmall; }
+
+function renderMoods() {
+  const host = $("#moods");
+  const moods = SCENES[sceneIx].moods;
+  host.innerHTML = moods.map((m, i) => {
+    const isSounding = sounding && sounding.scene === sceneIx && sounding.mood === i;
+    return `<div class="mood ${isSounding ? "sounding big" : ""}" data-i="${i}" tabindex="0" style="transform: translateY(${yFor(i)}px)">
+      <div class="frame" style="--h:${slotH(i)}px">
+        <div class="art" style="background:${m.art}"></div>
+        <div class="scrim"></div>
+        <div class="row"><span class="kb">${i + 1}</span><h2>${m.name}</h2></div>
+        <div class="meta"><span>KEY ${i + 1}</span><span class="dot">·</span><span>IN ${m.xin}s</span><span class="dot">·</span><span>OUT ${m.xout}s</span></div>
+      </div>
+    </div>`;
+  }).join("");
+  host.querySelectorAll(".mood").forEach(el => {
+    const i = +el.dataset.i;
+    el.addEventListener("click", () => playMood(i));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); playMood(i); } });
+    el.addEventListener("mouseenter", () => {
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => { hoverIx = i; applySizes(); }, TUNE.hoverDelayMs);
+    });
+    el.addEventListener("mouseleave", () => {
+      clearTimeout(hoverTimer);
+      if (hoverIx === i) { hoverIx = -1; applySizes(); }
+    });
+  });
+  applySizes();
+}
+
+function tops() {
+  // sounding here  -> sounding item pinned, center at anchor; list stacks around it,
+  //                    then slides (never stretches) until the anchor is clear of both strips.
+  // idle elsewhere -> bottom-docked menu above the one-shot strip; growth pushes up.
+  const n = SCENES[sceneIx].moods.length;
+  const h = Array.from({ length: n }, (_, i) => slotH(i));
+  const y = new Array(n);
+  const soundingHere = sounding && sounding.scene === sceneIx;
+  if (soundingHere) {
+    const a = sounding.mood, vh = window.innerHeight;
+    const total = h.reduce((s, x) => s + x, 0) + TUNE.gap * (n - 1);
+    // anchor-ideal top: sounding item's center lands at anchorY; centered top: list fills the
+    // space between the strips evenly. Take the higher of the two, never past either strip.
+    const ideal = vh * TUNE.anchorY - (h.slice(0, a).reduce((s, x) => s + x + TUNE.gap, 0)) - h[a] / 2;
+    const centered = TUNE.topReserve + (vh - TUNE.topReserve - TUNE.bottomReserve - total) / 2;
+    const top0 = Math.min(Math.max(ideal, TUNE.topReserve, centered), vh - TUNE.bottomReserve - total);
+    y[0] = Math.max(top0, TUNE.topReserve);
+    for (let i = 1; i < n; i++) y[i] = y[i - 1] + h[i - 1] + TUNE.gap;
+  } else {
+    const total = h.reduce((s, x) => s + x, 0) + TUNE.gap * (n - 1);
+    let top = window.innerHeight - TUNE.bottomReserve - total;
+    for (let i = 0; i < n; i++) { y[i] = top; top += h[i] + TUNE.gap; }
+  }
+  return y;
+}
+
+function yFor(i) { return tops()[i]; }
+
+function applySizes() {
+  const y = tops();
+  const vh = window.innerHeight;
+  document.querySelectorAll(".mood").forEach(el => {
+    const i = +el.dataset.i;
+    const isSounding = sounding && sounding.scene === sceneIx && sounding.mood === i;
+    const h = slotH(i);
+    el.classList.toggle("sounding", !!isSounding);
+    el.classList.toggle("big", !!isSounding || i === hoverIx);
+    el.querySelector(".frame").style.setProperty("--h", h + "px");
+    el.style.transform = `translateY(${y[i]}px)`;
+    el.classList.toggle("off", y[i] + h < TUNE.topReserve || y[i] > vh - TUNE.bottomReserve);
+  });
+  positionStandby();
+}
+
+function positionStandby() {
+  const idleHere = !(sounding && sounding.scene === sceneIx);
+  const sb = $("#standby");
+  sb.classList.toggle("on", idleHere);
+  if (idleHere) {
+    // dock the ghost directly above the bottom-docked menu
+    const y = tops();
+    sb.style.transform = `translateY(${y[0] - TUNE.gap - 150}px)`;
+  }
+}
+
+/* ================= playback (simulated) ================= */
+let bgFlip = false;
+function playMood(i) {
+  const prev = sounding;
+  sounding = { scene: sceneIx, mood: i };
+  const m = SCENES[sceneIx].moods[i];
+  const inEl = bgFlip ? $("#bgA") : $("#bgB"), outEl = bgFlip ? $("#bgB") : $("#bgA");
+  inEl.style.background = m.art; inEl.style.backgroundSize = "cover";
+  inEl.classList.add("on"); outEl.classList.remove("on"); bgFlip = !bgFlip;
+  applySizes();
+  if (prev && !(prev.scene === sceneIx && prev.mood === i)) {
+    const pm = SCENES[prev.scene].moods[prev.mood];
+    toast(`xfade from ${pm.name} · ${m.xin}s`, TUNE.xfadeMs);
+  }
+}
+
+function stopAll() {
+  sounding = null; mix.clear();
+  $("#bgA").classList.remove("on"); $("#bgB").classList.remove("on");
+  document.querySelectorAll(".shot.in-mix").forEach(el => el.classList.remove("in-mix"));
+  renderScenes(); applySizes();
+  toast("all stop — faded out", 1400);
+}
+
+/* ================= one-shots ================= */
+function renderShots() {
+  const host = $("#shots");
+  const chip = (s) => `<div class="shot ${mix.has(s.name) ? "in-mix" : ""}" data-name="${s.name}" tabindex="0">
+      <div class="art" style="background:${s.art}"></div><div class="scrim"></div>
+      <span class="kb">${s.key}</span><span class="name">${s.name}</span><div class="flash"></div></div>`;
+  host.innerHTML = `<span class="strip-label">ONE-SHOTS</span>` + SHOTS.map(chip).join("") +
+    `<div class="divider"></div><span class="strip-label">GLOBAL</span>` + GLOBALS.map(chip).join("");
+  host.querySelectorAll(".shot").forEach(el => {
+    el.addEventListener("click", () => fire(el));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fire(el); } });
+    el.addEventListener("contextmenu", e => { e.preventDefault(); toggleMix(el); });
+  });
+}
+
+function fire(el) {
+  el.classList.remove("fired"); void el.offsetWidth; el.classList.add("fired");
+  toast(`fired — ${el.dataset.name}`, 900);
+}
+
+function toggleMix(el) {
+  const name = el.dataset.name;
+  mix.has(name) ? mix.delete(name) : mix.add(name);
+  el.classList.toggle("in-mix", mix.has(name));
+  toast(mix.has(name) ? `${name} added to the mix` : `${name} removed from the mix`, 1100);
+}
+
+/* ================= toast ================= */
+let toastTimer;
+function toast(msg, ms = 1600) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("on"), ms);
+}
+
+/* ================= keyboard ================= */
+document.addEventListener("keydown", e => {
+  if (e.altKey && ["1","2","3","4"].includes(e.key)) { e.preventDefault(); switchScene(+e.key - 1); return; }
+  if (e.altKey || e.metaKey || e.ctrlKey) return;
+  const k = e.key.toUpperCase();
+  if (/^[1-8]$/.test(k)) { const i = +k - 1; if (i < SCENES[sceneIx].moods.length) playMood(i); return; }
+  if (k === "S") { stopAll(); return; }
+  const all = [...SHOTS, ...GLOBALS];
+  const hit = all.find(s => s.key === k);
+  if (hit) { const el = [...document.querySelectorAll(".shot")].find(x => x.dataset.name === hit.name); if (el) fire(el); }
+});
+
+/* ================= volume ================= */
+$("#vol").addEventListener("input", e => { $("#volVal").textContent = `${e.target.value} dB`.replace("-", "−"); });
+
+/* ================= boot ================= */
+window.addEventListener("resize", () => { applySizes(); });
+renderScenes(); renderMoods(); renderShots(); positionStandby();
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;box-sizing:border-box}
+  html,body{width:1440px;height:900px}
+  body{overflow:hidden;background:#10141d;color:#e8ecf4;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  .t{font-variant-numeric:tabular-nums}
+  /* ---------- top band ---------- */
+  header{height:46px;flex:none;display:flex;align-items:center;gap:14px;padding:0 20px;border-bottom:1px solid #20283a}
+  .mark{font:700 12px Oswald,sans-serif;letter-spacing:3.5px}
+  .mark span{color:#e5484d}
+  .sess{font:500 12px Inter;color:#5b6474}
+  .onair{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#e5484d}
+  .onair b{font:700 11px Inter;letter-spacing:2.5px;color:#e5484d}
+  /* ---------- module headers ---------- */
+  .mh{font:600 10px Inter;letter-spacing:2.2px;color:#5b6474;display:flex;align-items:center;gap:10px;white-space:nowrap}
+  .mh::after{content:"";flex:1;height:1px;background:#20283a}
+  .k{font:600 10.5px Inter;font-variant-numeric:tabular-nums;background:#1a2233;border:1px solid #333d55;border-bottom-width:2px;border-radius:4px;padding:2px 6px;color:#9aa4b8}
+  /* ---------- main ---------- */
+  main{flex:1;display:flex;min-height:0}
+  /* left rail */
+  .rail{width:200px;flex:none;border-right:1px solid #20283a;padding:16px 0 16px 16px;display:flex;flex-direction:column;gap:14px}
+  .sc{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;color:#8d96a8;font:500 13px Inter;border-radius:3px 0 0 3px}
+  .sc em{font-style:normal;font:500 11px Inter;color:#4d5566;font-variant-numeric:tabular-nums}
+  .sc.on{background:#181f2e;box-shadow:inset 3px 0 0 #e5484d;color:#e8ecf4}
+  .sc.on em{color:#e8ecf4}
+  /* moods */
+  .moods{flex:1;padding:16px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+  .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;min-height:0}
+  .tile{background:#141a26;border:1px solid #232c3f;border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between}
+  .tile .row{display:flex;align-items:center;justify-content:space-between}
+  .tile h3{font:600 24px Oswald,sans-serif;letter-spacing:.6px;text-transform:uppercase;line-height:1.05}
+  .tile p{font:400 11.5px Inter;color:#5b6474;margin-top:5px}
+  .b{font:700 9.5px Inter;letter-spacing:1.6px;padding:4px 8px;border-radius:3px;white-space:nowrap}
+  .b-live{background:#e5484d;color:#fff}
+  .b-fade{border:1px solid #e8a13c;color:#e8a13c}
+  .tile.live{border:1.5px solid #e5484d}
+  .tile.rest{opacity:.42}
+  .tile.fading{opacity:.8}
+  /* right column */
+  .side{width:320px;flex:none;border-left:1px solid #20283a;padding:16px;display:flex;flex-direction:column;gap:14px}
+  .pads{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pad{background:#141a26;border:1px solid #232c3f;border-radius:5px;padding:9px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .pad span{font:500 12px Inter;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .note{margin-top:auto;padding-top:12px;border-top:1px solid #20283a;font:400 11px Inter;color:#4d5566;letter-spacing:.3px}
+  /* ---------- chyron ---------- */
+  footer{height:110px;flex:none;position:relative;border-top:1px solid #20283a;overflow:hidden}
+  .fill{position:absolute;left:0;top:0;bottom:0;width:60%;background:#182033;border-right:2px solid #e5484d}
+  .chyron{position:relative;height:100%;display:flex;align-items:center;gap:28px;padding:0 24px}
+  .np{display:flex;flex-direction:column;gap:3px}
+  .np small{font:700 10px Inter;letter-spacing:2.6px;color:#5b6474}
+  .np h1{font:700 56px Oswald,sans-serif;text-transform:uppercase;letter-spacing:.5px;line-height:.95;white-space:nowrap}
+  .reads{margin-left:auto;text-align:right;display:flex;flex-direction:column;gap:7px}
+  .reads div{font:600 13px Inter;letter-spacing:1.2px}
+  .reads .xf{color:#e8a13c}
+  .reads .vol{color:#9aa4b8}
+  .stop{background:#e5484d;color:#10141d;font:700 13px Inter;letter-spacing:1.8px;padding:17px 26px;border-radius:3px}
+</style>
+</head>
+<body>
+<header>
+  <div class="mark">SOUND<span>SCAPE</span></div>
+  <div class="sess">Session 27 — The Saltmarsh Job</div>
+  <div class="onair"><div class="dot"></div><b>LIVE</b></div>
+</header>
+<main>
+  <aside class="rail">
+    <div class="mh">SCENES</div>
+    <div class="sc on"><span>The Laughing Gargoyle</span><em>⌃1</em></div>
+    <div class="sc"><span>Saltmarsh Docks</span><em>⌃2</em></div>
+    <div class="sc"><span>The Hollow Marsh</span><em>⌃3</em></div>
+    <div class="sc"><span>Smuggler's Cave</span><em>⌃4</em></div>
+  </aside>
+  <section class="moods">
+    <div class="mh">MOODS — THE LAUGHING GARGOYLE</div>
+    <div class="grid">
+      <div class="tile fading">
+        <div class="row"><span class="k">1</span><span class="b b-fade t">FADING OUT 4s</span></div>
+        <div><h3>Tavern Evening</h3><p>crowd murmur · lute · hearth fire</p></div>
+      </div>
+      <div class="tile live">
+        <div class="row"><span class="k">2</span><span class="b b-live">LIVE</span></div>
+        <div><h3>Rain Rolls In</h3><p>rain swell · distant thunder · shutters</p></div>
+      </div>
+      <div class="tile rest">
+        <div class="row"><span class="k">3</span></div>
+        <div><h3>Brawl!</h3><p>shouts · breaking furniture · bell</p></div>
+      </div>
+      <div class="tile rest">
+        <div class="row"><span class="k">4</span></div>
+        <div><h3>Last Call</h3><p>sparse crowd · chairs · night rain</p></div>
+      </div>
+    </div>
+  </section>
+  <aside class="side">
+    <div class="mh">ONE-SHOTS</div>
+    <div class="pads">
+      <div class="pad"><span>Sword Draw</span><span class="k">Q</span></div>
+      <div class="pad"><span>Coin Purse</span><span class="k">W</span></div>
+      <div class="pad"><span>Door Slam</span><span class="k">E</span></div>
+      <div class="pad"><span>Gunshot</span><span class="k">R</span></div>
+      <div class="pad"><span>Glass Break</span><span class="k">T</span></div>
+      <div class="pad"><span>Horse Pass</span><span class="k">U</span></div>
+      <div class="pad"><span>Chair Scrape</span><span class="k">I</span></div>
+      <div class="pad"><span>Bell Toll</span><span class="k">O</span></div>
+    </div>
+    <div class="mh">GLOBAL</div>
+    <div class="pads">
+      <div class="pad"><span>Thunder Crack</span><span class="k">G</span></div>
+      <div class="pad"><span>Dragon Roar</span><span class="k">H</span></div>
+    </div>
+    <div class="note">click fire · right-click add to mix</div>
+  </aside>
+</main>
+<footer>
+  <div class="fill"></div>
+  <div class="chyron">
+    <div class="np"><small>NOW PLAYING</small><h1>Rain Rolls In</h1></div>
+    <div class="reads">
+      <div class="xf t">XFADE 4s</div>
+      <div class="vol t">VOL −6 dB</div>
+    </div>
+    <div class="stop">STOP ALL</div>
+  </div>
+</footer>
+</body>
+</html>
