@@ -25,7 +25,9 @@ impl RenderOnce for HelloWorld {
                     .primary()
                     .label("List from db")
                     .on_click(|_, window, cx| {
-                        if let Ok(list) = NamedScene::list() {
+                        let settings = cx.global_mut::<AppSettings>();
+                        
+                        if let Ok(list) = NamedScene::list(&mut settings.db) {
                             println!("Scenes: {:?}", list);
 
                             let l: Vec<String> = list.iter().map(|el| el.name.to_owned()).collect();
@@ -39,7 +41,9 @@ impl RenderOnce for HelloWorld {
                     .primary()
                     .label("Insert into db")
                     .on_click(|_, window, cx| {
-                        if let Err(e) = NamedScene::new("test").persist() {
+                        let settings = cx.global_mut::<AppSettings>();
+
+                        if let Err(e) = NamedScene::new("test").persist(&mut settings.db) {
                             println!("Error creating scene: {:?}", e);
 
                             window.push_notification((NotificationType::Error, "Could not create scene."), cx)
@@ -74,7 +78,7 @@ impl RenderOnce for HelloWorld {
                 Button::new("ok3")
                     .primary()
                     .label("Stop all sounds")
-                    .on_click(|_, _, cx| {
+                    .on_click(|_, window, cx| {
                         cx.global_mut::<AppSettings>().audio_engine.stop_all()
                     }),
             )

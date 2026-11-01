@@ -1,8 +1,7 @@
 use anyhow::{Result};
-use diesel::{RunQueryDsl, SelectableHelper};
+use diesel::{RunQueryDsl, SelectableHelper, SqliteConnection};
 use diesel::query_dsl::limit_dsl::LimitDsl;
 use diesel::query_dsl::methods::SelectDsl;
-use crate::db::connect_to_db;
 use crate::model::{DbNewScene, DbScene};
 
 #[derive(Debug)]
@@ -25,19 +24,16 @@ impl NamedScene {
         }
     }
 
-    pub fn list() -> Result<Vec<NamedScene>> {
+    pub fn list(conn: &mut SqliteConnection) -> Result<Vec<NamedScene>> {
         use crate::schema::scenes::dsl::*;
 
-        let conn = &mut connect_to_db();
         let results = scenes.limit(5).select(DbScene::as_select()).load(conn)?;
 
         Ok(results.into_iter().map(NamedScene::from).collect())
     }
 
-    pub fn persist(&self) -> Result<()> {
+    pub fn persist(&self, conn: &mut SqliteConnection) -> Result<()> {
         use crate::schema::scenes::dsl::*;
-
-        let conn = &mut connect_to_db();
 
         let new_scene = DbNewScene {
             name: self.name.to_owned(),

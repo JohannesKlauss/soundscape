@@ -273,7 +273,7 @@ function renderScenes() {
 
 function switchScene(i) {
   sceneIx = i; hoverIx = -1;
-  renderScenes(); renderMoods(); layout();
+  renderScenes(); renderMoods();
   if (sounding && sounding.scene !== i) toast(`sounding elsewhere: ${SCENES[sounding.scene].moods[sounding.mood].name}`);
 }
 
