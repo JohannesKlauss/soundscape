@@ -1,16 +1,22 @@
 pub mod audio_engine;
 pub mod ui;
+pub mod model;
+pub mod db;
+pub mod domain;
 
 use std::path::PathBuf;
 
 use gpui_kit::component::{Theme, ThemeRegistry};
 use gpui_kit::*;
 use gpui_navigator::{init_router, Route};
+use native_db::{Database};
 use crate::audio_engine::AudioEngine;
+use crate::db::create_db;
 use crate::ui::home::HelloWorld;
 
 struct AppSettings {
-    audio_engine: AudioEngine
+    audio_engine: AudioEngine,
+    db: Database<'static>,
 }
 
 impl Global for AppSettings {}
@@ -52,5 +58,6 @@ fn set_theme(cx: &mut App) {
 fn init_app_settings(cx: &mut App) {
     cx.set_global(AppSettings {
         audio_engine: AudioEngine::new().expect("Failed to open default audio sink"),
+        db: create_db(),
     });
 }

@@ -1,8 +1,9 @@
-use gpui_kit::{div, Context, IntoElement, Render, Window, Styled, ParentElement, RenderOnce, App};
+use gpui_kit::{div, IntoElement, Window, Styled, ParentElement, RenderOnce, App};
 use gpui_kit::component::{ActiveTheme, WindowExt};
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::notification::NotificationType;
 use crate::AppSettings;
+use crate::domain::scene::NamedScene;
 
 #[derive(IntoElement)]
 pub struct HelloWorld;
@@ -19,6 +20,36 @@ impl RenderOnce for HelloWorld {
             .bg(cx.theme().background)
             .text_color(cx.theme().foreground)
             .child("Hello, World")
+            .child(
+                Button::new("db-list")
+                    .primary()
+                    .label("List from db")
+                    .on_click(|_, window, cx| {
+                        let settings = cx.global_mut::<AppSettings>();
+
+                        if let Ok(list) = NamedScene::list(&settings.db) {
+                            println!("Scenes: {:?}", list);
+
+                            let l: Vec<String> = list.iter().map(|el| el.name.to_owned()).collect();
+
+                            window.push_notification((NotificationType::Info, format!("Entries: {}", l.join("; "))), cx)
+                        }
+                    }),
+            )
+            .child(
+                Button::new("db")
+                    .primary()
+                    .label("Insert into db")
+                    .on_click(|_, window, cx| {
+                        let settings = cx.global_mut::<AppSettings>();
+
+                        if let Err(e) = NamedScene::new("test").persist(&settings.db) {
+                            println!("Error creating scene: {:?}", e);
+
+                            window.push_notification((NotificationType::Error, "Could not create scene."), cx)
+                        }
+                    }),
+            )
             .child(
                 Button::new("ok")
                     .primary()

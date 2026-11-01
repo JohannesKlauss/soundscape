@@ -7129,8 +7129,11 @@ dependencies = [
  "gpui-kit",
  "gpui-navigator",
  "native_db",
+ "native_model",
+ "once_cell",
  "rodio",
  "serde",
+ "uuid",
  "yt-dlp",
 ]
 
