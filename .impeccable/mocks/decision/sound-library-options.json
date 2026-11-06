@@ -1,0 +1,12 @@
+{
+  "title": "Shape the sound library",
+  "question": "Which structure best supports finding and managing sounds? Each keeps the existing Soundscape visual language.",
+  "options": [
+    {"id":"intake","kind":"assigned","label":"Collection and intake","kicker":"THE ROLL","thesis":"Browse the collection alongside a dedicated place for recent imports and unfinished organization.","palette":["#0a0a0c","#f5f4f0","#262629"],"materials":["compact rows","intake panel"],"viewport":"A searchable sound list shares the screen with a recent-imports and organizing panel.","risk":"The intake panel takes room even when imports are infrequent.","html":".impeccable/mocks/decision/library-intake.html"},
+    {"id":"inspector","kind":"dealt","label":"List and inspector","thesis":"Keep the collection front and center; select a sound to inspect, edit and audition it.","palette":["#0a0a0c","#f5f4f0","#262629"],"materials":["sortable list","detail inspector"],"viewport":"A searchable, filterable sound list sits next to a contextual sound inspector.","risk":"Details require selecting a sound before editing.","html":".impeccable/mocks/decision/library-inspector.html"},
+    {"id":"shelf","kind":"dealt","label":"Artwork shelf","thesis":"Find sounds visually in a browsable grid with quick preview and contextual details.","palette":["#0a0a0c","#f5f4f0","#262629"],"materials":["artwork tiles","contextual details"],"viewport":"Filters lead into an image-first collection with preview controls and a selected-sound panel.","risk":"A large library is less information-dense than a list.","html":".impeccable/mocks/decision/library-shelf.html"}
+  ],
+  "reroll":{"registers":["safer","bolder"]},
+  "buildPath":{"value":"code","toggle":false},
+  "steer":true
+}

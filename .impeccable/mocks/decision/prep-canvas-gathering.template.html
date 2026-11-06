@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<title>Prepare — Tavern Evening</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Space Grotesk', sans-serif; background: #0a0a0c; color: #f5f4f0; }
+::selection { background: #b3956d; color: #0a0a0c; }
+.stage { width: 1440px; height: 900px; overflow: hidden; display: flex; flex-direction: column; }
+.appnav { height: 56px; flex-shrink: 0; display: flex; align-items: center; gap: 28px; padding: 0 20px; border-bottom: 1px solid rgba(245,244,240,0.1); }
+.brand { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: .18em; }
+.navlinks { display: flex; gap: 22px; font-size: 13px; }
+.navlinks a { color: #bfb9af; text-decoration: none; padding: 6px 2px; }
+.navlinks a.on { color: #f5f4f0; border-bottom: 2px solid #b3956d; padding-bottom: 14px; }
+.scene { margin-left: auto; font-size: 13px; color: #d8d3cb; border: 1px solid rgba(245,244,240,0.18); border-radius: 4px; padding: 6px 12px; }
+.moodhead { height: 54px; flex-shrink: 0; display: flex; align-items: center; padding: 0 20px; gap: 14px; border-bottom: 1px solid rgba(245,244,240,0.1); }
+.moodhead h1 { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 500; letter-spacing: -0.01em; }
+.moodsub { font-size: 12px; color: #b7b3aa; }
+.headbtns { margin-left: auto; display: flex; gap: 10px; }
+.btn { background: transparent; border: 1px solid rgba(245,244,240,0.2); color: #f5f4f0; border-radius: 4px; font-size: 12px; padding: 7px 13px; cursor: pointer; font-family: inherit; }
+.btn:hover { border-color: rgba(245,244,240,0.45); background: rgba(245,244,240,0.06); }
+.btn:focus-visible { outline: 2px solid #b3956d; outline-offset: 2px; }
+.canvas { position: relative; flex: 1; background: #0e0e11; overflow: hidden; }
+.portrait { position: absolute; left: 560px; top: 177px; width: 320px; height: 240px; border-radius: 6px; background: url('asset://tavern.webp') center/cover; box-shadow: 0 14px 30px rgba(0,0,0,0.5); }
+.portrait .cap { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; background: rgba(10,10,12,0.72); border-radius: 0 0 6px 6px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; }
+.portrait .cap h2 { font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 600; letter-spacing: 0.02em; }
+.listenpill { display: inline-flex; align-items: center; gap: 6px; background: rgba(245,244,240,0.12); border: 1px solid rgba(245,244,240,0.3); color: #f5f4f0; border-radius: 20px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+.listenpill:hover { background: rgba(245,244,240,0.2); }
+.tile { position: absolute; border-radius: 6px; background: #17161a; border: 1px solid rgba(245,244,240,0.12); box-shadow: 0 8px 18px rgba(0,0,0,0.35); overflow: hidden; cursor: pointer; }
+.tile:hover { border-color: rgba(245,244,240,0.3); }
+.tile.sel { border-color: #b3956d; box-shadow: 0 0 0 1px #b3956d, 0 8px 18px rgba(0,0,0,0.4); }
+.tile .crop { height: 46px; background: url('asset://tavern.webp') center/cover; }
+.tile.harbor .crop { background: url('asset://harbor.webp') center/cover; }
+.tile .body { padding: 8px 12px 10px; }
+.tile .name { font-size: 16px; font-weight: 500; }
+.tile .row { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.lvl { font-size: 12px; color: #c6bdad; }
+.tile input[type="range"] { width: 100px; height: 3px; accent-color: #e4dccb; }
+.mini { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(245,244,240,0.25); background: transparent; color: #f5f4f0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.mini:hover { background: rgba(245,244,240,0.1); }
+.t1 { left: 605px; top: 20px; width: 230px; height: 120px; }
+.t2 { left: 905px; top: 72px; width: 210px; height: 130px; }
+.t3 { left: 150px; top: 92px; width: 205px; height: 128px; }
+.t4 { left: 195px; top: 400px; width: 220px; height: 128px; }
+.t5 { left: 980px; top: 410px; width: 205px; height: 128px; }
+.canvasedge { position: absolute; right: 20px; bottom: 16px; display: flex; gap: 8px; }
+.canvasedge .btn { opacity: 0.85; padding: 6px 11px; }
+.dock { height: 140px; flex-shrink: 0; display: flex; align-items: center; gap: 26px; padding: 0 24px; border-top: 1px solid rgba(245,244,240,0.14); background: #121114; }
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label { font-size: 12px; color: #b7b3aa; }
+.dockname { font-size: 18px; font-weight: 500; min-width: 170px; }
+.pair { display: flex; gap: 8px; }
+.pair .mini { border-radius: 4px; width: auto; padding: 6px 10px; font-size: 12px; }
+.pair .mini.active { border-color: #b3956d; color: #b3956d; }
+input[type="range"] { width: 160px; height: 3px; border-radius: 2px; background: rgba(245,244,240,0.2); accent-color: #b3956d; }
+input[type="number"] { width: 64px; background: rgba(245,244,240,0.08); border: 1px solid rgba(245,244,240,0.18); color: #f5f4f0; padding: 7px 8px; border-radius: 4px; font-size: 13px; font-family: inherit; }
+select { background: rgba(245,244,240,0.08); border: 1px solid rgba(245,244,240,0.18); color: #f5f4f0; padding: 7px 10px; border-radius: 4px; font-size: 13px; font-family: inherit; }
+.transport { height: 56px; flex-shrink: 0; display: flex; align-items: center; gap: 18px; padding: 0 20px; border-top: 1px solid rgba(245,244,240,0.1); }
+.demo { font-size: 12px; color: #b7b3aa; }
+.spacer { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.save { background: #f5f4f0; color: #0a0a0c; border: none; font-weight: 600; }
+.save:hover { background: #e4dccb; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="appnav">
+    <div class="brand">SOUNDSCAPE</div>
+    <div class="navlinks"><a class="on" href="#">Prepare</a><a href="#">Live view</a></div>
+    <select class="scene" aria-label="Scene"><option>The Laughing Gargoyle</option></select>
+  </div>
+  <div class="moodhead">
+    <h1>Tavern Evening</h1>
+    <div class="moodsub">5 sound layers</div>
+    <div class="headbtns"><button class="btn">Add sound</button><button class="btn">Duplicate mood</button></div>
+  </div>
+  <div class="canvas">
+    <div class="portrait">
+      <div class="cap"><h2>Tavern Evening</h2><div class="listenpill"><svg width="12" height="12" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg>Listen</div></div>
+    </div>
+    <div class="tile t1"><div class="crop"></div><div class="body"><div class="name">Tavern crowd</div><div class="row"><button class="mini"><svg width="11" height="11" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg></button><input type="range" aria-label="Tavern crowd level" value="72"><div class="lvl">72%</div></div></div></div>
+    <div class="tile sel t2"><div class="crop"></div><div class="body"><div class="name">Crackling hearth</div><div class="row"><button class="mini"><svg width="11" height="11" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg></button><input type="range" aria-label="Crackling hearth level" value="48"><div class="lvl">48%</div></div></div></div>
+    <div class="tile t3"><div class="crop"></div><div class="body"><div class="name">A wandering lute</div><div class="row"><button class="mini"><svg width="11" height="11" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg></button><input type="range" aria-label="A wandering lute level" value="35"><div class="lvl">35%</div></div></div></div>
+    <div class="tile harbor t4"><div class="crop"></div><div class="body"><div class="name">Rain at windows</div><div class="row"><button class="mini"><svg width="11" height="11" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg></button><input type="range" aria-label="Rain at windows level" value="28"><div class="lvl">28%</div></div></div></div>
+    <div class="tile t5"><div class="crop"></div><div class="body"><div class="name">Clinking glasses</div><div class="row"><button class="mini"><svg width="11" height="11" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg></button><input type="range" aria-label="Clinking glasses level" value="18"><div class="lvl">18%</div></div></div></div>
+    <div class="canvasedge"><button class="btn">Arrange neatly</button><button class="btn">Fit all</button></div>
+  </div>
+  <div class="dock">
+    <div class="dockname">Crackling hearth</div>
+    <div class="field"><label>Listening</label><div class="pair"><button class="mini active">Listen</button><button class="mini">Mute</button></div></div>
+    <div class="field"><label>Level · 48%</label><input type="range" aria-label="Selected sound level" value="48" style="width:120px"></div>
+    <div class="field"><label>Pan</label><input type="range" min="-100" max="100" value="12"></div>
+    <div class="field"><label>Fade in · seconds</label><input type="number" value="0.5"></div>
+    <div class="field"><label>Fade out · seconds</label><input type="number" value="2"></div>
+    <div class="field"><label>Loop</label><select><option>Yes</option><option>No</option></select></div>
+  </div>
+  <div class="transport">
+    <div class="field"><label>Preview volume</label><input type="range" min="0" max="100" value="75"></div>
+    <div class="demo">Unsaved changes · demo mood</div>
+    <div class="spacer"><button class="btn"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:6px"><polygon points="6,4 20,12 6,20" fill="currentColor"/></svg>Listen to mood</button><button class="btn save">Save mood</button></div>
+  </div>
+</div>
+</body>
+</html>

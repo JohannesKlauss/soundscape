@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Soundscape — grid focus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0a0a0c;
+  --paper:#f5f4f0;
+  --amber:#d5c6ac;
+  --amber-dim:#8a714f;
+  --line:rgba(245,244,240,0.12);
+  --line-soft:rgba(245,244,240,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:"Space Grotesk",sans-serif;
+  display:flex;flex-direction:column;
+}
+::selection{background:var(--amber);color:var(--ink)}
+
+.topnav{
+  height:56px;flex:0 0 56px;
+  display:flex;align-items:center;gap:28px;
+  padding:0 32px;
+  border-bottom:1px solid var(--line);
+}
+.brand{font-family:"Oswald",sans-serif;font-weight:600;font-size:16px;letter-spacing:0.18em;color:var(--paper)}
+.scene-select,.mood-select{
+  height:34px;display:flex;align-items:center;gap:8px;
+  padding:0 14px;border:1px solid var(--line);border-radius:7px;
+  font-size:13px;color:var(--paper);background:var(--line-soft);
+}
+.scene-select svg,.mood-select svg{width:12px;height:12px;opacity:0.6}
+.nav-spacer{flex:1}
+.nav-meta{font-size:12px;color:#8d8c87}
+
+.artheader{
+  flex:0 0 108px;position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;
+  padding:0 32px 16px;
+}
+.artheader::before{
+  content:"";position:absolute;inset:0;
+  background-image:url(asset://tavern.webp);
+  background-size:cover;background-position:center 38%;
+  filter:saturate(0.92);
+}
+.artheader::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(10,10,12,0.15) 0%, rgba(10,10,12,0.86) 100%);
+}
+.artheader-content{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;width:100%}
+.mood-title{font-family:"Oswald",sans-serif;font-weight:600;font-size:26px;letter-spacing:0.01em}
+.mood-sub{font-size:12.5px;color:#cfcdc6;margin-top:4px}
+.artheader-right{display:flex;align-items:center;gap:10px}
+.pill{
+  height:30px;padding:0 13px;border-radius:15px;
+  border:1px solid rgba(245,244,240,0.28);
+  font-size:12px;color:var(--paper);
+  display:flex;align-items:center;gap:6px;
+}
+
+.grid-wrap{flex:0 0 512px;padding:20px 32px 0;}
+.grid{
+  height:100%;display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+  gap:16px;
+}
+.tile{
+  position:relative;border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);
+  display:flex;flex-direction:column;
+  background:#141316;
+}
+.tile.selected{border-color:var(--amber)}
+.tile-art{height:90px;position:relative;flex:0 0 90px;overflow:hidden}
+.tile-art img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(0.9)}
+.tile-art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(10,10,12,0) 55%, rgba(10,10,12,0.75) 100%)}
+.tile-body{flex:1;padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.tile-name{font-size:17px;font-weight:500}
+.tile-meta{font-size:11px;color:#8d8c87;letter-spacing:0.02em;display:flex;gap:10px}
+.tile-row{display:flex;align-items:center;gap:10px;margin-top:auto}
+.listen-btn{
+  width:30px;height:30px;border-radius:50%;flex:0 0 30px;
+  border:1px solid var(--line);background:var(--line-soft);
+  display:flex;align-items:center;justify-content:center;
+}
+.listen-btn svg{width:11px;height:11px;fill:var(--paper)}
+.level{flex:1;display:flex;align-items:center;gap:8px}
+.level-track{flex:1;height:3px;border-radius:2px;background:rgba(245,244,240,0.14);position:relative}
+.level-fill{position:absolute;left:0;top:0;height:100%;border-radius:2px;background:var(--amber)}
+.level-pct{font-size:11px;color:#b9b7b0;width:30px;text-align:right}
+
+.tile.add{
+  align-items:center;justify-content:center;
+  background:transparent;border-style:dashed;border-color:rgba(245,244,240,0.2);
+}
+.add-inner{display:flex;flex-direction:column;align-items:center;gap:8px;color:#8d8c87}
+.add-inner svg{width:20px;height:20px;opacity:0.7}
+.add-inner span{font-size:13px}
+
+.dock{
+  flex:0 0 136px;margin:20px 32px 0;
+  border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:36px;
+  padding:18px 0;
+}
+.dock-id{display:flex;flex-direction:column;gap:6px;flex:0 0 160px}
+.dock-id .label{font-size:11px;color:#8d8c87;letter-spacing:0.04em}
+.dock-id .name{font-family:"Oswald",sans-serif;font-weight:600;font-size:19px}
+.dock-field{display:flex;flex-direction:column;gap:7px;flex:0 0 120px}
+.dock-field .label{font-size:11px;color:#8d8c87;letter-spacing:0.04em}
+.dock-field .value-row{display:flex;align-items:center;gap:8px}
+.dock-field .value-row .level-track{width:70px;flex:none}
+.dock-field .num{font-size:13px}
+.seconds-input{
+  width:56px;height:30px;border-radius:6px;border:1px solid var(--line);
+  background:var(--line-soft);color:var(--paper);font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+}
+.loop-toggle{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;height:30px}
+.loop-toggle div{padding:0 14px;display:flex;align-items:center;font-size:12px;color:#8d8c87}
+.loop-toggle .on{background:var(--amber);color:var(--ink);font-weight:500}
+.dock-spacer{flex:1}
+.dock-actions{display:flex;gap:10px}
+.ghost-btn{
+  height:34px;padding:0 16px;border-radius:7px;
+  border:1px solid var(--line);background:transparent;color:var(--paper);
+  font-size:12.5px;display:flex;align-items:center;gap:7px;
+}
+.ghost-btn.danger{color:#c98a6f}
+
+.footer{
+  flex:0 0 68px;margin-top:auto;
+  border-top:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+}
+.listening-meta{display:flex;align-items:center;gap:16px;font-size:12px;color:#8d8c87}
+.listening-dot{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+.save-btn{
+  height:40px;padding:0 24px;border-radius:8px;
+  background:var(--paper);color:var(--ink);
+  font-size:13.5px;font-weight:500;
+  display:flex;align-items:center;gap:8px;
+  border:none;
+}
+button,input,select{font:inherit;color:inherit;color-scheme:dark}input[type=range]{accent-color:#e5dcc9;min-width:0;width:100%}input[type=number],select{background:#191a16;color:#f5f4f0;border:1px solid #49473e;border-radius:5px;padding:6px;width:80px}input[type=number]{width:64px}.nav-meta,.tile-meta,.add-inner,.dock-id .label,.dock-field .label,.listening-meta{color:#bab5ab}.dock-id .name{font:500 18px 'Space Grotesk',sans-serif}.mood-title{font-size:36px}.topnav a{font-size:13px;color:#bab5ab;text-decoration:none}.topnav a.active{color:#f5f4f0}:focus-visible{outline:2px solid #e8dcc5;outline-offset:3px}.preview-btn{background:transparent;color:#f5f4f0;border:1px solid #49473e;border-radius:6px;padding:9px 16px}.dock-field select{width:120px}.artheader-right .ghost-btn{background:#12130fd9}
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="brand">SOUNDSCAPE</div><a class="active" href="#">Prepare</a><a href="#">Live view</a>
+  <div class="scene-select">The Laughing Gargoyle <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></div>
+  <div class="mood-select">Tavern Evening <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></div>
+  <div class="nav-spacer"></div>
+  <div class="nav-meta">Shape study · illustrative artwork</div>
+</div>
+
+<div class="artheader">
+  <div class="artheader-content">
+    <div>
+      <div class="mood-title">TAVERN EVENING</div>
+      <div class="mood-sub">5 sounds · warm crowded tavern, low lute under the noise</div>
+    </div>
+    <div class="artheader-right">
+      <button class="ghost-btn">Add sound</button>
+      <button class="ghost-btn">Duplicate mood</button>
+    </div>
+  </div>
+</div>
+
+<div class="grid-wrap">
+  <div class="grid">
+
+    <div class="tile">
+      <div class="tile-art"><img src="asset://tavern.webp" alt=""></div>
+      <div class="tile-body">
+        <div class="tile-name">Tavern crowd</div>
+        <div class="tile-meta"><span>Loop</span><span>Ambience</span></div>
+        <div class="tile-row">
+          <div class="listen-btn"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+          <div class="level"><input type="range" aria-label="Tavern crowd level" value="72"><div class="level-pct">72%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile selected">
+      <div class="tile-art"><img src="asset://tavern.webp" alt="" style="object-position:30% 60%"></div>
+      <div class="tile-body">
+        <div class="tile-name">Crackling hearth</div>
+        <div class="tile-meta"><span>Loop</span><span>Ambience</span></div>
+        <div class="tile-row">
+          <div class="listen-btn"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+          <div class="level"><input type="range" aria-label="Crackling hearth level" value="48"><div class="level-pct">48%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-art"><img src="asset://tavern.webp" alt="" style="object-position:70% 20%"></div>
+      <div class="tile-body">
+        <div class="tile-name">A wandering lute</div>
+        <div class="tile-meta"><span>Loop</span><span>Music</span></div>
+        <div class="tile-row">
+          <div class="listen-btn"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+          <div class="level"><input type="range" aria-label="A wandering lute level" value="35"><div class="level-pct">35%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-art"><img src="asset://harbor.webp" alt=""></div>
+      <div class="tile-body">
+        <div class="tile-name">Rain at windows</div>
+        <div class="tile-meta"><span>Loop</span><span>Weather</span></div>
+        <div class="tile-row">
+          <div class="listen-btn"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+          <div class="level"><input type="range" aria-label="Rain at windows level" value="28"><div class="level-pct">28%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-art"><img src="asset://tavern.webp" alt="" style="object-position:50% 85%"></div>
+      <div class="tile-body">
+        <div class="tile-name">Clinking glasses</div>
+        <div class="tile-meta"><span>Once</span><span>Effect</span></div>
+        <div class="tile-row">
+          <div class="listen-btn"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></div>
+          <div class="level"><input type="range" aria-label="Clinking glasses level" value="18"><div class="level-pct">18%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile add">
+      <div class="add-inner">
+        <svg viewBox="0 0 20 20"><path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+        <span>Add sound</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dock">
+  <div class="dock-id">
+    <div class="name">Crackling hearth</div>
+    <div class="label">Sound settings</div>
+  </div>
+  <div class="dock-field">
+    <div class="label">Pan</div>
+    <div class="value-row"><input aria-label="Selected sound pan" type="range" min="-100" max="100" value="0"><div class="num">Center</div></div>
+  </div>
+  <div class="dock-field">
+    <div class="label">Fade in</div>
+    <div class="value-row"><input type="number" aria-label="Fade in seconds" value="2" min="0" step="0.5"><span>s</span></div>
+  </div>
+  <div class="dock-field">
+    <div class="label">Fade out</div>
+    <div class="value-row"><input type="number" aria-label="Fade out seconds" value="4" min="0" step="0.5"><span>s</span></div>
+  </div>
+  <div class="dock-field">
+    <div class="label">Playback</div>
+    <select aria-label="Playback"><option>Loop</option><option>Once</option></select>
+  </div>
+  <div class="dock-spacer"></div>
+  <div class="dock-actions">
+    <button class="ghost-btn">Replace sound</button>
+    <button class="ghost-btn danger">Remove</button>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="listening-meta">
+    <button class="preview-btn">Listen to mood</button>
+    <span>5 sounds · unsaved changes</span>
+  </div>
+  <button class="save-btn">
+    <svg viewBox="0 0 14 14" width="13" height="13"><path d="M2 7l3.5 3.5L12 3" stroke="#0a0a0c" stroke-width="1.8" fill="none"/></svg>
+    Save mood
+  </button>
+</div>
+
+</body>
+</html>

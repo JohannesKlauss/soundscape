@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Soundscape — Sound library</title>
+  <link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/oswald-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="sound-library.css">
+  <script src="mood-state.js" defer></script>
+  <script src="library-state.js" defer></script>
+  <script src="sound-library.js" defer></script>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8ZM14 3v5h5M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 14 4-4M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0M16 8l1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13M9 8l10-2"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="16" cy="16" rx="3" ry="2"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 5h7l2 2h9v12H3Z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  </svg>
+
+  <header class="appbar">
+    <span class="brand">SOUNDSCAPE</span>
+    <nav class="mode-nav" aria-label="Prototype views"><a href="live-view.html">Live view</a><a href="mood-editor.html">Prepare</a><a href="sound-library.html" aria-current="page">Sound library</a></nav>
+    <span class="app-note">Prototype · simulated audio</span>
+  </header>
+
+  <div class="workspace">
+    <aside class="sidebar" aria-label="Library navigation">
+      <nav aria-label="Browse library">
+        <p class="side-heading">Library</p>
+        <button class="side-item" type="button" data-library-filter="all" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#i-music"/></svg><span>All sounds</span><span id="sidebarCount" class="count">8</span></button>
+        <button class="side-item" type="button" data-library-filter="recent" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span>Recently added</span></button>
+        <p class="side-heading side-heading-separated">Browse by type</p>
+        <button class="side-item" type="button" data-library-filter="ambience" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span>Ambience</span></button>
+        <button class="side-item" type="button" data-library-filter="music" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span>Music</span></button>
+        <button class="side-item" type="button" data-library-filter="effects" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span>Effects</span></button>
+      </nav>
+      <p class="side-note">Metadata stays on this device. Audio is not stored or played.</p>
+    </aside>
+
+    <main class="library" id="libraryMain">
+      <header class="library-head">
+        <div class="heading"><div><h1>Sound library</h1><p>Find, preview and organize your sounds.</p></div><div class="import-actions"><button id="filesButton" class="secondary" type="button"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>Files</button><button id="linkButton" class="primary" type="button" aria-controls="linkImport" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Import link</button></div></div>
+        <div id="linkImport" class="link-import" hidden>
+          <form id="importForm" novalidate><label for="importUrl">YouTube or audio link</label><div class="import-fields"><input id="importUrl" type="url" placeholder="Paste a link…" autocomplete="off" spellcheck="false" aria-describedby="importFeedback"><button class="primary" type="submit">Import</button><button id="closeImport" class="icon-button" type="button" aria-label="Close link import"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div><p id="importFeedback" class="feedback" role="status"></p></form>
+        </div>
+        <div class="toolbar"><div class="search-box"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><label class="sr-only" for="librarySearch">Search sounds or tags</label><input id="librarySearch" type="search" placeholder="Search sounds or tags" autocomplete="off" aria-controls="localResults freesoundResults"></div><label class="sr-only" for="typeFilter">Filter by type</label><select id="typeFilter"><option value="all">All types</option><option value="ambience">Ambience</option><option value="music">Music</option><option value="effects">Effects</option></select><label class="sr-only" for="sortSounds">Sort sounds</label><select id="sortSounds"><option value="name">Name</option><option value="recent">Recently added</option></select></div>
+      </header>
+
+      <div class="results-scroll">
+        <section class="results-section" aria-labelledby="localHeading">
+          <div class="section-heading"><div><h2 id="localHeading">Your sounds</h2><p id="localCount">8 sounds</p></div><span class="section-hint">Select a sound to inspect</span></div>
+          <div id="selectionBar" class="selection-bar" hidden><span id="selectionCount">0 selected</span><button id="bulkTagsButton" type="button" aria-controls="bulkTagEditor" aria-expanded="false">Edit tags</button><button id="clearSelection" type="button">Clear selection</button></div>
+          <div id="bulkTagEditor" class="tag-editor" hidden><label for="bulkTagInput">Add a tag to selected sounds</label><div class="field-action"><input id="bulkTagInput" type="text" placeholder="Tag name" maxlength="50"><button id="applyBulkTag" type="button">Add tag</button></div><div id="bulkTags" class="tag-list" aria-label="Tags on selected sounds"></div></div>
+          <table class="sound-table"><caption class="sr-only">Local sound library</caption><thead><tr><th scope="col"><span class="sr-only">Select</span></th><th scope="col"><span class="sr-only">Preview</span></th><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Duration</th><th scope="col">Added</th></tr></thead>
+            <tbody id="localResults">
+              <tr data-sound-id="ancient-forest"><td><input type="checkbox" data-action="select" aria-label="Select Ancient forest at night"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview Ancient forest at night" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="false"><strong>Ancient forest at night</strong><small>ancient-forest-night.wav</small></button></td><td>Ambience</td><td>4:32</td><td>Oct 24, 2026</td></tr>
+              <tr data-sound-id="blacksmith-forge"><td><input type="checkbox" data-action="select" aria-label="Select Blacksmith’s forge"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview Blacksmith’s forge" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="false"><strong>Blacksmith’s forge</strong><small>blacksmith-forge.mp3</small></button></td><td>Ambience</td><td>2:18</td><td>Oct 21, 2026</td></tr>
+              <tr data-sound-id="castle-gate"><td><input type="checkbox" data-action="select" aria-label="Select Castle gate opening"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview Castle gate opening" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="false"><strong>Castle gate opening</strong><small>castle-gate.wav</small></button></td><td>Effect</td><td>0:08</td><td>Oct 18, 2026</td></tr>
+              <tr class="is-inspected" data-sound-id="crackling-hearth"><td><input type="checkbox" data-action="select" aria-label="Select Crackling hearth"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview Crackling hearth" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="true"><strong>Crackling hearth</strong><small>crackling-hearth.wav</small></button></td><td>Ambience</td><td>3:24</td><td>Oct 12, 2026</td></tr>
+              <tr data-sound-id="dragon-roar"><td><input type="checkbox" data-action="select" aria-label="Select Distant dragon roar"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview Distant dragon roar" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="false"><strong>Distant dragon roar</strong><small>dragon-roar-distant.wav</small></button></td><td>Effect</td><td>0:12</td><td>Oct 10, 2026</td></tr>
+              <tr data-sound-id="dungeon-drips"><td><input type="checkbox" data-action="select" aria-label="Select Dungeon water drops"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview Dungeon water drops" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="false"><strong>Dungeon water drops</strong><small>dungeon-drips.mp3</small></button></td><td>Ambience</td><td>2:47</td><td>Oct 8, 2026</td></tr>
+              <tr data-sound-id="tavern-glasses"><td><input type="checkbox" data-action="select" aria-label="Select Glasses in the tavern"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview Glasses in the tavern" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="false"><strong>Glasses in the tavern</strong><small>tavern-glasses.wav</small></button></td><td>Effect</td><td>0:06</td><td>Oct 4, 2026</td></tr>
+              <tr data-sound-id="wandering-lute"><td><input type="checkbox" data-action="select" aria-label="Select The wandering lute"></td><td><button class="play-button" type="button" data-action="preview" aria-label="Preview The wandering lute" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button></td><td><button class="sound-select" type="button" data-action="inspect" aria-pressed="false"><strong>The wandering lute</strong><small>wandering-lute.mp3</small></button></td><td>Music</td><td>3:16</td><td>Sep 29, 2026</td></tr>
+            </tbody>
+          </table>
+          <p id="localEmpty" class="empty-state" hidden>No local sounds match. Try another search or import a sound.</p>
+        </section>
+        <section class="results-section freesound-section" aria-labelledby="freesoundHeading">
+          <div class="section-heading"><div><h2 id="freesoundHeading">Simulated Freesound results</h2><p>Example results appear as you search. No network request is made.</p></div><span class="section-hint">Simulated · separate from your library</span></div>
+          <div id="freesoundResults" class="freesound-results" aria-live="polite"><p id="freesoundEmpty" class="empty-state">Enter a search term to find simulated results.</p></div>
+          <p id="freesoundStatus" class="status" role="status"></p>
+        </section>
+      </div>
+    </main>
+
+    <aside id="inspector" class="inspector" aria-labelledby="inspectorHeading">
+      <div class="inspector-top"><h2 id="inspectorHeading">Sound details</h2><span>Local sound</span></div>
+      <div id="inspectorContent" class="inspector-content">
+        <h3 id="inspectorName">Crackling hearth</h3><p id="inspectorSummary" class="inspector-summary">Ambience · Local file</p>
+        <div class="preview"><button id="inspectorPreview" class="preview-play" type="button" aria-label="Preview Crackling hearth" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button><div><strong>Preview sound</strong><span id="previewStatus">Ready to listen</span></div><span id="previewTime" class="preview-time">0:00 / 3:24</span></div>
+        <section class="detail-section" aria-labelledby="fileHeading"><h4 id="fileHeading">File information</h4><dl class="metadata"><dt>File</dt><dd id="detailFile">crackling-hearth.wav</dd><dt>Duration</dt><dd id="detailDuration">3:24</dd><dt>Format</dt><dd id="detailFormat">WAV · 44.1 kHz · Stereo</dd><dt>Size</dt><dd id="detailSize">34.3 MB</dd><dt>Added</dt><dd id="detailAdded">October 12, 2026</dd></dl></section>
+        <section class="detail-section" aria-labelledby="tagsHeading"><div class="detail-heading"><h4 id="tagsHeading">Tags</h4><button id="editTags" class="text-button" type="button" aria-controls="tagEditor" aria-expanded="false">Edit tags</button></div><div id="inspectorTags" class="tag-list"><span class="tag">fire</span><span class="tag">tavern</span><span class="tag">interior</span></div><div id="tagEditor" class="tag-editor" hidden><label for="tagInput">Add a tag</label><div class="field-action"><input id="tagInput" type="text" placeholder="Tag name" maxlength="50"><button id="addTag" type="button">Add</button></div><div id="editableTags" class="tag-list" aria-label="Edit tags"></div></div></section>
+        <section class="detail-section" aria-labelledby="editHeading"><h4 id="editHeading">Edit sound</h4><form id="renameForm"><label for="soundName">Name</label><input id="soundName" type="text" value="Crackling hearth" maxlength="100" required><div class="inspector-actions"><button id="saveName" type="submit">Save name</button></div></form></section>
+        <div class="inspector-footer"><button id="addToSoundboard" class="primary" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Add to selected mood</button><a id="openEditor" href="mood-editor.html" hidden>Open mood editor</a><button id="deleteSound" class="text-button delete-button" type="button" aria-controls="deleteConfirm" aria-expanded="false">Delete sound</button></div>
+        <div id="deleteConfirm" class="confirm" hidden><p>Delete this sound from your library?</p><p>This cannot be undone.</p><div><button id="confirmDelete" type="button">Delete sound</button><button id="cancelDelete" type="button">Cancel</button></div></div>
+      </div>
+      <p id="inspectorEmpty" class="inspector-empty" hidden>Select a sound to see its details.</p>
+    </aside>
+  </div>
+  <footer class="statusbar"><span id="libraryStatus">Sound library · 8 sample sounds</span><span id="selectedStatus">Selected: Crackling hearth</span></footer>
+  <input id="fileInput" type="file" accept="audio/*,.wav,.mp3,.ogg,.flac,.m4a,.aac,.aif,.aiff" multiple hidden>
+  <div id="fileDropOverlay" class="file-drop-overlay" hidden><div><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg><h2>Drop audio files here</h2><p>Add file metadata to the library. Audio is not stored.</p></div></div>
+  <div id="toast" class="toast" role="status" hidden><span id="toastMessage"></span><button id="toastDismiss" class="icon-button" type="button" aria-label="Dismiss message"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+  <noscript><p class="noscript">Enable JavaScript to use this interaction prototype.</p></noscript>
+</body>
+</html>

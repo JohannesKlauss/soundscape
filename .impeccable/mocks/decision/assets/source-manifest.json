@@ -1,0 +1,32 @@
+{
+  "assets": [
+    {
+      "filename": "tavern.webp",
+      "subject": "Tavern/inn interior, warm firelight, Flemish genre scene",
+      "title": "Three smokers and a drinker in a tavern interior",
+      "artist": "David Teniers the Younger (1610–1690)",
+      "date": "between 1650 and 1670",
+      "source_page_url": "https://commons.wikimedia.org/wiki/File:David_Teniers_(II)_-_Three_smokers_and_a_drinker_in_a_tavern_interior.jpg",
+      "direct_image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/David_Teniers_(II)_-_Three_smokers_and_a_drinker_in_a_tavern_interior.jpg",
+      "original_dimensions": "963 x 1105 px",
+      "converted_dimensions": "1400 x 1607 px (upscaled on resize; source detail sufficient at target size for mockup use)",
+      "license": "Public domain (artist died 1690; PD-old-100-expired). Faithful 2D reproduction, public domain per Wikimedia Commons / U.S. law (published before 1931). CC Public Domain Mark 1.0.",
+      "license_evidence": "Licensing section of source page: 'This work is in the public domain in its country of origin... life plus 100 years or fewer' and 'published before January 1, 1931' + PDM 1.0 tag."
+    },
+    {
+      "filename": "harbor.webp",
+      "subject": "Moonlit river/harbor landscape, misty atmosphere, secondary mood",
+      "title": "Moonlit Landscape with a View of the New Amstel River and Castle Kostverloren",
+      "artist": "Aert van der Neer (1603/4–1677)",
+      "date": "1647",
+      "collection": "J. Paul Getty Museum, Los Angeles (accession 2000.27)",
+      "source_page_url": "https://commons.wikimedia.org/wiki/File:Aert_van_der_Neer_-_Moonlit_Landscape_with_a_View_of_the_New_Amstel_River_and_Castle_Kostverloren_-_Google_Art_Project.jpg",
+      "direct_image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Aert van der Neer - Moonlit Landscape with a View of the New Amstel River and Castle Kostverloren - Google Art Project.jpg",
+      "original_dimensions": "9307 x 6024 px (fetched at width=1600 via Commons thumbnail service, actual 1920x1243)",
+      "converted_dimensions": "700 x 454 px",
+      "license": "Public domain (artist died 1677; PD-old-100-expired). Faithful 2D reproduction, public domain per Wikimedia Commons / U.S. law (published before 1931). CC Public Domain Mark 1.0. Sourced via Google Art Project.",
+      "license_evidence": "Licensing section of source page: 'The author died in 1677, so this work is in the public domain...' + PDM 1.0 tag."
+    }
+  ],
+  "notes": "Both works confirmed non-competitor, non-fantasy-illustration public-domain museum paintings. No procedural/gradient art used. Downloaded via curl from Wikimedia Commons Special:FilePath redirects, converted to WebP with cwebp (q80)."
+}

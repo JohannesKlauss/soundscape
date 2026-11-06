@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Prep Layer Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0c;
+      color: #f5f4f0;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      height: 900px;
+      width: 1440px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    h1, h2, h3 { font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+    h1 { font-size: 28px; line-height: 1.2; }
+    h2 { font-size: 32px; line-height: 1.3; }
+    h3 { font-size: 14px; font-weight: 600; }
+    a { color: #f5f4f0; text-decoration: none; cursor: pointer; }
+    
+    /* Nav */
+    nav {
+      padding: 12px 24px;
+      border-bottom: 1px solid #2a2a2e;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      background: #0f0f12;
+    }
+    nav a { opacity: 0.7; transition: opacity 0.2s; }
+    nav a:hover { opacity: 1; }
+    nav .scene { font-weight: 600; opacity: 1; }
+    
+    /* Mood band */
+    .mood-band {
+      padding: 16px 24px;
+      border-bottom: 1px solid #2a2a2e;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      background: #0f0f12;
+    }
+    .mood-art {
+      width: 80px;
+      height: 56px;
+      background: #4a4234;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .mood-info h2 { margin-bottom: 2px; }
+    .mood-info p { font-size: 12px; opacity: 0.7; }
+    
+    /* Main layout */
+    .main { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+    
+    /* Layer board */
+    .board-area {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .layer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+    
+    /* Layer card */
+    .layer-card {
+      background: #14141a;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s;
+    }
+    .layer-card:hover { border-color: #4a4234; }
+    .layer-card.selected { border-color: #7a6f5f; background: #1a1a1f; }
+    
+    .layer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .layer-name { font-size: 13px; font-weight: 600; flex: 1; }
+    .layer-type { font-size: 11px; opacity: 0.6; }
+    
+    .layer-volume {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .layer-volume input[type="range"] {
+      flex: 1;
+      height: 4px;
+      accent-color: #7a6f5f;
+      cursor: pointer;
+    }
+    .layer-volume span { font-size: 12px; font-weight: 600; min-width: 30px; text-align: right; }
+    
+    .layer-controls {
+      display: flex;
+      gap: 6px;
+    }
+    button {
+      flex: 1;
+      padding: 6px 8px;
+      border: 1px solid #2a2a2e;
+      background: transparent;
+      color: #f5f4f0;
+      font-size: 11px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover { border-color: #7a6f5f; background: rgba(122, 111, 95, 0.1); }
+    
+    .add-layer {
+      background: transparent;
+      border: 1px dashed #4a4234;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7a6f5f;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .add-layer:hover { border-color: #7a6f5f; background: rgba(122, 111, 95, 0.05); }
+    
+    /* Inspector panel */
+    .inspector {
+      width: 280px;
+      border-left: 1px solid #2a2a2e;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: #0f0f12;
+      overflow-y: auto;
+    }
+    .inspector h3 { margin-bottom: 10px; }
+    
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .control-group label {
+      font-size: 12px;
+      opacity: 0.8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .control-group input[type="range"] {
+      height: 4px;
+      accent-color: #7a6f5f;
+      width: 100%;
+    }
+    .control-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #7a6f5f;
+    }
+    
+    .inspector-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .inspector-actions button { flex: 1; padding: 8px; }
+    
+    /* Footer */
+    .footer {
+      padding: 16px 24px;
+      border-top: 1px solid #2a2a2e;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      background: #0f0f12;
+    }
+    .footer button {
+      padding: 10px 20px;
+      border: 1px solid #2a2a2e;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .footer button.primary {
+      background: #7a6f5f;
+      border-color: #7a6f5f;
+      color: #0a0a0c;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <span class="scene">The Laughing Gargoyle</span>
+    <a href="#">Scenes</a>
+    <a href="#">Settings</a>
+  </nav>
+
+  <div class="mood-band">
+    <div class="mood-art"></div>
+    <div class="mood-info">
+      <h2>Tavern Evening</h2>
+      <p>5 independent sound layers</p>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="board-area">
+      <div class="layer-grid">
+        <!-- Layer 1: Tavern crowd -->
+        <div class="layer-card">
+          <div class="layer-header">
+            <div>
+              <div class="layer-name">Tavern crowd</div>
+              <div class="layer-type">Ambience</div>
+            </div>
+          </div>
+          <div class="layer-volume">
+            <input type="range" min="0" max="100" value="72">
+            <span>72%</span>
+          </div>
+          <div class="layer-controls">
+            <button>M</button>
+            <button>S</button>
+          </div>
+        </div>
+
+        <!-- Layer 2: Crackling hearth (selected) -->
+        <div class="layer-card selected">
+          <div class="layer-header">
+            <div>
+              <div class="layer-name">Crackling hearth</div>
+              <div class="layer-type">Loop</div>
+            </div>
+          </div>
+          <div class="layer-volume">
+            <input type="range" min="0" max="100" value="65">
+            <span>65%</span>
+          </div>
+          <div class="layer-controls">
+            <button>M</button>
+            <button>S</button>
+          </div>
+        </div>
+
+        <!-- Layer 3: A wandering lute -->
+        <div class="layer-card">
+          <div class="layer-header">
+            <div>
+              <div class="layer-name">A wandering lute</div>
+              <div class="layer-type">Music</div>
+            </div>
+          </div>
+          <div class="layer-volume">
+            <input type="range" min="0" max="100" value="45">
+            <span>45%</span>
+          </div>
+          <div class="layer-controls">
+            <button>M</button>
+            <button>S</button>
+          </div>
+        </div>
+
+        <!-- Layer 4: Rain at the windows -->
+        <div class="layer-card">
+          <div class="layer-header">
+            <div>
+              <div class="layer-name">Rain at the windows</div>
+              <div class="layer-type">Ambience</div>
+            </div>
+          </div>
+          <div class="layer-volume">
+            <input type="range" min="0" max="100" value="38">
+            <span>38%</span>
+          </div>
+          <div class="layer-controls">
+            <button>M</button>
+            <button>S</button>
+          </div>
+        </div>
+
+        <!-- Layer 5: Clinking glasses -->
+        <div class="layer-card">
+          <div class="layer-header">
+            <div>
+              <div class="layer-name">Clinking glasses</div>
+              <div class="layer-type">SFX</div>
+            </div>
+          </div>
+          <div class="layer-volume">
+            <input type="range" min="0" max="100" value="28">
+            <span>28%</span>
+          </div>
+          <div class="layer-controls">
+            <button>M</button>
+            <button>S</button>
+          </div>
+        </div>
+
+        <!-- Add layer -->
+        <button class="layer-card add-layer">Add layer</button>
+      </div>
+    </div>
+
+    <div class="inspector">
+      <div>
+        <h3>Crackling hearth</h3>
+        <p style="font-size: 12px; opacity: 0.6;">Loop • Ambience</p>
+      </div>
+
+      <div class="control-group">
+        <label>Pan</label>
+        <input type="range" min="-100" max="100" value="0">
+      </div>
+
+      <div class="control-group">
+        <label>Fade In</label>
+        <input type="range" min="0" max="5000" value="0" step="100">
+      </div>
+
+      <div class="control-group">
+        <label>Fade Out</label>
+        <input type="range" min="0" max="5000" value="500" step="100">
+      </div>
+
+      <div class="control-group">
+        <label>
+          <span>Loop</span>
+          <input type="checkbox" checked>
+        </label>
+      </div>
+
+      <div class="inspector-actions">
+        <button>Replace</button>
+        <button>Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button>Preview mix</button>
+    <button class="primary">Save mood</button>
+  </div>
+</body>
+</html>

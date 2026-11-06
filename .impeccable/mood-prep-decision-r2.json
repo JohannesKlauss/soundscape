@@ -1,0 +1,47 @@
+{
+  "title": "Three ways to compose an atmosphere",
+  "question": "All three use an open canvas with no nodes or wiring, evocative artwork, 3–6 sound layers, and contextual settings. They differ in what the canvas is organized around. Expand a study to see its full visual treatment; the small previews simplify the controls.",
+  "options": [
+    {
+      "id": "prep-canvas-atlas",
+      "kind": "assigned",
+      "kicker": "THE ROLL",
+      "label": "Scene atlas",
+      "thesis": "Prepare a scene as a landscape of moods, opening one composition without losing its neighbors.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["open scene canvas", "artwork-led mood clusters", "contextual side panel"],
+      "viewport": "Tavern Evening is the open composition with five loosely arranged sound tiles; Rain Rolls In and Last Call remain smaller mood landmarks elsewhere on the canvas; the selected sound’s settings live at right.",
+      "risk": "The richest scene context, but also the most to understand: mood membership and the current editing focus must stay unmistakable.",
+      "html": ".impeccable/mocks/decision/prep-canvas-atlas.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-canvas-stage",
+      "kind": "dealt",
+      "label": "Inside the atmosphere",
+      "thesis": "Work inside one mood’s artwork, arranging its sounds across an immersive but legible stage.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["full-stage mood artwork", "freely placed sound tiles", "quiet contextual controls"],
+      "viewport": "A narrow mood navigator at left, the tavern artwork filling the central canvas, and five small sound tiles placed around its open center; selecting a sound reveals settings at right; listening and saving stay anchored below.",
+      "risk": "The most immediate atmosphere, but artwork must never compete with sound names or turn the editor into wallpaper with controls on top.",
+      "html": ".impeccable/mocks/decision/prep-canvas-stage.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-canvas-gathering",
+      "kind": "dealt",
+      "label": "Around a mood",
+      "thesis": "Make the atmosphere the centerpiece, with its sounds gathered around it like ingredients in a composition.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["central mood portrait", "spatial sound constellation", "bottom settings dock"],
+      "viewport": "A large illustrated Tavern Evening portrait anchors the canvas, with five arrangeable sound tiles around it and no connecting lines; selected-sound settings open in a shallow bottom dock rather than taking a side column.",
+      "risk": "A clearer one-mood focus, but the initial arrangement must feel like a helpful starting point rather than a fixed diagram.",
+      "html": ".impeccable/mocks/decision/prep-canvas-gathering.html",
+      "htmlFrame": "1440x900"
+    }
+  ],
+  "reroll": true,
+  "steer": true,
+  "canon": false,
+  "buildPath": {"value": "code", "toggle": false}
+}

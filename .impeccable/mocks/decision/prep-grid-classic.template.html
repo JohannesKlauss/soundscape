@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soundscape — Moods, sounds, properties</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme:dark; --bg:#0a0a0c; --fg:#f5f4f0; --muted:#bab5ab; --line:#36352f; }
+* { margin:0; box-sizing:border-box; }
+html,body { width:1440px; height:900px; overflow:hidden; background:var(--bg); color:var(--fg); font:14px/1.45 'Space Grotesk',sans-serif; }
+button,input,select { color:inherit; font:inherit; }
+button,select { background:#1b1b18; border:1px solid #49473e; border-radius:6px; padding:9px 13px; }
+button { cursor:pointer; }
+button.primary { background:var(--fg); border-color:var(--fg); color:var(--bg); font-weight:600; }
+input[type=range] { accent-color:#e5dcc9; min-width:0; }
+input[type=number] { width:72px; padding:8px; background:#10110e; border:1px solid #555044; border-radius:5px; }
+:focus-visible { outline:2px solid #e8dcc5; outline-offset:3px; }
+::selection { color:#0a0a0c; background:#e8dcc5; }
+svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+nav { height:56px; padding:0 24px; display:flex; align-items:center; gap:28px; border-bottom:1px solid #302f28; }
+.brand { font:600 16px 'Oswald',sans-serif; letter-spacing:.18em; }
+nav a { color:var(--muted); text-decoration:none; }
+nav a.active { color:var(--fg); border-bottom:2px solid var(--fg); align-self:stretch; display:flex; align-items:center; }
+nav select { margin-left:auto; }
+.demo { font-size:12px; color:var(--muted); }
+.workspace { height:768px; display:grid; grid-template-columns:216px minmax(0,1fr) 280px; }
+.moods { padding:24px 12px; border-right:1px solid #302f28; background:#12130f; }
+.moods h2 { font-size:16px; font-weight:500; margin:0 10px 20px; }
+.mood { width:100%; display:flex; gap:10px; align-items:center; padding:9px 8px; border-color:transparent; background:transparent; margin-bottom:5px; text-align:left; }
+.mood.active { background:#27291f; border-color:#72694f; }
+.mood img { width:44px; height:46px; border-radius:4px; object-fit:cover; }
+.mood span { display:block; font-size:13px; font-weight:500; }
+.mood small { display:block; color:var(--muted); font-size:12px; margin-top:3px; }
+.new-mood { margin:16px 8px 0; width:calc(100% - 16px); font-size:13px; }
+.editor { padding:26px 26px 24px; min-width:0; background:#11120f; }
+.moodhead { display:flex; align-items:center; gap:18px; height:88px; margin-bottom:24px; }
+.moodhead img { width:114px; height:86px; border-radius:6px; object-fit:cover; object-position:65% 60%; }
+h1 { font:500 36px/1.1 'Oswald',sans-serif; }
+.moodhead p { margin-top:7px; color:var(--muted); font-size:13px; }
+.moodhead button { margin-left:auto; font-size:12px; }
+.gridhead { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.gridhead h2 { font-size:17px; font-weight:500; }
+.gridhead span { color:var(--muted); font-size:12px; }
+.sound-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.sound { height:226px; border:1px solid #49483f; border-radius:8px; overflow:hidden; background:#1a1b16; }
+.sound.selected { border-color:#e5d7bd; }
+.sound .art { height:94px; background-image:url('asset://tavern.webp'); background-size:cover; background-position:50% 50%; }
+.sound.hearth .art { background-position:25% 15%; }
+.sound.music .art { background-position:75% 75%; }
+.sound.rain .art { background-image:url('asset://harbor.webp'); background-position:50% 50%; }
+.sound.glasses .art { background-position:95% 65%; }
+.sound-body { padding:12px 13px; }
+.sound-name { display:flex; align-items:center; gap:6px; }
+.sound h3 { font-size:16px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sound .listen { display:flex; align-items:center; justify-content:center; padding:5px; margin-left:auto; border:0; background:none; }
+.sound p { font-size:12px; color:var(--muted); margin-top:4px; }
+.level { display:flex; gap:10px; align-items:center; margin-top:15px; }
+.level input { width:100%; }
+.level output { font-size:12px; font-variant-numeric:tabular-nums; min-width:30px; text-align:right; color:#e1dbcd; }
+.add { width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px; border-style:dashed; color:#ded9ca; background:#151711; }
+.add svg { width:22px; height:22px; }
+.editor-note { margin-top:22px; color:var(--muted); font-size:12px; }
+.properties { padding:26px 20px; border-left:1px solid #3d3b32; background:#191a14; }
+.properties h2 { font-size:19px; font-weight:500; margin-bottom:6px; }
+.properties p { color:#c7c0b0; font-size:12px; }
+.properties .listen { margin:22px 0 5px; display:flex; align-items:center; gap:8px; }
+.setting { margin-top:24px; }
+.setting label { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; color:#d5cdbd; font-size:13px; }
+.setting input[type=range] { width:100%; }
+.pan-labels { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); }
+.fades { display:flex; gap:20px; margin-top:24px; }
+.fades label { display:block; color:#d5cdbd; font-size:12px; margin-bottom:8px; }
+.fades span { padding-left:5px; color:var(--muted); font-size:12px; }
+.loop { display:flex; align-items:center; gap:9px; margin-top:26px; font-size:13px; }
+.loop input { accent-color:#e5dcc9; }
+.properties details { margin-top:24px; color:#c7c0b0; font-size:12px; }
+.properties details p { margin-top:10px; }
+.sound-actions { border-top:1px solid #3b3b30; padding-top:22px; margin-top:24px; display:flex; flex-direction:column; gap:9px; }
+.sound-actions .remove { border:0; font-size:12px; background:none; color:#d4beab; }
+footer { height:76px; display:flex; align-items:center; gap:22px; padding:0 26px; border-top:1px solid #3b3a31; background:#11130e; }
+footer button.listen { display:flex; align-items:center; gap:9px; }
+footer label { display:flex; align-items:center; gap:12px; font-size:12px; color:#c6c1b4; }
+footer input { width:125px; }
+footer .state { margin-left:auto; color:#c6bea9; font-size:12px; }
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true"><symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol></svg>
+<nav><span class="brand">SOUNDSCAPE</span><a class="active" href="#">Prepare</a><a href="#">Live view</a><select aria-label="Scene"><option>The Laughing Gargoyle</option></select><span class="demo">Shape study · illustrative artwork</span></nav>
+<div class="workspace">
+<aside class="moods"><h2>Moods</h2><button class="mood active"><img src="asset://tavern.webp" alt="Tavern"><div><span>Tavern Evening</span><small>5 sounds</small></div></button><button class="mood"><img src="asset://harbor.webp" alt="Moody harbor"><div><span>Rain Rolls In</span><small>4 sounds</small></div></button><button class="mood"><img src="asset://tavern.webp" style="filter:brightness(.65);object-position:90% 50%" alt="Quiet tavern"><div><span>Last Call</span><small>3 sounds</small></div></button><button class="new-mood">New mood</button></aside>
+<main class="editor"><header class="moodhead"><img src="asset://tavern.webp" alt="Fantasy tavern artwork"><div><h1>TAVERN EVENING</h1><p>The Laughing Gargoyle · 5 sound layers</p></div><button>Duplicate mood</button></header><div class="gridhead"><h2>Sounds in this mood</h2><span>Select a sound to edit its settings</span></div>
+<div class="sound-grid">
+<article class="sound crowd"><div class="art"></div><div class="sound-body"><div class="sound-name"><h3>Tavern crowd</h3><button class="listen" aria-label="Listen to Tavern crowd"><svg><use href="#play"/></svg></button></div><p>Loop · ambience</p><div class="level"><input aria-label="Tavern crowd level" type="range" value="72"><output>72%</output></div></div></article>
+<article class="sound hearth selected"><div class="art"></div><div class="sound-body"><div class="sound-name"><h3>Crackling hearth</h3><button class="listen" aria-label="Listen to Crackling hearth"><svg><use href="#play"/></svg></button></div><p>Loop · ambience</p><div class="level"><input aria-label="Crackling hearth level" type="range" value="48"><output>48%</output></div></div></article>
+<article class="sound music"><div class="art"></div><div class="sound-body"><div class="sound-name"><h3>A wandering lute</h3><button class="listen" aria-label="Listen to A wandering lute"><svg><use href="#play"/></svg></button></div><p>Loop · music</p><div class="level"><input aria-label="A wandering lute level" type="range" value="35"><output>35%</output></div></div></article>
+<article class="sound rain"><div class="art"></div><div class="sound-body"><div class="sound-name"><h3>Rain at the windows</h3><button class="listen" aria-label="Listen to Rain at the windows"><svg><use href="#play"/></svg></button></div><p>Loop · weather</p><div class="level"><input aria-label="Rain at the windows level" type="range" value="28"><output>28%</output></div></div></article>
+<article class="sound glasses"><div class="art"></div><div class="sound-body"><div class="sound-name"><h3>Clinking glasses</h3><button class="listen" aria-label="Listen to Clinking glasses"><svg><use href="#play"/></svg></button></div><p>Once · effect</p><div class="level"><input aria-label="Clinking glasses level" type="range" value="18"><output>18%</output></div></div></article>
+<button class="sound add"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg><span>Add sound</span></button>
+</div><p class="editor-note">Choose sounds from your library or import your own audio.</p></main>
+<aside class="properties" aria-label="Selected sound properties"><h2>Crackling hearth</h2><p>Ambience · part of Tavern Evening</p><button class="listen"><svg><use href="#play"/></svg>Listen to this sound</button><div class="setting"><label for="detail-level">Level <span>48%</span></label><input id="detail-level" type="range" value="48"></div><div class="setting"><label for="pan">Pan <span>Center</span></label><input id="pan" type="range" value="50"><div class="pan-labels"><span>Left</span><span>Center</span><span>Right</span></div></div><div class="fades"><div><label for="fade-in">Fade in</label><input id="fade-in" type="number" value="2"><span>s</span></div><div><label for="fade-out">Fade out</label><input id="fade-out" type="number" value="4"><span>s</span></div></div><label class="loop"><input type="checkbox" checked>Loop continuously</label><details><summary>Source file</summary><p>hearth-loop.wav · local audio</p></details><div class="sound-actions"><button>Replace sound</button><button class="remove">Remove from mood</button></div></aside>
+</div>
+<footer><button class="listen"><svg><use href="#play"/></svg>Listen to mood</button><label>Preview volume<input aria-label="Preview volume" type="range" value="65"></label><span class="state">Tavern Evening · unsaved changes</span><button class="primary">Save mood</button></footer>
+</body>
+</html>

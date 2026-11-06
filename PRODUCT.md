@@ -34,6 +34,7 @@ Confirmed domain model (rewrite, per owner 2026-11-01):
 
 - A **Scene** is the top-level playable container: it contains moods and sounds.
 - A **Mood** is a prepared mix: multiple sounds combined with per-sound fades, panning, and volume.
+- A **sound tile within a mood can hold a stack of source sounds** (confirmed 2026-11-03). The sources take turns, either randomly or in round-robin order, with a configurable crossfade between them. Each file plays through; the crossfade starts just before its end, not on a fixed rotation interval (timing confirmed 2026-11-03). The tile remains one shared volume/pan/mute layer, not several concurrent layers.
 - **Sounds** must also be triggerable individually, outside any mood.
 - Moods must also be runnable **on the fly** (ad-hoc, not only pre-prepared).
 
@@ -53,6 +54,19 @@ Undecided / open:
 - Whether the old app's "pad" concept survives into the new domain language or folds into sounds/moods.
 - Freesound import in the old app required a user-supplied API key; whether that flow carries over unchanged.
 - Timing and commitment for Windows/Linux.
+
+## Prototype Delivery
+
+- These are references for the **native macOS desktop app**, not a mobile website. Design and verification should cover desktop window sizes only; do not create phone-specific layouts or mobile test matrices (confirmed 2026-11-03).
+- The live-view prototype is the visual authority: preserve its near-black/white color language. Do not introduce olive/green chrome or a separate editor palette (confirmed 2026-11-03).
+- Design work in this project produces **clickable browser prototypes only**, alongside the Rust app. The owner implements the native gpui application themselves; prototype work must not change the native implementation (confirmed 2026-11-03).
+- Keep live-operation and preparation prototypes as separate, linked surfaces: `prototype/live-view.html` and `prototype/mood-editor.html`. `prototype/index.html` redirects to the live view to preserve the original entry point.
+- Prototype imagery may use illustrative internet art: the prototypes stay private and local, are seen only by the owner, and are never part of the actual product (confirmed 2026-11-03).
+- Mood preparation should make **3–6 sound layers** comfortable by default, while allowing larger mixes (confirmed 2026-11-03).
+
+## Discovery Backlog
+
+- **Switch the music, keep the place:** explore hotkey-swappable ambient/background music that changes the emotional tone (joyful, benevolent, tense, aggressive, mysterious) without replacing the surrounding sound bed. Example: tavern chatter and hearth continue while the music moves from easygoing to tense. This is a future discovery topic, not a committed interaction or data model; whether it belongs to a layer, a music slot, or mood variations remains open. Out of scope for the first general-purpose layer editor (recorded 2026-11-03).
 
 ## Brand Commitments
 

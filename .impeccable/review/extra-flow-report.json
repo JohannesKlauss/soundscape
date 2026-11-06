@@ -1,0 +1,228 @@
+{
+  "mode": "script",
+  "errors": [],
+  "script": {
+    "ok": true,
+    "total": 38,
+    "passed": 38,
+    "results": [
+      {
+        "name": "a selected tile offers adding another sound inside that tile",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "stack building opens the library with an explicit destination",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "a sound already in the tile cannot be added twice",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "adding a source keeps one tile and its shared volume",
+        "pass": true,
+        "detail": [
+          "hearth",
+          "wind"
+        ]
+      },
+      {
+        "name": "the tile quietly shows its sound count",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "the inspector lists both sources in order",
+        "pass": true,
+        "detail": [
+          "hearth",
+          "wind"
+        ]
+      },
+      {
+        "name": "the same destination accepts more than two sounds",
+        "pass": true,
+        "detail": [
+          "hearth",
+          "wind",
+          "drone"
+        ]
+      },
+      {
+        "name": "stack membership participates in mood-level library deduplication",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Done finishes stack building without leaving a hidden add destination",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "stack edits are saved as a working draft",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "moving a sound changes the round-robin order",
+        "pass": true,
+        "detail": [
+          "drone",
+          "hearth",
+          "wind"
+        ]
+      },
+      {
+        "name": "reordering preserves tile name, cover and shared volume",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "removing the first sound promotes the next without removing the tile",
+        "pass": true,
+        "detail": [
+          "hearth",
+          "wind"
+        ]
+      },
+      {
+        "name": "returning to one source collapses rotation controls and protects the last source",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Random changes the persisted rotation and quiet tile indicator",
+        "pass": true,
+        "detail": "random"
+      },
+      {
+        "name": "crossfade has its own live value without rebuilding the active slider",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "between-source crossfade does not overwrite mood-entry or exit fades",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "source order and rotation settings survive a mood round-trip",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "a stack exposes a Next sound preview control, disabled until listening",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "listening marks the currently playing source",
+        "pass": true,
+        "detail": "hearth"
+      },
+      {
+        "name": "file-end preview advances in visible round-robin order",
+        "pass": true,
+        "detail": "wind"
+      },
+      {
+        "name": "Repeat stack wraps back to the first sound",
+        "pass": true,
+        "detail": "hearth"
+      },
+      {
+        "name": "stopping clears playback indicators without modifying the mix",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "a non-repeating stack stops after the final sound",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Random visits all sources before repeating",
+        "pass": true,
+        "detail": [
+          "wind",
+          "drone",
+          "hearth"
+        ]
+      },
+      {
+        "name": "Random does not repeat the last sound at a cycle boundary",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "whole-mood preview also exposes the selected stack source",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "stopping the mood clears stack playback too",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "a file import goes inside the explicit stack destination, not into a new tile",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "a pending URL import remembers its stack even after a mood switch",
+        "pass": true,
+        "detail": [
+          "hearth",
+          "wind",
+          "drone",
+          "item-100",
+          "item-101"
+        ]
+      },
+      {
+        "name": "a completed background import does not steal the current mood or selection",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "returning to the stack shows both imported sources and original settings",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "removing the destination tile clears stack-building mode immediately",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Undo restores the entire tile, ordered sources and settings",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "the grid Add sound slot explicitly leaves stack mode and creates a separate tile",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "a removed pending-import destination leaves the new sound safely in the library, not in a surprise tile",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Save records the full stack baseline and marks the mood clean",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "editing a duplicate stack does not change the original mood",
+        "pass": true,
+        "detail": null
+      }
+    ]
+  }
+}

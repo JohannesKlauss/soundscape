@@ -1,0 +1,83 @@
+{
+  "mode": "capture",
+  "errors": [],
+  "captures": {
+    "desktop": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "drawer": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "import": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "compact": {
+      "width": 1280,
+      "height": 800,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "wide": {
+      "width": 2128,
+      "height": 833,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "mobileImport": {
+      "width": 390,
+      "height": 844,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "empty": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "live": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    }
+  },
+  "localFile": {
+    "cards": 5,
+    "images": true,
+    "fonts": [
+      {
+        "family": "Oswald",
+        "status": "loaded"
+      },
+      {
+        "family": "Space Grotesk",
+        "status": "loaded"
+      }
+    ]
+  }
+}

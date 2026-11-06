@@ -1,0 +1,16 @@
+{
+  "mode": "script",
+  "errors": [],
+  "script": {
+    "ok": false,
+    "total": 1,
+    "passed": 0,
+    "results": [
+      {
+        "name": "a selected tile offers adding another sound inside that tile",
+        "pass": false,
+        "detail": null
+      }
+    ]
+  }
+}

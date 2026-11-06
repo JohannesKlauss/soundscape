@@ -12,7 +12,7 @@ use gpui_kit::*;
 use gpui_navigator::{init_router, Route};
 use crate::audio_engine::AudioEngine;
 use crate::db::connect_to_db;
-use crate::ui::home::HelloWorld;
+use crate::ui::home::Home;
 
 struct AppSettings {
     audio_engine: AudioEngine,
@@ -36,7 +36,7 @@ fn main() {
 fn create_router(cx: &mut App) {
     init_router(cx, |router| {
         router.add_route(
-            Route::new("/", |_, _, _| HelloWorld.into_any_element())
+            Route::new("/", |window, app, _| Home::new(window, app).into_any_element())
         )
     })
 }

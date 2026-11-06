@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soundscape — Scene atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme:dark; --bg:#0a0a0c; --fg:#f5f4f0; --muted:#b7b3aa; --line:#363630; --panel:#191a17; }
+* { box-sizing:border-box; margin:0; }
+html,body { width:1440px; height:900px; overflow:hidden; background:var(--bg); color:var(--fg); font:14px/1.45 'Space Grotesk',sans-serif; }
+button,input,select { font:inherit; color:inherit; }
+button,select { border:1px solid var(--line); background:#1b1c19; border-radius:6px; padding:9px 13px; }
+button { cursor:pointer; }
+button.white { color:var(--bg); background:var(--fg); border-color:var(--fg); font-weight:600; }
+input[type=range] { accent-color:#e4dccb; min-width:0; }
+input[type=number] { width:66px; padding:8px; background:#11120f; border:1px solid #555348; border-radius:5px; }
+:focus-visible { outline:2px solid #e8dcc5; outline-offset:3px; }
+::selection { color:#0a0a0c; background:#e8dcc5; }
+svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+nav { height:64px; display:flex; align-items:center; gap:30px; padding:0 28px; border-bottom:1px solid #292a25; }
+.brand { font:600 16px 'Oswald',sans-serif; letter-spacing:.18em; }
+nav a { color:var(--muted); text-decoration:none; }
+nav .active { color:var(--fg); border-bottom:2px solid var(--fg); height:64px; display:flex; align-items:center; }
+nav select { margin-left:auto; }
+.demo { color:var(--muted); font-size:12px; }
+.workspace { display:flex; height:752px; }
+.canvas { position:relative; flex:1; min-width:0; background:#11130f; overflow:hidden; }
+.tools { position:absolute; top:0; left:0; right:0; height:64px; display:flex; align-items:center; gap:8px; padding:0 24px; border-bottom:1px solid #272b23; }
+.tools span { margin-right:auto; color:#c7c7bb; }
+.tools button { font-size:12px; }
+.field { position:absolute; inset:64px 0 0; }
+.landmark { position:absolute; width:194px; height:140px; border-radius:8px; overflow:hidden; border:1px solid #494b40; box-shadow:0 10px 24px #0005; }
+.landmark img { width:100%; height:100%; object-fit:cover; }
+.landmark .caption { position:absolute; inset:auto 0 0; padding:24px 14px 12px; background:linear-gradient(transparent,#090b09f5); }
+.landmark h2 { font:500 24px/1.1 'Oswald',sans-serif; }
+.landmark p { color:#d5d2c8; font-size:12px; margin-top:5px; }
+.rain-mood { left:26px; top:72px; }
+.rain-mood img { filter:brightness(1.25) saturate(.75); }
+.last-call { left:886px; top:470px; width:210px; height:151px; }
+.last-call img { object-position:70% 70%; filter:brightness(.65); }
+.composition { position:absolute; left:250px; top:88px; width:614px; height:532px; }
+.mood-art { position:absolute; left:0; top:0; width:260px; height:181px; border-radius:8px; overflow:hidden; border:1px solid #87795f; }
+.mood-art img { width:100%; height:100%; object-fit:cover; object-position:50% 62%; }
+.mood-art .caption { position:absolute; inset:auto 0 0; padding:30px 16px 13px; background:linear-gradient(transparent,#10120ff5); }
+h1 { font:500 32px/1.05 'Oswald',sans-serif; }
+.mood-art p { margin-top:6px; color:#e4dfd1; font-size:12px; }
+.layer { position:absolute; width:208px; height:128px; border:1px solid #4b4e40; border-radius:8px; background:#1b1e18; box-shadow:0 9px 22px #0005; overflow:hidden; }
+.layer .crop { position:absolute; inset:0 0 auto; height:45px; background-image:url('asset://tavern.webp'); background-size:310px; opacity:.5; }
+.layer h3 { position:relative; margin:49px 13px 10px; font-size:15px; font-weight:500; }
+.layer .controls { display:flex; align-items:center; gap:10px; padding:0 12px; }
+.layer button { padding:4px 5px; border:0; background:transparent; display:flex; }
+.layer input { width:112px; }
+.layer output { font-size:12px; color:#d5d2c8; font-variant-numeric:tabular-nums; }
+.layer.selected { border-color:#d6c5a5; background:#25291e; }
+.crowd { left:300px; top:12px; }
+.crowd .crop { background-position:35% 62%; }
+.hearth { left:350px; top:190px; transform:translateX(12px); }
+.hearth .crop { background-position:10% 12%; }
+.music { left:70px; top:230px; }
+.music .crop { background-position:62% 55%; }
+.weather { left:100px; top:411px; }
+.weather .crop { background-image:url('asset://harbor.webp'); background-position:40% 40%; }
+.glasses { left:380px; top:385px; }
+.glasses .crop { background-position:88% 85%; }
+.canvas-bottom { position:absolute; bottom:16px; left:24px; right:24px; display:flex; align-items:center; gap:8px; }
+.canvas-bottom p { margin-right:auto; font-size:12px; color:#c0c3b4; }
+.canvas-bottom button { padding:7px 11px; font-size:12px; }
+.inspector { width:288px; background:#161713; border-left:1px solid #35382e; padding:24px 22px; }
+.inspector .head { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+.inspector h2 { font-size:20px; font-weight:500; }
+.inspector .head button { padding:5px 8px; border:0; }
+.inspector p { color:#c1beaf; font-size:13px; }
+.inspector .listen { display:flex; align-items:center; gap:8px; margin:22px 0 28px; }
+.setting { margin-top:24px; }
+.setting label,.setting .label { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-size:13px; color:#d3d0c3; }
+.setting input[type=range] { width:100%; }
+.pan-labels { display:flex; justify-content:space-between; color:var(--muted); font-size:11px; }
+.fades { display:flex; gap:24px; margin-top:24px; }
+.fades label { display:block; font-size:12px; color:#c6c2b5; margin-bottom:8px; }
+.fades span { color:var(--muted); padding-left:5px; }
+.sound-actions { border-top:1px solid #36382e; margin-top:28px; padding-top:22px; display:flex; flex-direction:column; gap:10px; }
+.sound-actions .remove { border:0; font-size:12px; color:#d1beb0; background:none; }
+footer { height:84px; border-top:1px solid #37362e; padding:0 28px; display:flex; align-items:center; gap:22px; background:#12130f; }
+footer strong { display:block; font-size:14px; font-weight:500; }
+footer small { display:block; font-size:12px; color:var(--muted); margin-top:3px; }
+footer .listen { display:flex; align-items:center; gap:9px; }
+footer label { display:flex; align-items:center; gap:12px; font-size:12px; color:#c5c1b6; }
+footer input { width:120px; }
+footer .status { margin-left:auto; font-size:12px; color:#c6bda8; }
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true"><symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol></svg>
+<nav><span class="brand">SOUNDSCAPE</span><a class="active" href="#">Prepare</a><a href="#">Live view</a><select aria-label="Scene"><option>The Laughing Gargoyle</option></select><span class="demo">Shape study · illustrative artwork</span></nav>
+<div class="workspace">
+<main class="canvas" aria-label="Scene canvas">
+<div class="tools"><span>3 moods · editing Tavern Evening</span><button>New mood</button><button>Add sound</button></div>
+<div class="field">
+<section class="landmark rain-mood"><img src="asset://harbor.webp" alt="Moonlit waters"><div class="caption"><h2>RAIN ROLLS IN</h2><p>4 sounds · open mood</p></div></section>
+<section class="composition" aria-label="Tavern Evening composition">
+<div class="mood-art"><img src="asset://tavern.webp" alt="Painted tavern interior"><div class="caption"><h1>TAVERN EVENING</h1><p>5 sounds · editing this mood</p></div></div>
+<article class="layer crowd"><div class="crop"></div><h3>Tavern crowd</h3><div class="controls"><button aria-label="Listen to Tavern crowd"><svg><use href="#play"/></svg></button><input aria-label="Tavern crowd level" type="range" value="72"><output>72%</output></div></article>
+<article class="layer hearth selected"><div class="crop"></div><h3>Crackling hearth</h3><div class="controls"><button aria-label="Listen to Crackling hearth"><svg><use href="#play"/></svg></button><input aria-label="Crackling hearth level" type="range" value="48"><output>48%</output></div></article>
+<article class="layer music"><div class="crop"></div><h3>A wandering lute</h3><div class="controls"><button aria-label="Listen to A wandering lute"><svg><use href="#play"/></svg></button><input aria-label="A wandering lute level" type="range" value="35"><output>35%</output></div></article>
+<article class="layer weather"><div class="crop"></div><h3>Rain at the windows</h3><div class="controls"><button aria-label="Listen to Rain at the windows"><svg><use href="#play"/></svg></button><input aria-label="Rain at the windows level" type="range" value="28"><output>28%</output></div></article>
+<article class="layer glasses"><div class="crop"></div><h3>Clinking glasses</h3><div class="controls"><button aria-label="Listen to Clinking glasses"><svg><use href="#play"/></svg></button><input aria-label="Clinking glasses level" type="range" value="18"><output>18%</output></div></article>
+</section>
+<section class="landmark last-call"><img src="asset://tavern.webp" alt="A quieter tavern crop"><div class="caption"><h2>LAST CALL</h2><p>3 sounds · open mood</p></div></section>
+</div>
+<div class="canvas-bottom"><p>Arrange sounds freely. Their position doesn’t change the mix.</p><button>Arrange neatly</button><button>Fit all</button><button>85%</button></div>
+</main>
+<aside class="inspector" aria-label="Selected sound settings"><div class="head"><h2>Crackling hearth</h2><button aria-label="Close sound settings">Close</button></div><p>Part of Tavern Evening · ambience</p><button class="listen"><svg><use href="#play"/></svg>Listen to this sound</button><div class="setting"><label for="level">Level <span>48%</span></label><input id="level" type="range" value="48"></div><div class="setting"><label for="playback">Playback</label><select id="playback"><option>Loop continuously</option><option>Play once</option></select></div><div class="setting"><label for="pan">Position <span>Center</span></label><input id="pan" type="range" value="50"><div class="pan-labels"><span>Left</span><span>Center</span><span>Right</span></div></div><div class="fades"><div><label for="fadein">Fade in</label><input id="fadein" type="number" value="2"><span>s</span></div><div><label for="fadeout">Fade out</label><input id="fadeout" type="number" value="4"><span>s</span></div></div><div class="sound-actions"><button>Replace sound</button><button class="remove">Remove from this mood</button></div></aside>
+</div>
+<footer><div><strong>Tavern Evening</strong><small>5 sounds · preview only</small></div><button class="listen"><svg><use href="#play"/></svg>Listen to mood</button><label>Preview volume<input aria-label="Preview volume" type="range" value="65"></label><span class="status">Unsaved changes</span><button class="white">Save mood</button></footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "mode": "script",
+  "errors": [],
+  "script": {
+    "ok": true,
+    "total": 15,
+    "passed": 15,
+    "checks": [
+      {
+        "name": "slider edits immediately mark the mood tab dirty",
+        "pass": true
+      },
+      {
+        "name": "selecting a layer keeps its tile and keyboard focus intact",
+        "pass": true
+      },
+      {
+        "name": "scene shortcuts do not interrupt typing in a field",
+        "pass": true
+      },
+      {
+        "name": "changing mood cancels a stale replacement target",
+        "pass": true
+      },
+      {
+        "name": "adding after a mood switch targets the current mood",
+        "pass": true
+      },
+      {
+        "name": "a previous mood is not changed by a stale replacement",
+        "pass": true
+      },
+      {
+        "name": "removing a sound immediately makes it addable in the open library",
+        "pass": true
+      },
+      {
+        "name": "mood tab count updates after removal",
+        "pass": true
+      },
+      {
+        "name": "Escape closes the drawer and returns focus to the editor",
+        "pass": true
+      },
+      {
+        "name": "storage failure does not claim saved locally",
+        "pass": true
+      },
+      {
+        "name": "save failure keeps an honest recovery message",
+        "pass": true
+      },
+      {
+        "name": "Undo message does not disappear while its action has keyboard focus",
+        "pass": true
+      },
+      {
+        "name": "duplicating stops the previous mood preview state",
+        "pass": true
+      },
+      {
+        "name": "a new empty mood has a stopped preview label",
+        "pass": true
+      },
+      {
+        "name": "lookalike provider hosts are classified as ordinary audio links",
+        "pass": true
+      }
+    ]
+  }
+}

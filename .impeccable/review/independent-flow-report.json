@@ -1,0 +1,257 @@
+{
+  "mode": "script",
+  "errors": [],
+  "script": {
+    "ok": true,
+    "total": 49,
+    "passed": 49,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "baseline: Tavern Evening active on fresh load",
+        "pass": true,
+        "detail": "Tavern Evening"
+      },
+      {
+        "name": "import-1: UI switched to Rain Rolls In immediately",
+        "pass": true,
+        "detail": "Rain Rolls In"
+      },
+      {
+        "name": "import-1: imported sound landed in original target mood (Tavern Evening)",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "import-1: imported sound did NOT leak into the mood switched to during import",
+        "pass": true,
+        "detail": "null"
+      },
+      {
+        "name": "import-1: active mood after resolve stays on the mood user switched to",
+        "pass": true,
+        "detail": "rain-mood"
+      },
+      {
+        "name": "import-1: Rain Rolls In grid still shows only its own sounds (no leaked card)",
+        "pass": true,
+        "detail": "4 vs 4"
+      },
+      {
+        "name": "import-1: toast credits the original mood name, not the one switched to",
+        "pass": true,
+        "detail": "Imported \"Pending Import Sound\" into Tavern Evening (simulated, nothing downloaded)."
+      },
+      {
+        "name": "replace-2: library drawer opened for replacement",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "replace-2: thunder is selectable as a replacement (not already in mood)",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "replace-2: layer id kept, soundId swapped to thunder",
+        "pass": true,
+        "detail": "{\"id\":\"evening-crowd\",\"soundId\":\"thunder\",\"volume\":77,\"pan\":-40,\"fadeIn\":3,\"fadeOut\":5,\"loop\":true,\"enabled\":true}"
+      },
+      {
+        "name": "replace-2: volume preserved after replace",
+        "pass": true,
+        "detail": "77"
+      },
+      {
+        "name": "replace-2: pan preserved after replace",
+        "pass": true,
+        "detail": "-40"
+      },
+      {
+        "name": "replace-2: fadeIn preserved after replace",
+        "pass": true,
+        "detail": "3"
+      },
+      {
+        "name": "replace-2: fadeOut preserved after replace",
+        "pass": true,
+        "detail": "5"
+      },
+      {
+        "name": "undo-3: lute removed from evening mood",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "undo-3: switched to Last Call before undoing",
+        "pass": true,
+        "detail": "Last Call"
+      },
+      {
+        "name": "undo-3: undo toast still available after switching moods",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "undo-3: lute restored into ORIGINAL (evening) mood, not current (last-call)",
+        "pass": true,
+        "detail": "{\"id\":\"evening-lute\",\"soundId\":\"lute\",\"volume\":35,\"pan\":0,\"fadeIn\":0,\"fadeOut\":0,\"loop\":true,\"enabled\":true}"
+      },
+      {
+        "name": "undo-3: active mood remains Last Call (undo did not jump the user back)",
+        "pass": true,
+        "detail": "last-call"
+      },
+      {
+        "name": "undo-3: currently active mood is unchanged by undo in another mood",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "filedrop-4: synthetic multi-file drop dispatched",
+        "pass": true,
+        "detail": "null"
+      },
+      {
+        "name": "filedrop-4: 2 valid audio files added as layers, 1 invalid skipped",
+        "pass": true,
+        "detail": "before=6 after=8"
+      },
+      {
+        "name": "filedrop-4: valid .mp3 imported with derived name + sourceType file + chosen category",
+        "pass": true,
+        "detail": "{\"id\":\"item-102\",\"name\":\"crash-sound\",\"category\":\"effects\",\"loop\":true,\"art\":\"tavern\",\"sourceType\":\"file\",\"source\":\"crash-sound.mp3\"}"
+      },
+      {
+        "name": "filedrop-4: valid .wav imported with its own metadata",
+        "pass": true,
+        "detail": "{\"id\":\"item-104\",\"name\":\"ambient-loop\",\"category\":\"effects\",\"loop\":true,\"art\":\"tavern\",\"sourceType\":\"file\",\"source\":\"ambient-loop.wav\"}"
+      },
+      {
+        "name": "filedrop-4: invalid .txt file was NOT imported into the library",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "filedrop-4: toast reports partial success (2 added, 1 skipped)",
+        "pass": true,
+        "detail": "Added 2, skipped 1 unsupported file(s)."
+      },
+      {
+        "name": "filedrop-4: all-invalid drop adds nothing",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "filedrop-4: all-invalid drop shows an unsupported-type toast",
+        "pass": true,
+        "detail": "That file type is not supported audio."
+      },
+      {
+        "name": "kbd-5: \"/\" focuses library search when not typing",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "kbd-5: digit key switches mood when not typing",
+        "pass": true,
+        "detail": "rain-mood"
+      },
+      {
+        "name": "kbd-5: digit key ignored while typing in mood name (typing guard)",
+        "pass": true,
+        "detail": "evening"
+      },
+      {
+        "name": "kbd-5: \"/\" does not steal focus while typing in an input",
+        "pass": true,
+        "detail": "moodName"
+      },
+      {
+        "name": "kbd-5: import panel open before Escape sequence",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "kbd-5: Escape #1 closes import panel first",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "kbd-5: Escape #1 leaves drawer open",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "kbd-5: Escape #2 closes the library drawer next",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "kbd-5: sound properties remain a persistent desktop pane",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "kbd-5: Escape #3 stops the remaining sound preview",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "kbd-5: edit marks state dirty before Cmd+S",
+        "pass": true,
+        "detail": "Unsaved changes"
+      },
+      {
+        "name": "kbd-5: Cmd+S saves while input is focused (no typing guard on save)",
+        "pass": true,
+        "detail": "Saved locally"
+      },
+      {
+        "name": "reload-6: draft persisted to localStorage after mutation",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "reload-6: MoodState.restoreState reproduces identical scenes/library from the persisted draft",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "reload-6: rehydrated draft keeps the same active scene/mood/selection",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "reload-6: edited volume (91) survives the restoreState round-trip",
+        "pass": true,
+        "detail": "91"
+      },
+      {
+        "name": "reload-6: corrupted localStorage value falls back to a fresh valid state (no throw)",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "network-7: URL import + file drop issue zero fetch() calls",
+        "pass": true,
+        "detail": "[]"
+      },
+      {
+        "name": "network-7: URL import + file drop issue zero XHR requests",
+        "pass": true,
+        "detail": "[]"
+      },
+      {
+        "name": "network-7: no <audio>/<video> elements were created by import/drop",
+        "pass": true,
+        "detail": "0"
+      },
+      {
+        "name": "network-7: no network/resource entries for the imported/dropped sound sources",
+        "pass": true,
+        "detail": "[]"
+      }
+    ]
+  }
+}

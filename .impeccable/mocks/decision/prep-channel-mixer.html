@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Soundscape — Prepare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0a0a0c;--paper:#f5f4f0;--art:#352a21;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:1440px;height:900px;overflow:hidden;background:var(--ink);color:var(--paper);font-family:'Space Grotesk',sans-serif;font-size:14px;}
+::selection{background:var(--paper);color:var(--ink);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:#4a4a4e;border-radius:0;}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--paper);outline-offset:2px;}
+.nav{display:flex;align-items:center;gap:28px;height:52px;padding:0 28px;border-bottom:1px solid #222224;}
+.brand{font-family:'Oswald',sans-serif;font-weight:600;font-size:16px;letter-spacing:0.01em;}
+.navlink{color:#8a8a8e;font-size:13px;letter-spacing:0.02em;text-decoration:none;}
+.navlink.active{color:var(--paper);}
+.nav .spacer{flex:1;}
+.scenesel{background:transparent;border:1px solid #333335;color:var(--paper);font-family:inherit;font-size:13px;padding:7px 12px;}
+.header{display:flex;align-items:center;gap:20px;padding:24px 28px 20px;border-bottom:1px solid #1c1c1e;}
+.swatch{width:52px;height:52px;background:var(--art);flex-shrink:0;}
+.title{font-family:'Oswald',sans-serif;font-weight:600;font-size:40px;letter-spacing:-0.01em;}
+.header .spacer{flex:1;}
+.hbtn{background:transparent;border:1px solid #3a3a3c;color:var(--paper);font-family:inherit;font-size:13px;padding:9px 16px;cursor:pointer;}
+.hbtn:hover{border-color:var(--paper);}
+.moodsel{background:#141416;border:1px solid #3a3a3c;color:var(--paper);font-family:inherit;font-size:13px;padding:9px 12px;min-width:170px;}
+.channels{display:flex;height:calc(900px - 52px - 101px - 72px);}
+.ch{flex:1;display:flex;flex-direction:column;align-items:center;padding:20px 12px;border-right:1px solid #1c1c1e;}
+.ch:last-child{border-right:none;}
+.ch .name{font-weight:500;font-size:14px;text-align:center;margin-bottom:2px;}
+.ch .lvl{font-variant-numeric:tabular-nums;color:#9a9a9e;font-size:12px;margin-bottom:16px;}
+.rowbtns{display:flex;gap:6px;margin-bottom:18px;width:100%;}
+.ibtn{flex:1;background:transparent;border:1px solid #333335;color:#c8c8cc;font-family:inherit;font-size:12px;padding:6px 0;cursor:pointer;}
+.ibtn:hover{border-color:var(--paper);color:var(--paper);}
+.pan{width:100%;margin-bottom:6px;accent-color:var(--paper);}
+.panlbl{font-size:11px;color:#8a8a8e;font-variant-numeric:tabular-nums;margin-bottom:18px;}
+.vol{writing-mode:vertical-lr;direction:rtl;width:28px;height:220px;accent-color:var(--paper);margin-bottom:10px;}
+.volpct{font-variant-numeric:tabular-nums;font-size:15px;margin-bottom:16px;}
+.togglerow{display:flex;gap:6px;width:100%;margin-bottom:14px;}
+.tbtn{flex:1;background:transparent;border:1px solid #333335;color:#c8c8cc;font-family:inherit;font-size:11px;padding:6px 0;cursor:pointer;letter-spacing:0.03em;}
+.tbtn.on{background:var(--paper);color:var(--ink);border-color:var(--paper);}
+.tbtn:hover:not(.on){border-color:var(--paper);color:var(--paper);}
+.loop{width:100%;display:flex;align-items:center;gap:8px;font-size:12px;color:#c8c8cc;margin-bottom:16px;}
+.loop input{accent-color:var(--paper);}
+.fades{display:flex;gap:8px;width:100%;}
+.fadefield{flex:1;display:flex;flex-direction:column;gap:4px;}
+.fadefield label{font-size:10px;color:#8a8a8e;letter-spacing:0.03em;}
+.fadefield input{background:#141416;border:1px solid #333335;color:var(--paper);font-family:inherit;font-size:12px;padding:6px;width:100%;}
+.fadefield input:focus-visible{outline:2px solid var(--paper);outline-offset:1px;}
+.addslot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.addbtn{background:transparent;border:1px dashed #3a3a3c;color:#8a8a8e;font-family:inherit;font-size:13px;padding:14px 18px;cursor:pointer;width:100%;}
+.addbtn:hover{border-color:var(--paper);color:var(--paper);}
+.preview{display:flex;align-items:center;gap:18px;padding:0 28px;height:72px;border-top:1px solid #222224;}
+.playbtn{background:var(--paper);color:var(--ink);border:none;font-family:inherit;font-weight:500;font-size:13px;padding:11px 22px;cursor:pointer;}
+.playbtn:hover{background:#e3e1da;}
+.stopbtn{background:transparent;border:1px solid #3a3a3c;color:var(--paper);font-family:inherit;font-size:13px;padding:10px 20px;cursor:pointer;}
+.stopbtn:hover{border-color:var(--paper);}
+.pvvol{display:flex;align-items:center;gap:10px;font-size:12px;color:#c8c8cc;}
+.pvvol input{accent-color:var(--paper);width:140px;}
+.preview .spacer{flex:1;}
+.unsaved{font-size:12px;color:#9a9a9e;}
+.savebtn{background:transparent;border:1px solid var(--paper);color:var(--paper);font-family:inherit;font-size:13px;font-weight:500;padding:10px 20px;cursor:pointer;}
+.savebtn:hover{background:var(--paper);color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="nav">
+<div class="brand">SOUNDSCAPE</div>
+<a class="navlink active" href="#">Prepare</a>
+<a class="navlink" href="#">Live view</a>
+<div class="spacer"></div>
+<select class="scenesel"><option>The Laughing Gargoyle</option></select>
+</div>
+<div class="header">
+<div class="swatch"></div>
+<div class="title">TAVERN EVENING</div>
+<div class="spacer"></div>
+<select class="moodsel"><option>Tavern Evening</option></select>
+<button class="hbtn">New</button>
+<button class="hbtn">Duplicate</button>
+</div>
+<div class="channels">
+<div class="ch">
+<div class="name">Tavern crowd</div>
+<div class="lvl">72%</div>
+<div class="rowbtns"><button class="ibtn">Audition</button><button class="ibtn">Replace</button></div>
+<input class="pan" type="range" min="-100" max="100" value="-10">
+<div class="panlbl">PAN L10</div>
+<input class="vol" type="range" min="0" max="100" value="72">
+<div class="volpct">72%</div>
+<div class="togglerow"><button class="tbtn">MUTE</button><button class="tbtn">SOLO</button></div>
+<label class="loop"><input type="checkbox" checked>Loop</label>
+<div class="fades">
+<div class="fadefield"><label>FADE IN s</label><input type="number" value="2"></div>
+<div class="fadefield"><label>FADE OUT s</label><input type="number" value="3"></div>
+</div>
+</div>
+<div class="ch">
+<div class="name">Crackling hearth</div>
+<div class="lvl">48%</div>
+<div class="rowbtns"><button class="ibtn">Audition</button><button class="ibtn">Replace</button></div>
+<input class="pan" type="range" min="-100" max="100" value="0">
+<div class="panlbl">PAN C</div>
+<input class="vol" type="range" min="0" max="100" value="48">
+<div class="volpct">48%</div>
+<div class="togglerow"><button class="tbtn">MUTE</button><button class="tbtn">SOLO</button></div>
+<label class="loop"><input type="checkbox" checked>Loop</label>
+<div class="fades">
+<div class="fadefield"><label>FADE IN s</label><input type="number" value="4"></div>
+<div class="fadefield"><label>FADE OUT s</label><input type="number" value="4"></div>
+</div>
+</div>
+<div class="ch">
+<div class="name">A wandering lute</div>
+<div class="lvl">35%</div>
+<div class="rowbtns"><button class="ibtn">Audition</button><button class="ibtn">Replace</button></div>
+<input class="pan" type="range" min="-100" max="100" value="25">
+<div class="panlbl">PAN R25</div>
+<input class="vol" type="range" min="0" max="100" value="35">
+<div class="volpct">35%</div>
+<div class="togglerow"><button class="tbtn on">MUTE</button><button class="tbtn">SOLO</button></div>
+<label class="loop"><input type="checkbox">Loop</label>
+<div class="fades">
+<div class="fadefield"><label>FADE IN s</label><input type="number" value="1"></div>
+<div class="fadefield"><label>FADE OUT s</label><input type="number" value="1"></div>
+</div>
+</div>
+<div class="ch">
+<div class="name">Rain at windows</div>
+<div class="lvl">28%</div>
+<div class="rowbtns"><button class="ibtn">Audition</button><button class="ibtn">Replace</button></div>
+<input class="pan" type="range" min="-100" max="100" value="0">
+<div class="panlbl">PAN C</div>
+<input class="vol" type="range" min="0" max="100" value="28">
+<div class="volpct">28%</div>
+<div class="togglerow"><button class="tbtn">MUTE</button><button class="tbtn">SOLO</button></div>
+<label class="loop"><input type="checkbox" checked>Loop</label>
+<div class="fades">
+<div class="fadefield"><label>FADE IN s</label><input type="number" value="6"></div>
+<div class="fadefield"><label>FADE OUT s</label><input type="number" value="6"></div>
+</div>
+</div>
+<div class="ch">
+<div class="name">Clinking glasses</div>
+<div class="lvl">18%</div>
+<div class="rowbtns"><button class="ibtn">Audition</button><button class="ibtn">Replace</button></div>
+<input class="pan" type="range" min="-100" max="100" value="-30">
+<div class="panlbl">PAN L30</div>
+<input class="vol" type="range" min="0" max="100" value="18">
+<div class="volpct">18%</div>
+<div class="togglerow"><button class="tbtn">MUTE</button><button class="tbtn">SOLO</button></div>
+<label class="loop"><input type="checkbox" checked>Loop</label>
+<div class="fades">
+<div class="fadefield"><label>FADE IN s</label><input type="number" value="2"></div>
+<div class="fadefield"><label>FADE OUT s</label><input type="number" value="2"></div>
+</div>
+</div>
+<div class="ch addslot">
+<button class="addbtn">Add sound</button>
+</div>
+</div>
+<div class="preview">
+<button class="playbtn">Preview mix</button>
+<button class="stopbtn">Stop</button>
+<div class="pvvol">Preview volume<input type="range" min="0" max="100" value="80"></div>
+<div class="spacer"></div>
+<div class="unsaved">Unsaved changes</div>
+<button class="savebtn">Save mood</button>
+</div>
+</body>
+</html>

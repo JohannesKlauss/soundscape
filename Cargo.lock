@@ -7123,6 +7123,7 @@ dependencies = [
  "gpui-navigator",
  "rodio",
  "serde",
+ "thiserror 2.0.21",
  "uuid",
  "yt-dlp",
 ]

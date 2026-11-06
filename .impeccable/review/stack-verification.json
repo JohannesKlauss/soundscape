@@ -1,0 +1,34 @@
+{
+  "scope": "Private browser interaction prototype for native macOS desktop app",
+  "disposition": "ship",
+  "nativeIntegration": false,
+  "realAudio": false,
+  "tests": {
+    "model": {"passed":39,"total":39},
+    "stackDOM": {"passed":38,"total":38},
+    "legacySmoke": {"passed":24,"total":24},
+    "controllerRegressions": {"passed":15,"total":15},
+    "existingIndependentFlows": {"passed":49,"total":49},
+    "livePalette": {"passed":11,"total":11}
+  },
+  "desktopCaptures": [
+    {"path":"stack-desktop.png","size":[1440,900],"ok":true},
+    {"path":"stack-compact.png","size":[1280,800],"ok":true},
+    {"path":"stack-wide.png","size":[2128,833],"ok":true},
+    {"path":"stack-narrow.png","size":[1024,768],"ok":true}
+  ],
+  "independentUIGates": {
+    "saveAndActualReload":"resolved",
+    "fileImportAndDestinationClearing":"resolved",
+    "narrowDesktopKeyboardAndInspectorAccess":"resolved"
+  },
+  "reviewAgents": {
+    "code":"1c36781a-081d-4d4",
+    "uiFinish":"e2dbcbbc-8224-419",
+    "documentation":"c6685a56-15a1-40e"
+  },
+  "reviewFallbacks":"Dedicated code review failed AWS SSO before work; completed fresh general-purpose code review. Shipped documenter unavailable; completed fresh general-purpose comparison. UI verifier supplied fresh finish review and verdict pass.",
+  "systemFilesPreserved":["DESIGN.md",".impeccable/design.json"],
+  "newRasterAssets":0,
+  "mobileWork":false
+}

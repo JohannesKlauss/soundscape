@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Soundscape – Prep Canvas Stage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300..700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1440px; height: 900px; overflow: hidden; background: #0a0a0c; color: #f5f4f0; font-family: 'Space Grotesk', sans-serif; }
+::selection { background: #d3c3a9; color: #0a0a0c; }
+:focus-visible { outline: 2px solid #e4dccb; outline-offset: 3px; }
+input, button, select { font-family: inherit; color-scheme: dark; }
+.app { width: 1440px; height: 900px; display: flex; flex-direction: column; }
+.topnav { height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #121216; border-bottom: 1px solid #242428; }
+.topnav .crumb { display: flex; align-items: center; gap: 26px; font-size: 13px; color: #b7b3aa; }
+.topnav .crumb .brand { color: #f5f4f0; font: 600 16px 'Oswald',sans-serif; letter-spacing: .18em; }
+.topnav a { color: #b7b3aa; text-decoration: none; }
+.topnav a.active { color: #f5f4f0; }
+.topnav .status { font-size: 12px; color: #b7b3aa; }
+.main { flex: 1; display: flex; height: 788px; }
+.moodnav { width: 180px; flex-shrink: 0; background: #121216; border-right: 1px solid #242428; display: flex; flex-direction: column; padding: 14px 10px; gap: 6px; }
+.moodnav h2 { font-size: 14px; font-weight: 500; color: #c9c4b8; padding: 0 4px 10px; }
+.mood-item { display: flex; align-items: center; gap: 8px; padding: 7px 7px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+.mood-item:hover { background: #1b1b20; }
+.mood-item.active { background: #241d16; border-color: #5a4a37; }
+.mood-swatch { width: 30px; height: 40px; border-radius: 3px; flex-shrink: 0; background-size: cover; background-position: center; background-color: #2a2420; }
+.sw-tavern { background-image: url('asset://tavern.webp'); background-position: center 30%; }
+.sw-harbor { background-image: url('asset://harbor.webp'); }
+.sw-flat { background-image: url('asset://tavern.webp'); background-position: 70% 75%; }
+.mood-name { font-size: 13px; line-height: 1.25; }
+.mood-sub { font-size: 12px; color: #b7b3aa; }
+.mood-item.active .mood-sub { color: #c9b89f; }
+.mood-add { display: flex; align-items: center; gap: 8px; padding: 9px 7px; margin-top: 4px; border: 1px dashed #3a3a3e; border-radius: 6px; color: #9a958c; cursor: pointer; font-size: 13px; }
+.mood-add:hover { border-color: #5a5952; color: #f5f4f0; }
+.mood-add svg { opacity: 0.8; }
+.stage-wrap { width: 990px; flex-shrink: 0; position: relative; overflow: hidden; }
+.stage-art { position: absolute; inset: 0; background-image: url('asset://tavern.webp'); background-size: cover; background-position: center 38%; }
+.stage-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,7,6,0.62) 0%, rgba(8,7,6,0.08) 16%, rgba(8,7,6,0.02) 46%, rgba(8,7,6,0.1) 70%, rgba(8,7,6,0.55) 100%); }
+.toolbar { position: absolute; top: 12px; left: 16px; right: 16px; height: 38px; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: rgba(18,16,14,0.55); backdrop-filter: blur(10px); border: 1px solid rgba(245,244,240,0.12); border-radius: 8px; z-index: 3; }
+.tbtn { display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 12.5px; color: #e9e6df; background: transparent; border: none; border-radius: 5px; cursor: pointer; }
+.tbtn:hover { background: rgba(245,244,240,0.1); }
+.tgap { width: 1px; height: 18px; background: rgba(245,244,240,0.16); margin: 0 2px; }
+.zoomctl { display: flex; align-items: center; gap: 7px; margin-left: auto; font-size: 12px; color: #c9c5bc; }
+.zbtn { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; }
+.zbtn:hover { background: rgba(245,244,240,0.12); }
+.tile { position: absolute; z-index: 2; display: flex; flex-direction: column; gap: 6px; width: 172px; padding: 10px 11px; background: rgba(16,14,12,0.6); backdrop-filter: blur(7px); border: 1px solid rgba(245,244,240,0.14); border-radius: 9px; box-shadow: 0 8px 20px rgba(0,0,0,0.38); }
+.tile.selected { border-color: #b08f5e; box-shadow: 0 8px 22px rgba(0,0,0,0.45), 0 0 0 1px rgba(176,143,94,0.5); }
+.tile-top { display: flex; align-items: center; gap: 8px; }
+.tile-play { width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(245,244,240,0.1); color: #f5f4f0; cursor: pointer; }
+.tile.selected .tile-play { background: #b08f5e; color: #1a1208; }
+.tile-play:hover { background: rgba(245,244,240,0.2); }
+.tile-name { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2; }
+.tile-level { -webkit-appearance: none; width: 100%; height: 3px; border-radius: 3px; background: rgba(245,244,240,0.22); outline: none; }
+.tile-level::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: #f5f4f0; cursor: pointer; }
+.tile.selected .tile-level::-webkit-slider-thumb { background: #b08f5e; }
+.t1 { top: 16%; left: 4%; } .t2 { top: 66%; left: 7%; width: 182px; } .t3 { top: 12%; right: 4%; } .t4 { top: 70%; right: 5%; } .t5 { top: 7%; left: 44%; }
+.inspector { width: 270px; flex-shrink: 0; background: #121216; border-left: 1px solid #242428; padding: 20px 18px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.insp-title { font-size: 20px; font-weight: 500; }
+.insp-source { font-size: 12px; color: #b7b3aa; margin-top: 6px; }
+.mood-title { position:absolute; left:32px; bottom:34px; color:#f5f4f0; }
+.mood-title h1 { font:500 50px/1.1 'Oswald',sans-serif; }
+.mood-title p { margin-top:8px; color:#e0d7c6; font-size:13px; }
+.insp-row { display: flex; flex-direction: column; gap: 6px; }
+.insp-label { font-size: 13px; color: #c7c1b6; display: flex; justify-content: space-between; }
+.insp-slider { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 3px; background: #2a2a2e; outline: none; }
+.insp-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #b08f5e; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.insp-sep { height: 1px; background: #242428; margin: 2px 0 4px; }
+.fade-grid { display: flex; gap: 10px; }
+.fade-field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.fade-field input[type=number] { width: 100%; background: #1a1a1e; border: 1px solid #2e2e32; color: #f5f4f0; font-size: 13px; padding: 6px 8px; border-radius: 5px; }
+.insp-toggle { display: flex; align-items: center; gap: 9px; font-size: 13px; color: #d9d5cc; cursor: pointer; }
+.insp-toggle svg { color: #8a8579; } .insp-toggle.on svg { color: #b08f5e; }
+.switch { width: 32px; height: 18px; border-radius: 10px; background: #2e2e32; position: relative; margin-left: auto; }
+.switch::after { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #f5f4f0; top: 2px; left: 16px; }
+.footer { height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #121216; border-top: 1px solid #242428; }
+.footer .status { font-size: 12px; color: #b7b3aa; }
+.btns { display: flex; gap: 10px; }
+.btn { padding: 10px 18px; font-size: 13.5px; font-family: 'Space Grotesk', sans-serif; border-radius: 6px; cursor: pointer; border: 1px solid #2e2e32; background: #1c1c20; color: #f5f4f0; }
+.btn:hover { background: #26262b; }
+.btn.primary { background: #f5f4f0; border-color: #f5f4f0; color: #0a0a0c; font-weight: 500; }
+.btn.primary:hover { background: #e4dccb; }
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topnav"><div class="crumb"><b class="brand">SOUNDSCAPE</b><a class="active" href="#">Prepare</a><a href="#">Live view</a><span>The Laughing Gargoyle</span></div><div class="status">Shape study · illustrative artwork</div></div>
+<div class="main">
+<div class="moodnav">
+<h2>Moods</h2>
+<div class="mood-item active"><div class="mood-swatch sw-tavern"></div><div><div class="mood-name">Tavern Evening</div><div class="mood-sub">5 layers</div></div></div>
+<div class="mood-item"><div class="mood-swatch sw-harbor"></div><div><div class="mood-name">Rain Rolls In</div><div class="mood-sub">4 layers</div></div></div>
+<div class="mood-item"><div class="mood-swatch sw-flat"></div><div><div class="mood-name">Last Call</div><div class="mood-sub">3 layers</div></div></div>
+<div class="mood-add"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New mood</div>
+</div>
+<div class="stage-wrap">
+<div class="stage-art"></div>
+<div class="stage-scrim"></div>
+<div class="toolbar">
+<button class="tbtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>Add sound</button>
+<div class="tgap"></div>
+<button class="tbtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Fit all</button>
+<button class="tbtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Arrange neatly</button>
+<div class="zoomctl"><button class="tbtn" aria-label="Zoom out"><svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14"/></svg></button>100%<button class="tbtn" aria-label="Zoom in"><svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14M12 5v14"/></svg></button></div>
+</div>
+<div class="tile t1"><div class="tile-top"><div class="tile-play"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M9 7l9 5-9 5z" fill="currentColor"/></svg></div><div class="tile-name">Tavern crowd</div></div><input class="tile-level" type="range" value="72"></div>
+<div class="tile selected t2"><div class="tile-top"><div class="tile-play"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M9 7l9 5-9 5z" fill="currentColor"/></svg></div><div class="tile-name">Crackling hearth</div></div><input class="tile-level" type="range" value="48"></div>
+<div class="tile t3"><div class="tile-top"><div class="tile-play"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M9 7l9 5-9 5z" fill="currentColor"/></svg></div><div class="tile-name">A wandering lute</div></div><input class="tile-level" type="range" value="35"></div>
+<div class="tile t4"><div class="tile-top"><div class="tile-play"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M9 7l9 5-9 5z" fill="currentColor"/></svg></div><div class="tile-name">Rain at the windows</div></div><input class="tile-level" type="range" value="28"></div>
+<div class="tile t5"><div class="tile-top"><div class="tile-play"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M9 7l9 5-9 5z" fill="currentColor"/></svg></div><div class="tile-name">Clinking glasses</div></div><input class="tile-level" type="range" value="18"></div>
+<div class="mood-title"><h1>TAVERN EVENING</h1><p>5 sounds · arrange them freely</p></div>
+</div>
+<div class="inspector">
+<div><div class="insp-title">Crackling hearth</div><div class="insp-source">Hearth fire loop · 3:42 · tavern pack</div></div>
+<div class="insp-row"><div class="insp-label"><span>Level</span><span>48%</span></div><input class="insp-slider" type="range" value="48"></div>
+<div class="insp-row"><div class="insp-label"><span>Pan</span><span>Center</span></div><input class="insp-slider" type="range" value="50"></div>
+<div class="insp-sep"></div>
+<div class="fade-grid">
+<div class="fade-field"><div class="insp-label"><span>Fade in · seconds</span></div><input type="number" value="2.0" step="0.5"></div>
+<div class="fade-field"><div class="insp-label"><span>Fade out · seconds</span></div><input type="number" value="4.0" step="0.5"></div>
+</div>
+<label class="insp-toggle"><input type="checkbox" checked>Loop continuously</label><div class="insp-sep"></div><button class="btn">Replace sound</button><button class="tbtn">Remove from this mood</button>
+</div>
+</div>
+<div class="footer"><div class="status">Demo mode · unsaved changes</div><div class="btns"><button class="btn">Listen to mood</button><button class="btn primary">Save mood</button></div></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "note": "Private, local-only prototype assets for internal design studies. Not for shipping/distribution. Licensing not vetted beyond public accessibility.",
+  "assets": [
+    {
+      "filename": "tavern-fantasy.webp",
+      "subject": "Wide fantasy tavern interior, hearth/candlelight, D&D-style adventurer tavern",
+      "source_page_url": "https://wallhaven.cc/w/odww35",
+      "direct_image_url": "https://w.wallhaven.cc/full/od/wallhaven-odww35.jpg",
+      "original_source_attribution": "ArtStation artist atomiiii (https://www.artstation.com/artist/atomiiii), hosted/mirrored on wallhaven.cc",
+      "tags": "fantasy art, pointy ears, tavern, candles, Dungeons & Dragons",
+      "original_dimensions": "1920x1079",
+      "converted_dimensions": "1600x900, q82 webp"
+    },
+    {
+      "filename": "harbor-fantasy.webp",
+      "subject": "Fantasy renaissance-style harbor with sailing ship, ultrawide moody scene",
+      "source_page_url": "https://wallhaven.cc/w/vmx218",
+      "direct_image_url": "https://w.wallhaven.cc/full/vm/wallhaven-vmx218.jpg",
+      "original_source_attribution": "Uploader ikarusproject on wallhaven.cc; original artist/source not provided on page",
+      "tags": "ports, harbor, sailing ship, renaissance, ship, fantasy art, rigging, digital art, ultrawide",
+      "original_dimensions": "1830x830",
+      "converted_dimensions": "900x409, q82 webp"
+    }
+  ]
+}

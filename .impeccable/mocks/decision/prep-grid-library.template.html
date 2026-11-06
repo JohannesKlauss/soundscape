@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Soundscape — Tavern Evening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1440px; height:900px; background:#0a0a0c; color:#f5f4f0; font-family:'Space Grotesk',sans-serif; overflow:hidden; }
+  ::selection { background:#c98a3e; color:#0a0a0c; }
+  .app { width:1440px; height:900px; display:flex; flex-direction:column; }
+  .topnav { height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 24px; border-bottom:1px solid #201f1d; background:#0d0d0f; }
+  .brand { font-family:'Oswald',sans-serif; font-weight:700; font-size:17px; letter-spacing:-0.01em; color:#f5f4f0; }
+  .navselects { display:flex; align-items:center; gap:10px; }
+  .selectpill { display:flex; align-items:center; gap:8px; height:34px; padding:0 14px; border-radius:7px; background:#17161a; border:1px solid #2a2824; font-size:13px; color:#d8d4cc; }
+  .selectpill b { font-family:'Oswald',sans-serif; font-weight:600; color:#f5f4f0; font-size:13px; letter-spacing:0.01em; }
+  .selectpill svg { width:11px; height:11px; stroke:#9a958a; }
+  .savebtn { height:36px; padding:0 20px; border-radius:7px; background:#f5f4f0; color:#0a0a0c; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; display:flex; align-items:center; gap:7px; }
+  .savebtn svg { width:14px; height:14px; stroke:#0a0a0c; }
+  .main { flex:1; display:flex; padding:24px; gap:24px; }
+  .library { width:300px; flex-shrink:0; display:flex; flex-direction:column; background:#111012; border:1px solid #221f1b; border-radius:12px; overflow:hidden; }
+  .libhead { padding:16px 16px 12px; border-bottom:1px solid #1d1b18; }
+  .libtitle { font-family:'Oswald',sans-serif; font-weight:600; font-size:14px; letter-spacing:0.02em; color:#f5f4f0; margin-bottom:10px; }
+  .search { height:32px; border-radius:6px; background:#1a1816; border:1px solid #2a2722; display:flex; align-items:center; padding:0 10px; gap:7px; }
+  .search svg { width:13px; height:13px; stroke:#7e7a71; }
+  .search span { font-size:12px; color:#7e7a71; }
+  .libfilters { display:flex; gap:6px; margin-top:10px; }
+  .filterchip { height:26px; padding:0 11px; border-radius:13px; font-size:11px; display:flex; align-items:center; color:#a9a49a; border:1px solid #2a2722; }
+  .filterchip.active { background:#c98a3e; color:#0a0a0c; border-color:#c98a3e; font-weight:600; }
+  .libscroll { flex:1; overflow:hidden; padding:10px 10px 4px; display:flex; flex-direction:column; gap:3px; }
+  .librow { display:flex; align-items:center; gap:9px; padding:8px 8px; border-radius:7px; }
+  .librow:hover { background:#1a1816; }
+  .libplay { width:24px; height:24px; border-radius:50%; background:#201e1a; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .libplay svg { width:9px; height:9px; fill:#d8d4cc; }
+  .libname { flex:1; font-size:12.5px; color:#d8d4cc; }
+  .libadded .libname { color:#6f6b62; }
+  .libstate { font-size:10.5px; color:#6f6b62; letter-spacing:0.02em; }
+  .libaddbtn { width:22px; height:22px; border-radius:50%; border:1px solid #3a362f; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .libaddbtn svg { width:10px; height:10px; stroke:#c98a3e; }
+  .libimport { margin:8px 10px 12px; height:34px; border-radius:7px; border:1px dashed #3a362f; display:flex; align-items:center; justify-content:center; gap:7px; }
+  .libimport svg { width:12px; height:12px; stroke:#9a958a; }
+  .libimport span { font-size:11.5px; color:#9a958a; }
+  .stage { flex:1; display:flex; flex-direction:column; gap:16px; min-width:0; }
+  .moodhead { height:96px; border-radius:12px; display:flex; align-items:flex-end; padding:16px 20px; position:relative; overflow:hidden; background:#1c1813 url('asset://tavern.webp') center 30%/cover; }
+  .moodhead::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(10,9,8,0.05) 0%,rgba(8,7,6,0.78) 100%); }
+  .moodhead .mhtext { position:relative; z-index:1; }
+  .moodname { font-family:'Oswald',sans-serif; font-weight:700; font-size:26px; letter-spacing:-0.01em; color:#f5f4f0; }
+  .scenename { font-size:12.5px; color:#d7b98a; margin-top:2px; }
+  .grid { height:456px; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr); gap:16px; }
+  .tile { border-radius:10px; background:#111012; border:1px solid #221f1b; overflow:hidden; display:flex; flex-direction:column; }
+  .tile.selected { border-color:#c98a3e; }
+  .tileart { height:80px; background-size:cover; background-position:center; position:relative; }
+  .tilebody { padding:10px 12px 12px; display:flex; flex-direction:column; gap:7px; flex:1; }
+  .tiletop { display:flex; align-items:center; justify-content:space-between; }
+  .tilename { font-size:14px; font-weight:500; color:#f0eee8; }
+  .tilebadges { display:flex; gap:5px; align-items:center; }
+  .tilebadges svg { width:11px; height:11px; stroke:#8a8579; }
+  .tileplay { width:24px; height:24px; border-radius:50%; background:#1d1b17; display:flex; align-items:center; justify-content:center; }
+  .tileplay svg { width:9px; height:9px; fill:#d8d4cc; }
+  .sliderow { display:flex; align-items:center; gap:8px; }
+  .sliderow .track { flex:1; height:4px; border-radius:2px; background:#2a2722; position:relative; }
+  .sliderow .fill { position:absolute; left:0; top:0; bottom:0; border-radius:2px; background:#c98a3e; }
+  .sliderow .pct { font-size:10.5px; color:#9a958a; width:28px; text-align:right; }
+  .tilemeta { font-size:10px; color:#6f6b62; letter-spacing:0.02em; }
+  .tile.add { align-items:center; justify-content:center; border-style:dashed; }
+  .addinner { display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .addinner svg { width:20px; height:20px; stroke:#6f6b62; }
+  .addinner span { font-size:12px; color:#6f6b62; }
+  .dock { height:120px; border-radius:12px; background:#121113; border:1px solid #221f1b; display:flex; align-items:center; padding:0 20px; gap:22px; }
+  .dockart { width:64px; height:64px; border-radius:8px; background-size:cover; background-position:center; flex-shrink:0; }
+  .dockinfo { width:150px; flex-shrink:0; }
+  .dockname { font-size:15px; font-weight:500; color:#f0eee8; }
+  .dockfile { font-size:10.5px; color:#5c5952; margin-top:3px; }
+  .dockfields { flex:1; display:flex; gap:26px; }
+  .field { display:flex; flex-direction:column; gap:7px; }
+  .fieldlabel { font-size:10px; letter-spacing:0.04em; color:#6f6b62; text-transform:uppercase; }
+  .fieldrow { display:flex; align-items:center; gap:8px; }
+  .fieldrow .track { width:84px; height:4px; border-radius:2px; background:#2a2722; position:relative; }
+  .fieldrow .fill { position:absolute; left:0; top:0; bottom:0; border-radius:2px; background:#c98a3e; }
+  .fieldval { font-size:11px; color:#a9a49a; width:30px; }
+  .togglepair { display:flex; align-items:center; gap:7px; }
+  .toggle { width:30px; height:17px; border-radius:9px; background:#2a2722; position:relative; }
+  .toggle.on { background:#c98a3e; }
+  .toggle::after { content:""; position:absolute; top:2px; left:2px; width:13px; height:13px; border-radius:50%; background:#f5f4f0; }
+  .toggle.on::after { left:15px; }
+  .togglepair span { font-size:11.5px; color:#a9a49a; }
+  .dockactions { display:flex; gap:8px; margin-left:auto; }
+  .dockbtn { height:30px; padding:0 14px; border-radius:6px; border:1px solid #2a2722; font-size:11.5px; color:#d8d4cc; display:flex; align-items:center; }
+  .dockbtn.remove { color:#b56a4c; border-color:#3a2a22; }
+  .footer { height:76px; border-top:1px solid #201f1d; background:#0d0d0f; display:flex; align-items:center; padding:0 24px; gap:18px; }
+  .masterplay { width:44px; height:44px; border-radius:50%; background:#c98a3e; display:flex; align-items:center; justify-content:center; }
+  .masterplay svg { width:15px; height:15px; fill:#0a0a0c; }
+  .ftrack { flex:1; height:5px; border-radius:3px; background:#201f1d; position:relative; }
+  .ftrack .fill { position:absolute; left:0; top:0; bottom:0; width:38%; border-radius:3px; background:#c98a3e; }
+  .ftime { font-size:11px; color:#6f6b62; }
+  .fvol { display:flex; align-items:center; gap:8px; width:130px; }
+  .fvol svg { width:15px; height:15px; stroke:#9a958a; }
+  .fvol .track { flex:1; height:4px; border-radius:2px; background:#201f1d; position:relative; }
+  .fvol .fill { position:absolute; left:0; top:0; bottom:0; width:66%; border-radius:2px; background:#d8d4cc; }
+button,input,select{font:inherit;color:inherit;color-scheme:dark}button{cursor:pointer}input[type=range]{accent-color:#e5dcc9;min-width:0}.search input{width:100%;min-width:0;border:0;background:transparent;color:#f5f4f0;outline-offset:4px;font-size:13px}.search input::placeholder{color:#bab5ab}.libtitle{font:500 16px 'Space Grotesk',sans-serif}.brand{font-size:16px;letter-spacing:.18em}.tilename{font-size:16px}.tilemeta,.libadded .libname,.libstate,.libimport span,.dockfile,.fieldlabel,.addinner span,.sliderow .pct{color:#bab5ab;font-size:12px}.libname{font-size:13px}.filterchip{background:none;cursor:pointer}.filterchip.active{background:#f5f4f0;color:#0a0a0c;border-color:#f5f4f0}.sliderow input{width:100%}.detail-range{width:80px}.fieldrow input[type=number]{width:56px;background:#1a1b17;border:1px solid #49473e;border-radius:5px;padding:6px}.dockfields{gap:20px}.dockart{display:none}.dockinfo{width:148px}.fieldlabel{text-transform:none;letter-spacing:0}.dockbtn{background:transparent}.masterlisten{display:flex;align-items:center;gap:8px;padding:9px 16px;background:#1a1b17;border:1px solid #49473e;border-radius:6px}.preview-volume{display:flex;align-items:center;gap:12px;font-size:12px;color:#c6c1b4}.preview-volume input{width:130px}.footer .state{margin-left:auto;font-size:12px;color:#c6bea9}.navlinks{display:flex;gap:24px;align-items:center}.navlinks a{font-size:13px;color:#bab5ab;text-decoration:none}.navlinks a.active{color:#f5f4f0}:focus-visible{outline:2px solid #e8dcc5;outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topnav">
+    <div class="navlinks"><div class="brand">SOUNDSCAPE</div><a href="#" class="active">Prepare</a><a href="#">Live view</a></div>
+    <div class="navselects">
+      <div class="selectpill"><span>Mood</span><b>Tavern Evening</b><svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke-width="1.5"/></svg></div>
+      <div class="selectpill"><span>Scene</span><b>The Laughing Gargoyle</b><svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke-width="1.5"/></svg></div>
+    </div>
+    <button class="savebtn">Save mood</button>
+  </div>
+
+  <div class="main">
+
+    <div class="library">
+      <div class="libhead">
+        <div class="libtitle">Sound Library</div>
+        <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" aria-label="Search sounds" placeholder="Search sounds"></div>
+        <div class="libfilters">
+          <button class="filterchip active">All</button>
+          <button class="filterchip">Ambience</button>
+          <button class="filterchip">Music</button>
+        </div>
+      </div>
+      <div class="libscroll">
+        <div class="librow libadded"><div class="libplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div><div class="libname">Tavern crowd</div><div class="libstate">Added</div></div>
+        <div class="librow libadded"><div class="libplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div><div class="libname">Crackling hearth</div><div class="libstate">Added</div></div>
+        <div class="librow libadded"><div class="libplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div><div class="libname">A wandering lute</div><div class="libstate">Added</div></div>
+        <div class="librow libadded"><div class="libplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div><div class="libname">Rain at windows</div><div class="libstate">Added</div></div>
+        <div class="librow libadded"><div class="libplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div><div class="libname">Clinking glasses</div><div class="libstate">Added</div></div>
+        <div class="librow"><div class="libplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div><div class="libname">Distant chatter</div><div class="libaddbtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+        <div class="librow"><div class="libplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div><div class="libname">Footsteps on timber</div><div class="libaddbtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+      </div>
+      <div class="libimport"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span>Import files</span></div>
+    </div>
+
+    <div class="stage">
+      <div class="moodhead">
+        <div class="mhtext">
+          <div class="moodname">Tavern Evening</div>
+          <div class="scenename">The Laughing Gargoyle</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="tile">
+          <div class="tileart" style="background-image:url('asset://tavern.webp')"></div>
+          <div class="tilebody">
+            <div class="tiletop"><div class="tilename">Tavern crowd</div><div class="tileplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div></div>
+            <div class="sliderow"><input type="range" aria-label="Tavern crowd level" value="72"><div class="pct">72%</div></div>
+            <div class="tilemeta">Loop · Quiet</div>
+          </div>
+        </div>
+        <div class="tile selected">
+          <div class="tileart" style="background-image:url('asset://tavern.webp')"></div>
+          <div class="tilebody">
+            <div class="tiletop"><div class="tilename">Crackling hearth</div><div class="tileplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div></div>
+            <div class="sliderow"><input type="range" aria-label="Crackling hearth level" value="48"><div class="pct">48%</div></div>
+            <div class="tilemeta">Loop · Quiet</div>
+          </div>
+        </div>
+        <div class="tile">
+          <div class="tileart" style="background-image:url('asset://tavern.webp')"></div>
+          <div class="tilebody">
+            <div class="tiletop"><div class="tilename">A wandering lute</div><div class="tileplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div></div>
+            <div class="sliderow"><input type="range" aria-label="A wandering lute level" value="35"><div class="pct">35%</div></div>
+            <div class="tilemeta">Once · Quiet</div>
+          </div>
+        </div>
+        <div class="tile">
+          <div class="tileart" style="background-image:url('asset://tavern.webp')"></div>
+          <div class="tilebody">
+            <div class="tiletop"><div class="tilename">Rain at windows</div><div class="tileplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div></div>
+            <div class="sliderow"><input type="range" aria-label="Rain at windows level" value="28"><div class="pct">28%</div></div>
+            <div class="tilemeta">Loop · Quiet</div>
+          </div>
+        </div>
+        <div class="tile">
+          <div class="tileart" style="background-image:url('asset://tavern.webp')"></div>
+          <div class="tilebody">
+            <div class="tiletop"><div class="tilename">Clinking glasses</div><div class="tileplay"><svg viewBox="0 0 10 10"><path d="M1 0l8 5-8 5z"/></svg></div></div>
+            <div class="sliderow"><input type="range" aria-label="Clinking glasses level" value="18"><div class="pct">18%</div></div>
+            <div class="tilemeta">Once · Quiet</div>
+          </div>
+        </div>
+        <div class="tile add">
+          <div class="addinner"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><span>Add sound</span></div>
+        </div>
+      </div>
+
+      <div class="dock">
+        <div class="dockart" style="background-image:url('asset://tavern.webp')"></div>
+        <div class="dockinfo"><div class="dockname">Crackling hearth</div><div class="dockfile">Added to Tavern Evening</div></div>
+        <div class="dockfields">
+          <div class="field"><div class="fieldlabel">Pan</div><div class="fieldrow"><input class="detail-range" type="range" min="-100" max="100" value="0" aria-label="Selected sound pan"><div class="fieldval">Center</div></div></div>
+          <div class="field"><div class="fieldlabel">Fade in</div><div class="fieldrow"><input type="number" value="2" min="0" step="0.5" aria-label="Fade in seconds"><span>s</span></div></div>
+          <div class="field"><div class="fieldlabel">Fade out</div><div class="fieldrow"><input type="number" value="4" min="0" step="0.5" aria-label="Fade out seconds"><span>s</span></div></div>
+          <div class="field"><div class="fieldlabel">Playback</div><label class="togglepair"><input type="checkbox" checked>Loop</label></div>
+        </div>
+        <div class="dockactions">
+          <button class="dockbtn">Replace</button>
+          <button class="dockbtn remove">Remove</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <button class="masterlisten">Listen to mood</button><label class="preview-volume">Preview volume<input type="range" value="65" aria-label="Preview volume"></label><span class="state">Tavern Evening · 5 sounds · unsaved changes</span>
+  </div>
+
+</div>
+</body>
+</html>

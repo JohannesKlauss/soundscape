@@ -1,0 +1,47 @@
+{
+  "title": "A more practical mood editor",
+  "question": "Reworked around the references: choose sounds, balance the mix, test, then save. These are preparation layouts—not the live soundboard. All keep Soundscape’s existing dark visual language and 3–6-layer focus.",
+  "options": [
+    {
+      "id": "prep-sound-first",
+      "kind": "assigned",
+      "kicker": "THE ROLL",
+      "label": "Choose sounds, then shape the mix",
+      "thesis": "Give finding sounds and balancing them their own focused views, with the current mood always in sight.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["searchable library", "plain sound rows", "persistent mood preview"],
+      "viewport": "Choose sounds opens with the searchable library across the left and the current mood’s five sounds at right; Shape mix switches the work area to volume, pan, loop, and fade controls without losing the selection.",
+      "risk": "Clear for starting a mood, but switching views adds a step when repeatedly auditioning and adjusting layers.",
+      "html": ".impeccable/mocks/decision/prep-sound-first.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-inline-mix",
+      "kind": "dealt",
+      "label": "Sound rows with in-place editing",
+      "thesis": "Choose a sound, set its level, test the mood; expand only the layer that needs more detail.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["compact layer list", "inline sound settings", "library on demand"],
+      "viewport": "Scene and mood selectors above one spacious layer list; every row has audition, volume, mute, solo, and playback state; the selected row opens pan and fades in place; Preview mix and Save mood stay in the bottom bar.",
+      "risk": "Only one layer’s detailed settings are open at a time; rows below it move when it expands.",
+      "html": ".impeccable/mocks/decision/prep-inline-mix.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-channel-mixer",
+      "kind": "dealt",
+      "label": "A compact channel mixer",
+      "thesis": "Balance the entire atmosphere at once with one consistent strip per sound, rather than artwork cards.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["named sound channels", "vertical volume faders", "aligned mix controls"],
+      "viewport": "A scene/mood header above five sound channels and an Add sound slot; each channel exposes source, pan, vertical level, loop, fades, mute and solo; a shared preview bar anchors the screen.",
+      "risk": "Great for comparing levels, but more audio-tool-like and less comfortable for long filenames or narrow windows.",
+      "html": ".impeccable/mocks/decision/prep-channel-mixer.html",
+      "htmlFrame": "1440x900"
+    }
+  ],
+  "reroll": true,
+  "steer": true,
+  "canon": false,
+  "buildPath": {"value": "code", "toggle": false}
+}

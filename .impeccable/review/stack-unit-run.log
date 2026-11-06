@@ -1,0 +1,47 @@
+✔ random playback chooses a random starting sound, not always the first file (1.075083ms)
+✔ editing an inactive mood stack preserves the current mood selection (0.5525ms)
+✔ a random cursor with missing history still cannot immediately repeat its current sound (0.183ms)
+✔ legacy single-source layer stays clean through a roundtrip (no stack fields added) (1.481417ms)
+✔ getLayerSounds returns ordered sound objects for single-source layer and throws for unknown layer (0.272125ms)
+✔ addLayerSound builds a stack: canonical order, alias snapshot, coverArt snapshot, dedupe no-op (0.274792ms)
+✔ addLayerSound rejects a sound owned by another tile in the mood, without mutating (0.121625ms)
+✔ addLayerSound validates the sound id and throws for unknown sources (0.095834ms)
+✔ removeLayerSound: rejects unknown source and last remaining source without mutation; promotes next on removing first (0.186ms)
+✔ moveLayerSound reorders and rewrites first+additional atomically; invalid input fails without mutation (0.178375ms)
+✔ advanceLayerSound: single-source obeys loop (repeat if loop true, stop if loop false) (0.1895ms)
+✔ advanceLayerSound: round-robin follows visible order both ways and wraps only if loop (0.135167ms)
+✔ advanceLayerSound: random is a shuffle bag (all sources once per cycle), avoids immediate repeat at boundary (0.274625ms)
+✔ advanceLayerSound resets safely for a stale/deleted cursor (0.107042ms)
+✔ updateLayer: rotation enum validated before any mutation; crossfade clamps 0..30 and ignores non-finite (0.689416ms)
+✔ updateLayer: name empty string clears to fallback (no custom alias) (0.101625ms)
+✔ updateLayer soundId replacement rejects a sound owned by any other stack member, and existing addSound dedupe finds stack members (0.175167ms)
+✔ restoreLayer rejects on any source overlap (not just the primary) with an existing stack (0.142875ms)
+✔ duplicateMood deep clones stack fields independently (0.162708ms)
+✔ isDirty/saveMood detect stack field changes; dirty/save/storage roundtrip for stack layers (0.239875ms)
+✔ restoreState rejects corrupted new fields and falls back to a clean default state (0.793083ms)
+✔ corrupted stack fields in a baseline entry also force a clean fallback (0.164541ms)
+✔ createState seeds Tavern Evening as active with 5 layers and hearth selected (0.706459ms)
+✔ other scene names and sound display names match live prototype content (0.136333ms)
+✔ seeded moods start clean (baselines pre-populated); created/duplicated moods stay dirty (0.210042ms)
+✔ selectScene picks first mood and valid selected layer; selectMood only within active scene (0.270916ms)
+✔ draft edits survive scene/mood switches without prompts (0.23925ms)
+✔ createMood adds empty mood, selects it, and it is dirty until saved (0.128208ms)
+✔ duplicateMood deep clones with new mood/layer ids, name suffix, selected, dirty (0.161833ms)
+✔ addSound dedupes existing soundId in mood, otherwise adds with volume 60 and selects it (0.150083ms)
+✔ addSound rejects unknown soundId without mutating the mood (0.128792ms)
+✔ updateLayer clamps numeric fields and ignores non-finite values (0.168375ms)
+✔ updateLayer soundId replace preserves other fields and rejects duplicate in mood (0.153667ms)
+✔ updateLayer validates the full patch before applying any mutation (0.457875ms)
+✔ removeLayer returns undo record; restoreLayer reinserts into original mood avoiding duplicates (0.153291ms)
+✔ saveMood rejects blank trimmed name; renameMood allows blank draft (0.61925ms)
+✔ importSound creates metadata-only library record; searchLibrary filters by text and category (0.195958ms)
+✔ serializeState/restoreState round-trips and falls back to createState on corrupt data (0.406708ms)
+✔ restoreState falls back to a fresh seed on malformed nested structures instead of throwing (0.488792ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 39
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 64.658667

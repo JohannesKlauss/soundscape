@@ -6,3 +6,10 @@ diesel::table! {
         name -> Text,
     }
 }
+
+diesel::table! {
+    projects (id) {
+        id -> Integer,
+        name -> Text,
+    }
+}

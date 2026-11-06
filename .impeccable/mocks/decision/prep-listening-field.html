@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soundscape – Prep Listening Field</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Space Grotesk', sans-serif; background: #0a0a0c; color: #f5f4f0; height: 100vh; overflow: hidden; }
+    
+    .app { display: flex; flex-direction: column; height: 100vh; }
+    .nav { background: #1a1a1e; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #2a2a2e; }
+    .nav-path { opacity: 0.6; }
+    
+    .header { padding: 12px 16px; background: #15151a; border-bottom: 1px solid #2a2a2e; display: flex; gap: 12px; align-items: center; }
+    .artwork { width: 48px; height: 48px; background: #6b5b47; border-radius: 2px; flex-shrink: 0; }
+    .header-text h1 { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
+    .header-text p { font-size: 12px; opacity: 0.7; }
+    
+    .workspace { display: flex; flex: 1; overflow: hidden; gap: 12px; padding: 12px; }
+    
+    .layers-panel { width: 40%; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+    .layer-row { background: #15151a; padding: 10px; border-radius: 2px; border: 1px solid #2a2a2e; }
+    .layer-name { font-size: 12px; font-weight: 500; margin-bottom: 8px; }
+    .layer-controls { display: flex; gap: 8px; align-items: center; font-size: 11px; }
+    .control-group { display: flex; gap: 4px; align-items: center; flex: 1; }
+    .slider-compact { width: 80px; height: 4px; }
+    .value-label { width: 24px; text-align: right; opacity: 0.7; }
+    .btn-icon { width: 24px; height: 24px; background: #2a2a2e; border: 1px solid #3a3a3e; color: #f5f4f0; font-size: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 2px; }
+    .btn-icon:hover { background: #3a3a3e; }
+    
+    .overview-panel { width: 60%; display: flex; flex-direction: column; gap: 12px; }
+    
+    .stereo-field { background: #15151a; border: 1px solid #2a2a2e; padding: 16px; border-radius: 2px; flex: 1; display: flex; flex-direction: column; }
+    .stereo-labels { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stereo-diagram { flex: 1; position: relative; background: linear-gradient(90deg, rgba(245,244,240,0.03) 50%, transparent 50%); border: 1px solid #2a2a2e; border-radius: 1px; }
+    
+    .layer-marker { position: absolute; padding: 8px 12px; background: #352a21; border: 1px solid #847461; border-radius: 4px; white-space: nowrap; font-size: 13px; transform: translate(-50%, -50%); }
+    .marker-0 { top: 15%; left: 20%; }
+    .marker-1 { top: 25%; left: 50%; }
+    .marker-2 { top: 35%; left: 75%; }
+    .marker-3 { top: 50%; left: 30%; }
+    .marker-4 { top: 60%; left: 45%; }
+    
+    .controls-row { background: #15151a; padding: 10px; border-radius: 2px; border: 1px solid #2a2a2e; display: flex; gap: 16px; align-items: center; font-size: 11px; }
+    .control-set { display: flex; gap: 8px; align-items: center; }
+    .control-set label { opacity: 0.7; min-width: 50px; }
+    
+    .footer { background: #1a1a1e; padding: 12px 16px; border-top: 1px solid #2a2a2e; display: flex; justify-content: space-between; gap: 8px; }
+    .btn { padding: 8px 16px; font-size: 12px; font-family: 'Space Grotesk', sans-serif; background: #2a2a2e; border: 1px solid #3a3a3e; color: #f5f4f0; cursor: pointer; border-radius: 2px; transition: background 80ms ease-out; }
+    .btn:hover { background: #3a3a3e; }
+    .btn-primary { background: #6b5b47; border-color: #7a6a57; }
+    .btn-primary:hover { background: #7a6a57; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <nav class="nav">
+      <span class="nav-path">Soundscape › The Laughing Gargoyle › Tavern Evening</span>
+    </nav>
+    
+    <div class="header">
+      <div class="artwork"></div>
+      <div class="header-text">
+        <h1>Tavern Evening</h1>
+        <p>The Laughing Gargoyle – 5 layers</p>
+      </div>
+    </div>
+    
+    <div class="workspace">
+      <div class="layers-panel">
+        <div class="layer-row">
+          <div class="layer-name">Tavern crowd</div>
+          <div class="layer-controls">
+            <div class="control-group">
+              <label>Vol</label>
+              <input type="range" class="slider-compact" min="0" max="100" value="75">
+              <span class="value-label">75</span>
+            </div>
+            <div class="control-group">
+              <label>Pan</label>
+              <input type="range" class="slider-compact" min="-100" max="100" value="-30">
+              <span class="value-label">−30</span>
+            </div>
+            <button class="btn-icon" title="Mute">M</button>
+            <button class="btn-icon" title="Solo">S</button>
+          </div>
+        </div>
+        
+        <div class="layer-row">
+          <div class="layer-name">Crackling hearth</div>
+          <div class="layer-controls">
+            <div class="control-group">
+              <label>Vol</label>
+              <input type="range" class="slider-compact" min="0" max="100" value="60">
+              <span class="value-label">60</span>
+            </div>
+            <div class="control-group">
+              <label>Pan</label>
+              <input type="range" class="slider-compact" min="-100" max="100" value="0">
+              <span class="value-label">0</span>
+            </div>
+            <button class="btn-icon" title="Mute">M</button>
+            <button class="btn-icon" title="Solo">S</button>
+          </div>
+        </div>
+        
+        <div class="layer-row">
+          <div class="layer-name">A wandering lute</div>
+          <div class="layer-controls">
+            <div class="control-group">
+              <label>Vol</label>
+              <input type="range" class="slider-compact" min="0" max="100" value="45">
+              <span class="value-label">45</span>
+            </div>
+            <div class="control-group">
+              <label>Pan</label>
+              <input type="range" class="slider-compact" min="-100" max="100" value="50">
+              <span class="value-label">50</span>
+            </div>
+            <button class="btn-icon" title="Mute">M</button>
+            <button class="btn-icon" title="Solo">S</button>
+          </div>
+        </div>
+        
+        <div class="layer-row">
+          <div class="layer-name">Rain at the windows</div>
+          <div class="layer-controls">
+            <div class="control-group">
+              <label>Vol</label>
+              <input type="range" class="slider-compact" min="0" max="100" value="40">
+              <span class="value-label">40</span>
+            </div>
+            <div class="control-group">
+              <label>Pan</label>
+              <input type="range" class="slider-compact" min="-100" max="100" value="-50">
+              <span class="value-label">−50</span>
+            </div>
+            <button class="btn-icon" title="Mute">M</button>
+            <button class="btn-icon" title="Solo">S</button>
+          </div>
+        </div>
+        
+        <div class="layer-row">
+          <div class="layer-name">Clinking glasses</div>
+          <div class="layer-controls">
+            <div class="control-group">
+              <label>Vol</label>
+              <input type="range" class="slider-compact" min="0" max="100" value="55">
+              <span class="value-label">55</span>
+            </div>
+            <div class="control-group">
+              <label>Pan</label>
+              <input type="range" class="slider-compact" min="-100" max="100" value="30">
+              <span class="value-label">30</span>
+            </div>
+            <button class="btn-icon" title="Mute">M</button>
+            <button class="btn-icon" title="Solo">S</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="overview-panel">
+        <div class="stereo-field">
+          <div class="stereo-labels">
+            <span>Left</span>
+            <span>Center</span>
+            <span>Right</span>
+          </div>
+          <div class="stereo-diagram">
+            <div class="layer-marker marker-0">Tavern crowd · L30</div>
+            <div class="layer-marker marker-1">Crackling hearth · Center</div>
+            <div class="layer-marker marker-2">A wandering lute · R50</div>
+            <div class="layer-marker marker-3">Rain at the windows · L50</div>
+            <div class="layer-marker marker-4">Clinking glasses · R30</div>
+          </div>
+        </div>
+        
+        <div class="controls-row">
+          <div class="control-set">
+            <label>Fade in</label>
+            <input type="range" min="0" max="10" value="2" style="width: 60px;">
+            <span style="min-width: 30px; text-align: right; opacity: 0.7;">2.0s</span>
+          </div>
+          <div class="control-set"><label>Fade out</label><input type="number" min="0" max="30" value="4" style="width:50px"> s</div>
+          <div class="control-set">
+            <label>Loop</label>
+            <input type="checkbox" checked>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <footer class="footer">
+      <button class="btn">Preview mix</button>
+      <button class="btn btn-primary">Save mood</button>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "title": "An ordered grid, three workspaces",
+  "question": "Back to a Syrinscape-like grid. All three have stable, consistently sized sound tiles, artwork, simple listening and level controls, and settings on selection. The differences are where mood navigation, the sound library, and detailed editing live—not the arrangement of sounds.",
+  "options": [
+    {
+      "id": "prep-grid-classic",
+      "kind": "grounded",
+      "label": "Moods · sounds · properties",
+      "thesis": "The familiar persistent workspace: choose a mood at left, balance its sound grid in the center, and refine the selected sound at right.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["stable sound grid", "visible saved moods", "contextual side panel"],
+      "viewport": "A narrow saved-mood navigator, a 3×2 sound grid beneath the selected mood’s artwork and name, and a right properties panel for Crackling hearth; whole-mood listening and saving remain anchored below.",
+      "risk": "The clearest all-in-one structure, but the sound grid has less horizontal space when properties are open.",
+      "html": ".impeccable/mocks/decision/prep-grid-classic.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-grid-focus",
+      "kind": "grounded",
+      "label": "One mood, a generous grid",
+      "thesis": "Let one atmosphere and its sound grid take the screen, keeping precise settings in a shallow bottom dock.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["wide sound grid", "artwork-led mood header", "bottom settings dock"],
+      "viewport": "Scene and mood selectors in the top bar, a restrained illustrated mood header, a spacious 3×2 sound grid, and selected-sound settings below it; no permanent sidebars.",
+      "risk": "The most breathing room for a single mix, but sibling moods and the library take an explicit opening action.",
+      "html": ".impeccable/mocks/decision/prep-grid-focus.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-grid-library",
+      "kind": "grounded",
+      "label": "Library beside the mood",
+      "thesis": "Keep finding and adding sounds close to composing, with a persistent library beside the ordered mix grid.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["searchable sound library", "stable mix grid", "contextual sound settings"],
+      "viewport": "A searchable library at left, the current mood’s regular sound grid at right, and selected-sound settings in a dock beneath the grid; mood navigation stays in the header.",
+      "risk": "The quickest way to discover and add layers, but the library takes space even when you only want to rebalance an existing mood.",
+      "html": ".impeccable/mocks/decision/prep-grid-library.html",
+      "htmlFrame": "1440x900"
+    }
+  ],
+  "reroll": true,
+  "steer": true,
+  "canon": false,
+  "buildPath": {"value": "code", "toggle": false}
+}

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soundscape — Choose sounds</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme:dark; --bg:#0a0a0c; --panel:#151517; --line:#343332; --ink:#f5f4f0; --muted:#b7b2aa; }
+* { box-sizing:border-box; margin:0; }
+body { width:1440px; height:900px; overflow:hidden; background:var(--bg); color:var(--ink); font:14px/1.45 'Space Grotesk',sans-serif; }
+button,input,select { font:inherit; color:inherit; }
+button,select { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:9px 14px; }
+button { cursor:pointer; }
+button.white { background:var(--ink); color:var(--bg); border-color:var(--ink); font-weight:600; }
+nav { height:64px; display:flex; align-items:center; gap:28px; padding:0 32px; border-bottom:1px solid var(--line); }
+.brand { font:600 16px 'Oswald',sans-serif; letter-spacing:.2em; }
+.nav-active { border-bottom:2px solid var(--ink); height:64px; display:flex; align-items:center; }
+nav select { margin-left:auto; }
+nav a { color:var(--muted); text-decoration:none; }
+header { display:flex; align-items:center; gap:24px; padding:24px 40px; height:144px; }
+.art { width:112px; height:88px; background:#352a21; border-radius:6px; flex:none; }
+h1 { font:500 42px/1.2 'Oswald',sans-serif; }
+header p { color:var(--muted); margin-top:8px; }
+header .actions { margin-left:auto; display:flex; gap:8px; }
+.steps { height:48px; display:flex; align-items:stretch; gap:32px; margin:0 40px; border-bottom:1px solid var(--line); }
+.step { border:0; border-radius:0; background:none; padding:10px 0; color:var(--muted); }
+.step.active { color:var(--ink); border-bottom:2px solid var(--ink); }
+main { height:564px; padding:24px 40px; display:grid; grid-template-columns:1.3fr 1fr; gap:40px; }
+h2 { font-size:18px; font-weight:500; }
+.library-head,.mix-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.library { padding-right:32px; border-right:1px solid var(--line); }
+.search { width:100%; height:42px; border:1px solid #625c52; border-radius:6px; padding:8px 14px; background:#191816; margin-bottom:14px; }
+.filters { display:flex; gap:8px; margin-bottom:18px; }
+.filters button { padding:6px 12px; font-size:12px; }
+.filters .active { background:var(--ink); color:var(--bg); }
+.sound { min-height:66px; display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:12px; border-bottom:1px solid #292828; }
+.sound strong { display:block; font-size:14px; font-weight:500; }
+.sound small { color:var(--muted); font-size:12px; }
+.sound button { padding:7px 10px; font-size:12px; }
+.sound .audition { width:38px; padding:7px 4px; }
+.mix .sound { min-height:66px; grid-template-columns:1fr auto; }
+.mix-head span,.small { font-size:12px; color:var(--muted); }
+.in-mood { color:var(--muted); font-size:12px; }
+.hint { color:var(--muted); font-size:12px; margin-top:20px; max-width:45ch; }
+.next { display:flex; justify-content:flex-end; margin-top:24px; }
+footer { position:absolute; bottom:0; height:80px; width:1440px; display:flex; align-items:center; gap:18px; padding:0 40px; border-top:1px solid var(--line); background:#111113; }
+footer label { color:var(--muted); font-size:12px; display:flex; gap:12px; align-items:center; }
+footer input { width:130px; accent-color:var(--ink); }
+footer .status { margin-left:auto; color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<nav><span class="brand">SOUNDSCAPE</span><span class="nav-active">Prepare</span><a href="#">Live view</a><select aria-label="Scene"><option>The Laughing Gargoyle</option></select><span class="small">Browser prototype</span></nav>
+<header><div class="art" aria-label="Mood artwork"></div><div><h1>TAVERN EVENING</h1><p>The Laughing Gargoyle · 5 sound layers</p></div><div class="actions"><button>Rename</button><button>Duplicate mood</button></div></header>
+<div class="steps"><button class="step active">1. Choose sounds</button><button class="step">2. Shape mix</button></div>
+<main>
+<section class="library">
+<div class="library-head"><h2>Your sounds</h2><button>Import files</button></div>
+<input class="search" type="search" placeholder="Search your sound library" aria-label="Search your sound library">
+<div class="filters"><button class="active">All sounds</button><button>Ambience</button><button>Music</button><button>Effects</button></div>
+<div class="sound"><button class="audition" aria-label="Audition tavern crowd">Play</button><div><strong>Tavern crowd</strong><small>tavern-crowd.wav · Ambience · 2:14</small></div><span class="in-mood">In mood</span></div>
+<div class="sound"><button class="audition" aria-label="Audition crackling hearth">Play</button><div><strong>Crackling hearth</strong><small>hearth.wav · Ambience · 0:48</small></div><span class="in-mood">In mood</span></div>
+<div class="sound"><button class="audition" aria-label="Audition wandering lute">Play</button><div><strong>A wandering lute</strong><small>wandering-lute.mp3 · Music · 3:42</small></div><span class="in-mood">In mood</span></div>
+<div class="sound"><button class="audition" aria-label="Audition distant chatter">Play</button><div><strong>Distant chatter</strong><small>distant-chatter.wav · Ambience · 1:32</small></div><button>Add sound</button></div>
+<div class="sound"><button class="audition" aria-label="Audition footsteps">Play</button><div><strong>Footsteps on timber</strong><small>timber-footsteps.wav · Effects · 0:12</small></div><button>Add sound</button></div>
+</section>
+<section class="mix">
+<div class="mix-head"><h2>In this mood</h2><span>5 sounds</span></div>
+<div class="sound"><div><strong>Tavern crowd</strong><small>Loop · 72%</small></div><button>Remove</button></div>
+<div class="sound"><div><strong>Crackling hearth</strong><small>Loop · 48%</small></div><button>Remove</button></div>
+<div class="sound"><div><strong>A wandering lute</strong><small>Loop · 35%</small></div><button>Remove</button></div>
+<div class="sound"><div><strong>Rain at the windows</strong><small>Loop · 28%</small></div><button>Remove</button></div>
+<div class="sound"><div><strong>Clinking glasses</strong><small>Once · 18%</small></div><button>Remove</button></div>
+<p class="hint">Your sound selection stays intact when you switch to balancing the mix.</p>
+<div class="next"><button class="white">Shape mix</button></div>
+</section>
+</main>
+<footer><button>Preview mix</button><label>Preview volume <input type="range" min="0" max="100" value="65" aria-label="Preview volume"></label><span class="status">Unsaved changes</span><button class="white">Save mood</button></footer>
+</body>
+</html>

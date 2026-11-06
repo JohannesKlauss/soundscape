@@ -1,0 +1,209 @@
+{
+  "mode": "all",
+  "errors": [],
+  "smoke": {
+    "ok": true,
+    "total": 24,
+    "passed": 24,
+    "failed": 0,
+    "results": [
+      {
+        "name": "initial moodStrip has 3 moods",
+        "pass": true,
+        "detail": "found 3"
+      },
+      {
+        "name": "initial soundGrid has 5 cards",
+        "pass": true,
+        "detail": "found 5"
+      },
+      {
+        "name": "moodName shows Tavern Evening",
+        "pass": true,
+        "detail": "Tavern Evening"
+      },
+      {
+        "name": "searching opens the library drawer",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "open drawer is not inert",
+        "pass": true,
+        "detail": "inert=false"
+      },
+      {
+        "name": "search \"rain\" filters library results",
+        "pass": true,
+        "detail": "visible=1 matching=1"
+      },
+      {
+        "name": "found a non-dup library row for \"waves\"",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "waves row has an Add button",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "adding a sound yields a 6th card",
+        "pass": true,
+        "detail": "found 6"
+      },
+      {
+        "name": "search query is preserved after add",
+        "pass": true,
+        "detail": "waves"
+      },
+      {
+        "name": "first card has a volume range input",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "a second mood button exists to switch to",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "volume change survives a mood round-trip",
+        "pass": true,
+        "detail": "13"
+      },
+      {
+        "name": "new mood starts with zero cards",
+        "pass": true,
+        "detail": "found 0"
+      },
+      {
+        "name": "new mood opens the library drawer",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "new mood grid shows an empty-state hint",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "renaming marks save state dirty before saving",
+        "pass": true,
+        "detail": "Unsaved changes"
+      },
+      {
+        "name": "saving marks save state clean",
+        "pass": true,
+        "detail": "Saved locally"
+      },
+      {
+        "name": "paste link opens the import panel",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "invalid import URL shows inline feedback",
+        "pass": true,
+        "detail": "Enter a valid http(s) link to import."
+      },
+      {
+        "name": "YouTube URL import adds a new layer card",
+        "pass": true,
+        "detail": "before=0 after=1"
+      },
+      {
+        "name": "imported layer card references YouTube audio",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "nonsense search yields no library rows",
+        "pass": true,
+        "detail": "rows=0"
+      },
+      {
+        "name": "nonsense search shows a no-results message",
+        "pass": true,
+        "detail": "No sounds found for your search."
+      }
+    ]
+  },
+  "reload": {
+    "volume": "19",
+    "query": "rain",
+    "ok": true
+  },
+  "captures": {
+    "desktop": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "drawer": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "import": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "compact": {
+      "width": 1280,
+      "height": 800,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "wide": {
+      "width": 2128,
+      "height": 833,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "narrowDesktop": {
+      "width": 1024,
+      "height": 768,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "empty": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    },
+    "live": {
+      "width": 1440,
+      "height": 900,
+      "rootOverflow": false,
+      "brokenImages": [],
+      "clippedControls": []
+    }
+  },
+  "localFile": {
+    "cards": 5,
+    "images": true,
+    "fonts": [
+      {
+        "family": "Oswald",
+        "status": "loaded"
+      },
+      {
+        "family": "Space Grotesk",
+        "status": "loaded"
+      }
+    ]
+  }
+}

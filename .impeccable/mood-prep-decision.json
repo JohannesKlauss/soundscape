@@ -1,0 +1,47 @@
+{
+  "title": "Shape the mood editor",
+  "question": "Same Soundscape visual language, three different ways to build and fine-tune a 3–6-layer mood. Choose the working layout; the next step is a concise scope confirmation before the clickable prototype.",
+  "options": [
+    {
+      "id": "prep-layer-board",
+      "kind": "assigned",
+      "kicker": "THE ROLL",
+      "label": "Layer board + inspector",
+      "thesis": "See the whole atmosphere as a small board of sound layers; fine-tune one without losing the mix.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["inherited dark surfaces", "art-led layers", "steady white controls"],
+      "viewport": "Scene navigation across the top; selected mood artwork and name at left above a 2×3 layer board; a right inspector exposes pan, fades, and playback for the selected layer; preview and save stay visible.",
+      "risk": "Comparing detailed pan and fade values across layers takes selection; the board must not become decorative cards.",
+      "html": ".impeccable/mocks/decision/prep-layer-board.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-listening-field",
+      "kind": "dealt",
+      "label": "Listening field",
+      "thesis": "Tune a conventional layer list while a stereo field shows where every sound sits in the atmosphere.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["inherited dark surfaces", "art-led mood identity", "standard sliders"],
+      "viewport": "A focused mood header leads into a compact layer list at left and a wide stereo-position overview at right; volume and pan remain standard sliders, with selected-layer fades beneath the field.",
+      "risk": "The field helps with placement, but could consume space better spent on ordinary editing; it must never imply surround sound or a game map.",
+      "html": ".impeccable/mocks/decision/prep-listening-field.html",
+      "htmlFrame": "1440x900"
+    },
+    {
+      "id": "prep-mood-shelf",
+      "kind": "dealt",
+      "label": "Mood shelf + layer sheet",
+      "thesis": "Keep the scene’s moods in a shallow art shelf, then give the selected mix a full-width, directly editable layer sheet.",
+      "palette": ["#0a0a0c", "#f5f4f0", "#352a21", "#847461"],
+      "materials": ["inherited art bands", "aligned layer rows", "inline mix controls"],
+      "viewport": "A shallow horizontal shelf shows sibling moods; the selected mood opens beneath it as five aligned layer rows with volume, pan, loop, and fades in place; a fixed lower preview bar keeps auditioning close.",
+      "risk": "Fast comparison and editing, but denser and more spreadsheet-like; the shelf must not shrink the 3–6-layer workspace.",
+      "html": ".impeccable/mocks/decision/prep-mood-shelf.html",
+      "htmlFrame": "1440x900"
+    }
+  ],
+  "reroll": true,
+  "steer": true,
+  "canon": false,
+  "buildPath": {"value": "code", "toggle": false}
+}

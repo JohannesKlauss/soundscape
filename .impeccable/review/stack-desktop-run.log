@@ -1,0 +1,69 @@
+{
+  "mode": "script",
+  "errors": [],
+  "script": {
+    "ok": true,
+    "viewport": [
+      1440,
+      900
+    ],
+    "tiles": 5,
+    "sounds": [
+      "Crackling hearth",
+      "Low embers",
+      "Lively flame"
+    ],
+    "current": "hearth",
+    "controls": [
+      {
+        "label": "Move Crackling hearth up",
+        "fitsWidth": true
+      },
+      {
+        "label": "Move Crackling hearth down",
+        "fitsWidth": true
+      },
+      {
+        "label": "Remove Crackling hearth from tile",
+        "fitsWidth": true
+      },
+      {
+        "label": "Move Low embers up",
+        "fitsWidth": true
+      },
+      {
+        "label": "Move Low embers down",
+        "fitsWidth": true
+      },
+      {
+        "label": "Remove Low embers from tile",
+        "fitsWidth": true
+      },
+      {
+        "label": "Move Lively flame up",
+        "fitsWidth": true
+      },
+      {
+        "label": "Move Lively flame down",
+        "fitsWidth": true
+      },
+      {
+        "label": "Remove Lively flame from tile",
+        "fitsWidth": true
+      }
+    ],
+    "crossfadeVisible": true,
+    "orderVisible": true,
+    "palette": {
+      "ink": "#f5f4f0",
+      "void": "#0a0a0c"
+    }
+  },
+  "capture": {
+    "width": 1440,
+    "height": 900,
+    "rootOverflow": false,
+    "brokenImages": [],
+    "clippedControls": []
+  }
+}

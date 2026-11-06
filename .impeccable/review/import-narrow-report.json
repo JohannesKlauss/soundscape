@@ -1,0 +1,77 @@
+{
+  "mode": "script",
+  "errors": [],
+  "script": {
+    "ok": true,
+    "viewport": [
+      1024,
+      768
+    ],
+    "checks": [
+      {
+        "name": "invalid URL feedback is completely visible without scrolling",
+        "pass": true
+      },
+      {
+        "name": "file drop and choose-files sublabel are completely visible",
+        "pass": true
+      },
+      {
+        "name": "import type selector remains visible",
+        "pass": true
+      },
+      {
+        "name": "import action remains visible",
+        "pass": true
+      }
+    ],
+    "panel": {
+      "top": 203,
+      "bottom": 640,
+      "height": 437
+    },
+    "feedback": {
+      "id": "importFeedback",
+      "top": 359.5,
+      "bottom": 377.09375,
+      "left": 486,
+      "right": 740,
+      "width": 254,
+      "height": 17.59375
+    },
+    "drop": {
+      "id": "importFiles",
+      "top": 558,
+      "bottom": 624,
+      "left": 484,
+      "right": 742,
+      "width": 258,
+      "height": 66
+    },
+    "category": {
+      "id": "importCategory",
+      "top": 452.09375,
+      "bottom": 488.09375,
+      "left": 519.953125,
+      "right": 602.953125,
+      "width": 83,
+      "height": 36
+    },
+    "submit": {
+      "id": "importSubmit",
+      "top": 452.09375,
+      "bottom": 488.09375,
+      "left": 652.15625,
+      "right": 740,
+      "width": 87.84375,
+      "height": 36
+    }
+  },
+  "capture": {
+    "width": 1024,
+    "height": 768,
+    "rootOverflow": false,
+    "brokenImages": [],
+    "clippedControls": []
+  }
+}

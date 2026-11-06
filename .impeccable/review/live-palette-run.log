@@ -1,0 +1,68 @@
+{
+  "mode": "script",
+  "errors": [],
+  "script": {
+    "ok": true,
+    "viewport": [
+      1440,
+      900
+    ],
+    "total": 11,
+    "passed": 11,
+    "checks": [
+      {
+        "name": "foreground matches the live-view ink token",
+        "pass": true,
+        "detail": "#f5f4f0"
+      },
+      {
+        "name": "editor canvas matches the live-view void",
+        "pass": true,
+        "detail": "rgb(10, 10, 12)"
+      },
+      {
+        "name": "selection and slider accent use live-view white, not beige/green",
+        "pass": true,
+        "detail": "#f5f4f0"
+      },
+      {
+        "name": ".properties has no olive/green chrome",
+        "pass": true,
+        "detail": "rgb(8, 10, 13)"
+      },
+      {
+        "name": ".library-bar has no olive/green chrome",
+        "pass": true,
+        "detail": "rgb(8, 10, 13)"
+      },
+      {
+        "name": ".library-drawer has no olive/green chrome",
+        "pass": true,
+        "detail": "rgb(8, 10, 13)"
+      },
+      {
+        "name": ".sound-card has no olive/green chrome",
+        "pass": true,
+        "detail": "rgba(245, 244, 240, 0.04)"
+      },
+      {
+        "name": "active preview uses the same white treatment as live selection",
+        "pass": true,
+        "detail": "rgb(245, 244, 240)"
+      },
+      {
+        "name": "checkbox accent matches the live-view white controls",
+        "pass": true,
+        "detail": "rgb(245, 244, 240)"
+      },
+      {
+        "name": "phone-only property toggles are absent",
+        "pass": true
+      },
+      {
+        "name": "properties stay a persistent desktop pane",
+        "pass": true
+      }
+    ]
+  }
+}

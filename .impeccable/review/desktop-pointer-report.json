@@ -1,0 +1,20 @@
+{
+  "scope": "Native-desktop browser prototype; real pointer clicks/hover via Chrome DevTools MCP",
+  "viewport": [1440, 900],
+  "ok": true,
+  "total": 2,
+  "passed": 2,
+  "red": {
+    "selector": "#previewMood",
+    "pressed": true,
+    "hovered": true,
+    "background": "rgba(245, 244, 240, 0.08)",
+    "color": "rgb(10, 10, 12)",
+    "problem": "Generic button:hover overrode the white pressed fill and made dark text unreadable."
+  },
+  "checks": [
+    {"selector":"#previewMood","pressed":true,"hovered":true,"background":"rgb(245, 244, 240)","color":"rgb(10, 10, 12)","pass":true},
+    {"selector":"#soundGrid .tile-listen[aria-pressed=\"true\"]","pressed":true,"hovered":true,"background":"rgb(245, 244, 240)","color":"rgb(10, 10, 12)","pass":true}
+  ],
+  "fix": "Button-qualified pressed/selected selectors outrank the generic hover rule; primary hover and active use the existing #e4e3df neutral. No token, layout, or native-code change."
+}

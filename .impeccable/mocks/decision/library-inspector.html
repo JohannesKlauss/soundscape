@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440, initial-scale=1">
+<title>Soundscape — Sound library</title>
+<style>
+:root { color-scheme:dark; --bg:#0a0a0c; --panel:#101012; --ink:#f5f4f0; --muted:#a6a6a3; --line:rgba(245,244,240,.14); --surface:rgba(245,244,240,.05); }
+* { box-sizing:border-box; }
+html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:var(--bg); color:var(--ink); font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+button,input,select { font:inherit; color:inherit; }
+button,select { cursor:pointer; }
+button { border:1px solid var(--line); background:var(--surface); border-radius:6px; height:36px; padding:0 12px; }
+button:hover { background:#29292b; border-color:#777; }
+button:focus-visible,input:focus-visible,select:focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
+svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+.appbar { height:58px; border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 24px; gap:30px; background:#0d0d0f; }
+.traffic { display:flex; gap:8px; margin-right:12px; }
+.traffic i { width:10px; height:10px; border-radius:50%; background:#4d4d4e; }
+.brand { font-size:13px; font-weight:750; letter-spacing:.18em; }
+.nav { height:100%; display:flex; gap:26px; align-items:center; color:var(--muted); }
+.nav span { height:100%; display:flex; align-items:center; }
+.nav .active { color:var(--ink); border-bottom:2px solid var(--ink); }
+.app-right { margin-left:auto; color:var(--muted); font-size:12px; }
+.workspace { display:grid; grid-template-columns:208px 852px 380px; height:802px; }
+.sidebar { background:#0d0d0f; border-right:1px solid var(--line); padding:28px 14px; }
+.side-title { margin:0 10px 12px; font-size:11px; color:var(--muted); font-weight:600; }
+.side-item { height:38px; display:flex; align-items:center; gap:11px; padding:0 10px; color:#bdbdb9; border-radius:6px; }
+.side-item.active { background:#262628; color:var(--ink); font-weight:600; }
+.side-item .count { margin-left:auto; color:var(--muted); font-size:12px; font-weight:400; }
+.side-divider { height:1px; background:var(--line); margin:24px 10px; }
+.side-note { margin:18px 10px 0; color:var(--muted); font-size:12px; line-height:1.55; }
+.library { min-width:0; display:flex; flex-direction:column; }
+.library-head { padding:29px 30px 21px; }
+.heading { display:flex; align-items:center; justify-content:space-between; }
+h1,h2,h3,p { margin:0; }
+h1 { font-size:25px; letter-spacing:-.025em; font-weight:650; }
+.subtitle { margin-top:5px; color:var(--muted); font-size:13px; }
+.primary { background:var(--ink); color:#111; border-color:var(--ink); font-weight:650; display:flex; align-items:center; gap:7px; }
+.primary:hover { background:#deddd9; color:#111; }
+.toolbar { display:flex; align-items:center; gap:10px; margin-top:25px; }
+.search { height:38px; width:354px; display:flex; align-items:center; gap:9px; border:1px solid #525254; background:#080809; border-radius:6px; padding:0 11px; color:var(--muted); }
+.search input { width:100%; border:0; outline:0; background:transparent; color:var(--ink); }
+.search input::placeholder { color:#a3a3a0; }
+.key { font-size:11px; border:1px solid #555; border-radius:4px; padding:1px 5px; white-space:nowrap; }
+select { height:38px; padding:0 28px 0 11px; border:1px solid var(--line); border-radius:6px; background:#1b1b1d; }
+.toolbar .spacer { flex:1; }
+.list-meta { padding:0 30px 13px; display:flex; justify-content:space-between; color:var(--muted); font-size:12px; }
+.table { padding:0 18px; }
+.table-head,.row { display:grid; grid-template-columns:38px minmax(0,1fr) 120px 94px 94px; align-items:center; gap:12px; }
+.table-head { height:37px; padding:0 12px; border-bottom:1px solid var(--line); color:var(--muted); font-size:11px; }
+.table-head span:last-child,.row .date { text-align:right; }
+.row { height:63px; padding:0 12px; border-bottom:1px solid rgba(245,244,240,.07); }
+.row.selected { background:#242426; border-radius:6px; border-bottom-color:transparent; box-shadow:inset 2px 0 0 var(--ink); }
+.play { width:32px; height:32px; padding:0; display:grid; place-items:center; border-radius:50%; background:#252527; }
+.play svg { width:14px; height:14px; fill:currentColor; stroke:none; }
+.sound-name { font-weight:600; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.filename { color:var(--muted); font-size:11px; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cell { color:#c2c2bf; font-size:12px; }
+.duration { font-variant-numeric:tabular-nums; }
+.list-end { margin:19px 30px; font-size:12px; color:var(--muted); }
+.inspector { background:#111113; border-left:1px solid var(--line); display:flex; flex-direction:column; }
+.inspector-top { height:64px; padding:0 24px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; }
+.inspector-top h2 { font-size:14px; font-weight:650; }
+.icon-button { border:0; background:transparent; padding:0; width:32px; height:32px; display:grid; place-items:center; }
+.details { padding:23px 24px 0; }
+.details h2 { font-size:21px; letter-spacing:-.02em; font-weight:650; }
+.details .sub { margin-top:4px; color:var(--muted); font-size:12px; }
+.preview { margin-top:20px; padding:14px; border:1px solid var(--line); border-radius:7px; background:#19191b; }
+.preview-head { display:flex; align-items:center; gap:11px; }
+.preview-head .play { width:38px; height:38px; background:var(--ink); color:#111; }
+.preview-label { font-weight:600; font-size:12px; }
+.preview-sub { color:var(--muted); font-size:11px; margin-top:2px; }
+.preview-time { margin-left:auto; font-size:11px; font-variant-numeric:tabular-nums; color:#c6c6c2; }
+.wave { height:44px; margin-top:14px; display:flex; gap:3px; align-items:center; }
+.wave i { flex:1; height:var(--h); min-width:2px; border-radius:2px; background:#797977; }
+.wave i:nth-child(-n+8) { background:#797977; }
+.section { margin-top:23px; }
+.section-title { display:flex; align-items:center; justify-content:space-between; margin-bottom:13px; }
+.section-title h3 { font-size:13px; font-weight:650; }
+.text-button { border:0; height:auto; padding:0; background:transparent; color:#deded9; font-size:12px; text-decoration:underline; text-underline-offset:3px; }
+.metadata { display:grid; grid-template-columns:100px 1fr; gap:9px 10px; font-size:12px; }
+.metadata dt { color:var(--muted); }
+.metadata dd { margin:0; color:#e4e4e0; }
+.tags { display:flex; gap:7px; }
+.tag { padding:5px 9px; border:1px solid var(--line); background:var(--surface); border-radius:5px; font-size:12px; color:#dededb; }
+.field-label { display:block; font-size:12px; color:var(--muted); margin:0 0 7px; }
+.name-input { height:36px; width:100%; border:1px solid #4d4d4f; border-radius:6px; padding:0 10px; background:#09090a; }
+.inspector-actions { display:flex; gap:8px; margin-top:12px; }
+.inspector-actions button { font-size:12px; }
+footer { height:40px; border-top:1px solid var(--line); background:#0d0d0f; padding:0 24px; display:flex; align-items:center; color:var(--muted); font-size:11px; }
+footer span:last-child { margin-left:auto; }
+</style>
+</head>
+<body>
+<svg aria-hidden="true" style="display:none"><symbol id="play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol><symbol id="search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></symbol><symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="music" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13M9 8l10-2"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="16" cy="16" rx="3" ry="2"/></symbol><symbol id="folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></symbol><symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol></svg>
+<header class="appbar"><div class="traffic" aria-hidden="true"><i></i><i></i><i></i></div><div class="brand">SOUNDSCAPE</div><nav class="nav" aria-label="Main navigation"><span>Live view</span><span>Prepare</span><span class="active" aria-current="page">Sound library</span></nav><div class="app-right">All sounds stored locally</div></header>
+<div class="workspace">
+<aside class="sidebar" aria-label="Library navigation"><p class="side-title">LIBRARY</p><div class="side-item active"><svg><use href="#music"/></svg>All sounds <span class="count">128</span></div><div class="side-item"><svg><use href="#clock"/></svg>Recently added</div><div class="side-divider"></div><p class="side-title">BROWSE BY TYPE</p><div class="side-item"><svg><use href="#folder"/></svg>Ambience <span class="count">52</span></div><div class="side-item"><svg><use href="#folder"/></svg>Music <span class="count">31</span></div><div class="side-item"><svg><use href="#folder"/></svg>Effects <span class="count">45</span></div><p class="side-note">Your sounds are available across all scenes and moods.</p></aside>
+<main class="library"><div class="library-head"><div class="heading"><div><h1>Sound library</h1><p class="subtitle">Find, preview and organize your sounds.</p></div><button class="primary"><svg><use href="#plus"/></svg>Import sound</button></div><div class="toolbar"><label class="search"><svg><use href="#search"/></svg><input type="search" placeholder="Search sounds or tags" aria-label="Search sounds or tags"><span class="key">⌘ K</span></label><select aria-label="Filter by type"><option>All types</option><option>Ambience</option><option>Music</option><option>Effects</option></select><div class="spacer"></div><select aria-label="Sort sounds"><option>Sort: Name A–Z</option><option>Recently added</option><option>Duration</option></select></div></div>
+<div class="list-meta"><span>128 sounds</span><span>Click a sound to inspect</span></div>
+<div class="table" role="table" aria-label="Sound library"><div class="table-head" role="row"><span></span><span>Name ↑</span><span>Type</span><span>Duration</span><span>Added</span></div>
+<div class="row" role="row"><button class="play" aria-label="Preview Ancient forest at night"><svg><use href="#play"/></svg></button><div><div class="sound-name">Ancient forest at night</div><div class="filename">ancient-forest-night.wav</div></div><span class="cell">Ambience</span><span class="cell duration">4:32</span><span class="cell date">Oct 24, 2026</span></div>
+<div class="row" role="row"><button class="play" aria-label="Preview Blacksmith's forge"><svg><use href="#play"/></svg></button><div><div class="sound-name">Blacksmith’s forge</div><div class="filename">blacksmith-forge.mp3</div></div><span class="cell">Ambience</span><span class="cell duration">2:18</span><span class="cell date">Oct 21, 2026</span></div>
+<div class="row" role="row"><button class="play" aria-label="Preview Castle gate opening"><svg><use href="#play"/></svg></button><div><div class="sound-name">Castle gate opening</div><div class="filename">castle-gate.wav</div></div><span class="cell">Effect</span><span class="cell duration">0:08</span><span class="cell date">Oct 18, 2026</span></div>
+<div class="row selected" role="row" aria-selected="true"><button class="play" aria-label="Preview Crackling hearth"><svg><use href="#play"/></svg></button><div><div class="sound-name">Crackling hearth</div><div class="filename">crackling-hearth.wav</div></div><span class="cell">Ambience</span><span class="cell duration">3:24</span><span class="cell date">Oct 12, 2026</span></div>
+<div class="row" role="row"><button class="play" aria-label="Preview Distant dragon roar"><svg><use href="#play"/></svg></button><div><div class="sound-name">Distant dragon roar</div><div class="filename">dragon-roar-distant.wav</div></div><span class="cell">Effect</span><span class="cell duration">0:12</span><span class="cell date">Oct 10, 2026</span></div>
+<div class="row" role="row"><button class="play" aria-label="Preview Dungeon water drops"><svg><use href="#play"/></svg></button><div><div class="sound-name">Dungeon water drops</div><div class="filename">dungeon-drips.mp3</div></div><span class="cell">Ambience</span><span class="cell duration">2:47</span><span class="cell date">Oct 8, 2026</span></div>
+<div class="row" role="row"><button class="play" aria-label="Preview Glasses in the tavern"><svg><use href="#play"/></svg></button><div><div class="sound-name">Glasses in the tavern</div><div class="filename">tavern-glasses.wav</div></div><span class="cell">Effect</span><span class="cell duration">0:06</span><span class="cell date">Oct 4, 2026</span></div>
+<div class="row" role="row"><button class="play" aria-label="Preview The wandering lute"><svg><use href="#play"/></svg></button><div><div class="sound-name">The wandering lute</div><div class="filename">wandering-lute.mp3</div></div><span class="cell">Music</span><span class="cell duration">3:16</span><span class="cell date">Sep 29, 2026</span></div></div><p class="list-end">Showing 8 of 128 sounds</p></main>
+<aside class="inspector" aria-label="Selected sound inspector"><div class="inspector-top"><h2>Sound details</h2><button class="icon-button" aria-label="More sound actions">•••</button></div><div class="details"><h2>Crackling hearth</h2><p class="sub">Ambience · Local file</p><div class="preview"><div class="preview-head"><button class="play" aria-label="Preview Crackling hearth"><svg><use href="#play"/></svg></button><div><div class="preview-label">Preview sound</div><div class="preview-sub">Not playing</div></div><span class="preview-time">0:00 / 3:24</span></div><div class="wave" aria-hidden="true"><i style="--h:20%"></i><i style="--h:36%"></i><i style="--h:53%"></i><i style="--h:28%"></i><i style="--h:67%"></i><i style="--h:42%"></i><i style="--h:79%"></i><i style="--h:44%"></i><i style="--h:58%"></i><i style="--h:31%"></i><i style="--h:69%"></i><i style="--h:88%"></i><i style="--h:52%"></i><i style="--h:35%"></i><i style="--h:72%"></i><i style="--h:46%"></i><i style="--h:60%"></i><i style="--h:85%"></i><i style="--h:48%"></i><i style="--h:26%"></i><i style="--h:54%"></i><i style="--h:76%"></i><i style="--h:43%"></i><i style="--h:65%"></i><i style="--h:33%"></i><i style="--h:56%"></i><i style="--h:80%"></i><i style="--h:39%"></i><i style="--h:59%"></i><i style="--h:24%"></i><i style="--h:48%"></i><i style="--h:30%"></i></div></div>
+<section class="section"><div class="section-title"><h3>File information</h3></div><dl class="metadata"><dt>File</dt><dd>crackling-hearth.wav</dd><dt>Duration</dt><dd>3:24</dd><dt>Format</dt><dd>WAV · 44.1 kHz · Stereo</dd><dt>Size</dt><dd>34.3 MB</dd><dt>Added</dt><dd>October 12, 2026</dd></dl></section>
+<section class="section"><div class="section-title"><h3>Tags</h3><button class="text-button">Edit tags</button></div><div class="tags"><span class="tag">fire</span><span class="tag">tavern</span><span class="tag">interior</span></div></section>
+<section class="section"><div class="section-title"><h3>Edit sound</h3></div><label class="field-label" for="sound-name">Name</label><input class="name-input" id="sound-name" value="Crackling hearth"><div class="inspector-actions"><button>Save changes</button><button>Show file</button></div></section></div></aside>
+</div><footer><span>Sound library · 128 local sounds</span><span>Selected: Crackling hearth</span></footer>
+</body>
+</html>

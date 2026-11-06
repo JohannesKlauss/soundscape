@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Soundscape — Prepare a mood</title>
+  <link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/oswald-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="mood-editor.css">
+  <script src="mood-state.js" defer></script>
+  <script src="mood-editor.js" defer></script>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="m5 4 10 8-10 8ZM19 4v16"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 4h6a4 4 0 0 1 3 2 4 4 0 0 1 3-2h6v15h-6a4 4 0 0 0-3 2 4 4 0 0 0-3-2H3Z M12 6v15"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 14 4-4M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0M16 8l1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" transform="translate(0 0) scale(.96)"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8ZM14 3v5h5M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 6"/></symbol>
+  </svg>
+
+  <header class="appbar">
+    <span class="brand">SOUNDSCAPE</span>
+    <nav class="mode-nav" aria-label="Prototype views"><a href="mood-editor.html" aria-current="page">Prepare</a><a href="live-view.html">Live view</a><a href="sound-library.html">Sound library</a></nav>
+    <label class="scene-control"><span>Scene</span><select id="sceneSelect" aria-label="Scene"><option>The Laughing Gargoyle</option></select></label>
+    <span class="prototype-note" title="An interaction prototype. Playback and imports are simulated; no media is downloaded.">Prototype · no audio</span>
+  </header>
+
+  <nav class="mood-nav" aria-label="Moods">
+    <div id="moodStrip" class="mood-strip"><span class="muted">Loading moods…</span></div>
+    <button id="newMood" class="new-mood" title="Create a new mood"><svg class="icon"><use href="#i-plus"/></svg><span>New mood</span></button>
+  </nav>
+
+  <div class="workspace">
+    <main id="editor" class="editor" tabindex="-1" aria-label="Mood preparation">
+      <header class="mood-overview">
+        <img id="moodArt" class="mood-art" src="assets/tavern.webp" alt="Tavern atmosphere artwork">
+        <div class="mood-heading"><label class="sr-only" for="moodName">Mood name</label><input id="moodName" class="mood-name" value="Tavern Evening" maxlength="80" spellcheck="false" title="Click to rename this mood"><p id="moodMeta">5 sounds · a mix for The Laughing Gargoyle</p></div>
+        <button id="duplicateMood" class="secondary compact" title="Duplicate this mood"><svg class="icon"><use href="#i-copy"/></svg><span>Duplicate mood</span></button>
+      </header>
+      <div class="grid-heading"><h1>Sounds in this mood</h1><span id="gridHint">Select a sound to edit its settings · Drop library sounds here</span></div>
+      <section id="soundGrid" class="sound-grid" aria-label="Sound layers"><div class="loading-state">Your mood will appear here.</div></section>
+    </main>
+
+    <aside id="soundPanel" class="properties" aria-label="Selected sound settings">
+      <div class="properties-heading"><h2 id="selectedSoundName">Sound settings</h2></div>
+      <p id="selectedSoundMeta" class="sound-meta">Select a sound from the grid.</p>
+      <div id="soundSettings" class="sound-settings"></div>
+    </aside>
+  </div>
+
+  <section id="libraryDrawer" class="library-drawer" aria-label="Sound library" aria-hidden="true" inert>
+    <header class="drawer-heading"><div><h2>Sound library</h2><p id="libraryCount">Your sounds, ready to add</p></div><div id="replacementBar" class="replacement-bar" hidden><span id="replacementName"></span><button id="cancelReplace" class="text-button">Cancel</button></div><button id="closeLibrary" class="icon-button" aria-label="Close sound library"><svg class="icon"><use href="#i-close"/></svg></button></header>
+    <div class="drawer-body">
+      <div id="libraryResults" class="library-results" role="list" aria-label="Library sounds"></div>
+      <aside id="importPanel" class="import-panel" hidden aria-label="Quick import">
+        <div class="import-heading"><h3>Quick import</h3><button id="closeImport" class="icon-button" aria-label="Close quick import"><svg class="icon"><use href="#i-close"/></svg></button></div>
+        <p class="simulation-note">Prototype only · no media downloaded.</p>
+        <form id="importForm" novalidate>
+          <label for="importUrl">YouTube, Freesound, or an audio link</label><input id="importUrl" type="url" placeholder="Paste a link…" autocomplete="off" spellcheck="false" aria-describedby="importFeedback">
+          <p id="importFeedback" class="field-feedback" role="status"></p>
+          <label for="importName">Sound name</label><input id="importName" type="text" placeholder="Give it a name" maxlength="100" autocomplete="off">
+          <div class="import-options"><label for="importCategory">Type</label><select id="importCategory"><option value="music">Music</option><option value="ambience">Ambience</option><option value="effects">Effect</option></select><button id="importSubmit" class="primary" type="submit">Import &amp; add</button></div>
+        </form>
+        <button id="importFiles" class="file-drop"><svg class="icon"><use href="#i-file"/></svg><span>Drop audio files here<br><small>or choose files</small></span></button>
+      </aside>
+    </div>
+  </section>
+
+  <section class="library-bar" aria-label="Library search and quick actions">
+    <button id="libraryToggle" class="library-toggle" aria-controls="libraryDrawer" aria-expanded="false" title="Open sound library"><svg class="icon"><use href="#i-book"/></svg><span>Library</span><svg class="icon disclosure"><use href="#i-chevron"/></svg></button>
+    <div class="search-box"><svg class="icon"><use href="#i-search"/></svg><input id="librarySearch" type="search" placeholder="Search your sounds…" aria-label="Search sound library" aria-controls="libraryResults" autocomplete="off"><kbd aria-hidden="true">/</kbd></div>
+    <select id="libraryCategory" aria-label="Filter sound library"><option value="all">All sounds</option><option value="ambience">Ambience</option><option value="music">Music</option><option value="effects">Effects</option></select>
+    <div class="quick-actions"><button id="pasteLink" class="secondary compact" title="Import from a YouTube, Freesound, or audio URL"><svg class="icon"><use href="#i-link"/></svg><span>Paste link</span></button><button id="filesButton" class="secondary compact" title="Import local audio files"><svg class="icon"><use href="#i-file"/></svg><span>Files</span></button></div>
+  </section>
+
+  <footer class="transport">
+    <button id="previewMood" class="secondary listen-mood" aria-pressed="false"><svg class="icon"><use href="#i-play"/></svg><span id="previewLabel">Listen to mood</span></button>
+    <span id="previewStatus" class="preview-status">Prototype · no audio</span>
+    <label class="preview-volume" for="previewVolume"><span>Preview volume</span><input id="previewVolume" type="range" min="0" max="100" value="65"><output id="previewVolumeValue" for="previewVolume">65%</output></label>
+    <span id="saveState" class="save-state" role="status">Saved locally</span><button id="saveMood" class="primary save-mood">Save mood<kbd aria-hidden="true">⌘S</kbd></button>
+  </footer>
+
+  <input id="fileInput" type="file" accept="audio/*,.wav,.mp3,.ogg,.flac,.m4a,.aac,.aif,.aiff" multiple hidden>
+  <div id="fileDropOverlay" class="file-drop-overlay" hidden><div><svg class="icon"><use href="#i-file"/></svg><h2>Drop a sound into this mood</h2><p>Audio files become sample layers. Nothing is uploaded.</p></div></div>
+  <div id="toast" class="toast" role="status" hidden><span id="toastMessage"></span><button id="toastAction" class="text-button" hidden>Undo</button><button id="toastDismiss" class="icon-button" aria-label="Dismiss message"><svg class="icon"><use href="#i-close"/></svg></button></div>
+  <noscript><p class="noscript">Enable JavaScript to try this interaction prototype. No account or network is needed.</p></noscript>
+</body>
+</html>
