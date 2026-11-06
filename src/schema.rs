@@ -1,15 +1,17 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    scenes (id) {
+    campaigns (id) {
         id -> Integer,
         name -> Text,
     }
 }
 
 diesel::table! {
-    projects (id) {
+    scenes (id) {
         id -> Integer,
         name -> Text,
     }
 }
+
+diesel::allow_tables_to_appear_in_same_query!(campaigns, scenes,);

@@ -1,27 +1,26 @@
-use gpui_kit::{div, IntoElement, Window, Styled, ParentElement, RenderOnce, App};
+use gpui_kit::{div, IntoElement, Window, Styled, ParentElement, RenderOnce, App, Context, AppContext, Entity, Render};
 use gpui_kit::component::{ActiveTheme, WindowExt};
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::notification::NotificationType;
 use crate::AppSettings;
 use crate::domain::creatable_scene::CreatableScene;
 use crate::domain::named_scene::NamedScene;
-use crate::ui::create_project::CreateProject;
+use crate::ui::create_campaign::CreateCampaign;
 
-#[derive(IntoElement)]
 pub struct Home {
-    pub name_input: CreateProject
+    pub name_input: Entity<CreateCampaign>
 }
 
 impl Home {
-    pub fn new(window: &mut Window, cx: &mut App) -> Self {
+    pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         Self {
-            name_input: CreateProject::new(window, cx)
+            name_input: cx.new(|cx| CreateCampaign::new(window, cx))
         }
     }
 }
 
-impl RenderOnce for Home {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+impl Render for Home {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
             .flex_col()
@@ -32,7 +31,7 @@ impl RenderOnce for Home {
             .bg(cx.theme().background)
             .text_color(cx.theme().foreground)
             .child("Hello, World")
-            .child(self.name_input)
+            .child(self.name_input.clone())
             .child(
                 Button::new("db-list")
                     .primary()

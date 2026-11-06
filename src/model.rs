@@ -16,16 +16,16 @@ pub struct DbNewScene {
 }
 
 #[derive(Queryable, Selectable)]
-#[diesel(table_name = crate::schema::projects)]
+#[diesel(table_name = crate::schema::campaigns)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct DbProject {
+pub struct DbCampaign {
     pub id: i32,
     pub name: String,
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = crate::schema::projects)]
+#[diesel(table_name = crate::schema::campaigns)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct DbNewProject {
+pub struct DbNewCampaign {
     pub name: String,
 }

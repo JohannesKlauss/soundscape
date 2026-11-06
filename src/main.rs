@@ -36,7 +36,7 @@ fn main() {
 fn create_router(cx: &mut App) {
     init_router(cx, |router| {
         router.add_route(
-            Route::new("/", |window, app, _| Home::new(window, app).into_any_element())
+            Route::component_with_context("/", |window, cx| Home::new(window, cx))
         )
     })
 }
