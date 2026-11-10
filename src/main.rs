@@ -12,6 +12,7 @@ use gpui_kit::*;
 use gpui_navigator::{init_router, Route};
 use crate::audio_engine::AudioEngine;
 use crate::db::connect_to_db;
+use crate::domain::campaign::CampaignStore;
 use crate::ui::home::Home;
 
 struct AppSettings {
@@ -24,6 +25,7 @@ impl Global for AppSettings {}
 fn main() {
     application().with_assets(assets::Assets).run(|cx| {
         init_app_settings(cx);
+        CampaignStore::init(cx);
         init(cx);
         set_theme(cx);
         create_router(cx);

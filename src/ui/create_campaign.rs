@@ -1,5 +1,5 @@
 use crate::AppSettings;
-use crate::domain::campaign::CreatableCampaign;
+use crate::domain::campaign::{CampaignStore, CreatableCampaign};
 use gpui_kit::component::WindowExt;
 use gpui_kit::component::button::{Button, ButtonVariants};
 use gpui_kit::component::input::{Input, InputState};
@@ -36,10 +36,13 @@ impl Render for CreateCampaign {
             .child(Button::new("create").primary().label("Create").on_click(
                 move |_, window, cx| {
                     let name = project_name.read(cx).value();
-                    let settings = cx.global_mut::<AppSettings>();
-                    let project = CreatableCampaign::new(name.as_str()).persist(&mut settings.db);
+                    let store = CampaignStore::global(cx);
 
-                    match project {
+                    let campaign = store.update(cx, |store, cx| {
+                        store.create(name.as_str(), cx)
+                    });
+
+                    match campaign {
                         Ok(_) => window.push_notification(
                             Notification::success(format!("Created campaign {}", name)),
                             cx,
